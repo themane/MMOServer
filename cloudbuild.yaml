@@ -1,4 +1,16 @@
 steps:
-  - name: "gcr.io/cloud-builders/gcloud"
-    args: ["app", "deploy"]
+  #build docker container
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'gcr.io/themane/mmo-server', '.']
+
+  #push container to container registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'push', 'gcr.io/themane/mmo-server']
+
+  #deploy to cloud run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['run','deploy','cloudrunservice','--image','gcr.io/themane/mmo-server', '--region', 'asia-south1']
+
+images:
+  - 'gcr.io/themane/mmo-server'
 timeout: "1600s"
