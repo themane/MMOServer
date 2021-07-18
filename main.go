@@ -17,6 +17,6 @@ func main() {
 
 func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"message": "Try1.branch push linked",
+		"message": "Try2.branch push linked",
 	})
 }
