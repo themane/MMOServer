@@ -1,0 +1,74 @@
+{
+  "levels": {
+    "1": {
+      "water_required": 5,
+      "graphene_required": 11,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 1,
+      "workers_max_limit": 15
+    },
+    "2": {
+      "water_required": 5,
+      "graphene_required": 22,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 1,
+      "workers_max_limit": 25
+    },
+    "3": {
+      "water_required": 5,
+      "graphene_required": 44,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 1,
+      "workers_max_limit": 40
+    },
+    "4": {
+      "water_required": 5,
+      "graphene_required": 101,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 1,
+      "workers_max_limit": 65
+    },
+    "5": {
+      "water_required": 10,
+      "graphene_required": 202,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 2,
+      "workers_max_limit": 100
+    },
+    "6": {
+      "water_required": 20,
+      "graphene_required": 404,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 2,
+      "workers_max_limit": 200
+    },
+    "7": {
+      "water_required": 40,
+      "graphene_required": 1001,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 3,
+      "workers_max_limit": 400
+    },
+    "8": {
+      "water_required": 80,
+      "graphene_required": 2002,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 3,
+      "workers_max_limit": 800
+    },
+    "9": {
+      "water_required": 160,
+      "graphene_required": 4004,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 4,
+      "workers_max_limit": 1500
+    },
+    "10": {
+      "water_required": 500,
+      "graphene_required": 10000,
+      "shelio_required": 0,
+      "mining_rate_per_worker": 6,
+      "workers_max_limit": 3000
+    }
+  }
+}

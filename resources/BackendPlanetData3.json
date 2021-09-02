@@ -1,0 +1,88 @@
+{
+    "position": {
+        "sector": 32, 
+        "planet": 10, 
+        "system": 2, 
+        "display": "2:32:10"
+    }, 
+    "mines": [
+        {
+            "max_limit": 1826, 
+            "increase_rate": 31, 
+            "_id": "G101", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 1156, 
+            "increase_rate": 9, 
+            "_id": "G102", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 1201, 
+            "increase_rate": 10, 
+            "_id": "G103", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 935, 
+            "increase_rate": 7, 
+            "_id": "G104", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 822, 
+            "increase_rate": 6, 
+            "_id": "W101", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 888, 
+            "increase_rate": 9, 
+            "_id": "W102", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 1142, 
+            "increase_rate": 12, 
+            "_id": "W103", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 967, 
+            "increase_rate": 9, 
+            "_id": "W104", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 967, 
+            "increase_rate": 5, 
+            "_id": "W105", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 862, 
+            "increase_rate": 7, 
+            "_id": "W106", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 1950, 
+            "increase_rate": 33, 
+            "_id": "W107", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 945, 
+            "increase_rate": 7, 
+            "_id": "W108", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 1293, 
+            "increase_rate": 6, 
+            "_id": "W109", 
+            "type": "WATER"
+        }
+    ]
+}

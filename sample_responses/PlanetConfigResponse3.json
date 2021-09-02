@@ -1,0 +1,323 @@
+{
+    "shelio": {
+        "amount": 7
+    }, 
+    "planet_config": "Planet3.json", 
+    "mines": [
+        {
+            "increase_rate": 31, 
+            "max_limit": 1826, 
+            "mined": 313, 
+            "_id": "G101", 
+            "type": "GRAPHENE", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 22, 
+                    "current_mining_rate_per_worker": 1, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 25, 
+                    "current_workers_max_limit": 15, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 1, 
+                "mining_rate": 7, 
+                "building_id": "GMP101", 
+                "workers": 7
+            }
+        }, 
+        {
+            "increase_rate": 9, 
+            "max_limit": 1156, 
+            "mined": 1076, 
+            "_id": "G102", 
+            "type": "GRAPHENE", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 11, 
+                    "current_mining_rate_per_worker": 0, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 15, 
+                    "current_workers_max_limit": 0, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 0, 
+                "mining_rate": 0, 
+                "building_id": null, 
+                "workers": 0
+            }
+        }, 
+        {
+            "increase_rate": 10, 
+            "max_limit": 1201, 
+            "mined": 165, 
+            "_id": "G103", 
+            "type": "GRAPHENE", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 11, 
+                    "current_mining_rate_per_worker": 0, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 15, 
+                    "current_workers_max_limit": 0, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 0, 
+                "mining_rate": 0, 
+                "building_id": null, 
+                "workers": 0
+            }
+        }, 
+        {
+            "increase_rate": 7, 
+            "max_limit": 935, 
+            "mined": 749, 
+            "_id": "G104", 
+            "type": "GRAPHENE", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 11, 
+                    "current_mining_rate_per_worker": 0, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 15, 
+                    "current_workers_max_limit": 0, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 0, 
+                "mining_rate": 0, 
+                "building_id": null, 
+                "workers": 0
+            }
+        }, 
+        {
+            "increase_rate": 6, 
+            "max_limit": 822, 
+            "mined": 81, 
+            "_id": "W101", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 1001, 
+                    "current_mining_rate_per_worker": 2, 
+                    "next_mining_rate_per_worker": 3, 
+                    "water_required": 40, 
+                    "next_workers_max_limit": 400, 
+                    "current_workers_max_limit": 200, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 6, 
+                "mining_rate": 28, 
+                "building_id": "WMP101", 
+                "workers": 14
+            }
+        }, 
+        {
+            "increase_rate": 9, 
+            "max_limit": 888, 
+            "mined": 507, 
+            "_id": "W102", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 1001, 
+                    "current_mining_rate_per_worker": 2, 
+                    "next_mining_rate_per_worker": 3, 
+                    "water_required": 40, 
+                    "next_workers_max_limit": 400, 
+                    "current_workers_max_limit": 200, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 6, 
+                "mining_rate": 28, 
+                "building_id": "WMP102", 
+                "workers": 14
+            }
+        }, 
+        {
+            "increase_rate": 12, 
+            "max_limit": 1142, 
+            "mined": 1023, 
+            "_id": "W103", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 11, 
+                    "current_mining_rate_per_worker": 0, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 15, 
+                    "current_workers_max_limit": 0, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 0, 
+                "mining_rate": 0, 
+                "building_id": null, 
+                "workers": 0
+            }
+        }, 
+        {
+            "increase_rate": 9, 
+            "max_limit": 967, 
+            "mined": 342, 
+            "_id": "W104", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 11, 
+                    "current_mining_rate_per_worker": 0, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 15, 
+                    "current_workers_max_limit": 0, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 0, 
+                "mining_rate": 0, 
+                "building_id": null, 
+                "workers": 0
+            }
+        }, 
+        {
+            "increase_rate": 5, 
+            "max_limit": 967, 
+            "mined": 419, 
+            "_id": "W105", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 11, 
+                    "current_mining_rate_per_worker": 0, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 15, 
+                    "current_workers_max_limit": 0, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 0, 
+                "mining_rate": 0, 
+                "building_id": null, 
+                "workers": 0
+            }
+        }, 
+        {
+            "increase_rate": 7, 
+            "max_limit": 862, 
+            "mined": 536, 
+            "_id": "W106", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 202, 
+                    "current_mining_rate_per_worker": 1, 
+                    "next_mining_rate_per_worker": 2, 
+                    "water_required": 10, 
+                    "next_workers_max_limit": 100, 
+                    "current_workers_max_limit": 65, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 4, 
+                "mining_rate": 6, 
+                "building_id": "WMP106", 
+                "workers": 6
+            }
+        }, 
+        {
+            "increase_rate": 33, 
+            "max_limit": 1950, 
+            "mined": 834, 
+            "_id": "W107", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 11, 
+                    "current_mining_rate_per_worker": 0, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 15, 
+                    "current_workers_max_limit": 0, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 0, 
+                "mining_rate": 0, 
+                "building_id": null, 
+                "workers": 0
+            }
+        }, 
+        {
+            "increase_rate": 7, 
+            "max_limit": 945, 
+            "mined": 449, 
+            "_id": "W108", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 101, 
+                    "current_mining_rate_per_worker": 1, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 65, 
+                    "current_workers_max_limit": 40, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 3, 
+                "mining_rate": 12, 
+                "building_id": "WMP108", 
+                "workers": 12
+            }
+        }, 
+        {
+            "increase_rate": 6, 
+            "max_limit": 1293, 
+            "mined": 26, 
+            "_id": "W109", 
+            "type": "WATER", 
+            "mining_plant": {
+                "next_level": {
+                    "graphene_required": 44, 
+                    "current_mining_rate_per_worker": 1, 
+                    "next_mining_rate_per_worker": 1, 
+                    "water_required": 5, 
+                    "next_workers_max_limit": 40, 
+                    "current_workers_max_limit": 25, 
+                    "shelio_required": 0
+                }, 
+                "building_level": 2, 
+                "mining_rate": 10, 
+                "building_id": "WMP109", 
+                "workers": 10
+            }
+        }
+    ], 
+    "water": {
+        "generation_rate": 84, 
+        "amount": 20, 
+        "reserved": 4
+    }, 
+    "position": {
+        "sector": 32, 
+        "planet": 10, 
+        "system": 2, 
+        "display": "2:32:10"
+    }, 
+    "graphene": {
+        "generation_rate": 7, 
+        "amount": 20, 
+        "reserved": 1
+    }, 
+    "population": {
+        "total_population": 37, 
+        "soldiers": {
+            "idle": 2, 
+            "total": 15
+        }, 
+        "workers": {
+            "idle": 0, 
+            "total": 16
+        }, 
+        "unemployed_population": 6, 
+        "generation_rate": 2
+    }
+}

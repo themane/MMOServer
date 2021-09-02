@@ -1,0 +1,82 @@
+{
+    "position": {
+        "sector": 32, 
+        "planet": 3, 
+        "system": 2, 
+        "display": "2:32:3"
+    }, 
+    "mines": [
+        {
+            "max_limit": 846, 
+            "increase_rate": 7, 
+            "_id": "G101", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 833, 
+            "increase_rate": 6, 
+            "_id": "G102", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 840, 
+            "increase_rate": 5, 
+            "_id": "G103", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 1609, 
+            "increase_rate": 15, 
+            "_id": "G104", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 1833, 
+            "increase_rate": 39, 
+            "_id": "G105", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 1762, 
+            "increase_rate": 19, 
+            "_id": "G106", 
+            "type": "GRAPHENE"
+        }, 
+        {
+            "max_limit": 908, 
+            "increase_rate": 7, 
+            "_id": "W101", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 832, 
+            "increase_rate": 7, 
+            "_id": "W102", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 1832, 
+            "increase_rate": 37, 
+            "_id": "W103", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 1789, 
+            "increase_rate": 17, 
+            "_id": "W104", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 854, 
+            "increase_rate": 6, 
+            "_id": "W105", 
+            "type": "WATER"
+        }, 
+        {
+            "max_limit": 1818, 
+            "increase_rate": 39, 
+            "_id": "W106", 
+            "type": "WATER"
+        }
+    ]
+}
