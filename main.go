@@ -8,6 +8,20 @@ import (
 	"os"
 )
 
+// @title MMO Game Server
+// @version 1.0.0
+// @description This is the server for new MMO Game based in space.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Devashish Gupta
+// @contact.email devagpta@gmail.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host https://mmo-server-4xcaklgmnq-el.a.run.app
+// @BasePath /
+// @schemes https
 func main() {
 	r := gin.Default()
 	r.GET("/ping", ping)
@@ -19,12 +33,28 @@ func main() {
 	}
 }
 
+// HealthCheck ping godoc
+// @Summary Pings the server
+// @Description get the version and check the health of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /ping [get]
 func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Test 3 Pong",
 	})
 }
 
+// Login godoc
+// @Summary Login API
+// @Description login verification and first load of complete user data
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /login [post]
 func login(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request LoginRequest

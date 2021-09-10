@@ -1,0 +1,49 @@
+basePath: /
+host: https://mmo-server-4xcaklgmnq-el.a.run.app
+info:
+  contact:
+    email: devagpta@gmail.com
+    name: Devashish Gupta
+  description: This is the server for new MMO Game based in space.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: MMO Game Server
+  version: 1.0.0
+paths:
+  /login:
+    post:
+      consumes:
+      - '*/*'
+      description: login verification and first load of complete user data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login API
+      tags:
+      - root
+  /ping:
+    get:
+      consumes:
+      - '*/*'
+      description: get the version and check the health of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Pings the server
+      tags:
+      - root
+schemes:
+- https
+swagger: "2.0"
