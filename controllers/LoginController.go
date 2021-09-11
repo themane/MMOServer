@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/themane/MMOServer/models"
 	"io/ioutil"
 	"log"
 	"os"
@@ -18,11 +19,11 @@ import (
 // @Router /login [post]
 func Login(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request LoginRequest
+	var request models.LoginRequest
 	json.Unmarshal(body, &request)
 	log.Printf("Logged in user: %s", request.Username)
 
-	var response LoginResponse
+	var response models.LoginResponse
 	switch request.Username {
 	case "devashish":
 		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse1.json")
