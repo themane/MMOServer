@@ -16,7 +16,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param username "user identifier" string true "valid username for data retrieval"
-// @Param planet_id "planet identifier" string true "occupied planet id for data retrieval"
+// @Param planet_id "planet identifier" string true "identifier of occupied planet for data retrieval"
 // @Success 200 {object} models.Population
 // @Router /refresh/population [post]
 func RefreshPopulationController(c *gin.Context) {
@@ -36,7 +36,7 @@ func RefreshPopulationController(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param username "user identifier" string true "valid username for data retrieval"
-// @Param planet_id "planet identifier" string true "occupied planet id for data retrieval"
+// @Param planet_id "planet identifier" string true "identifier of occupied planet for data retrieval"
 // @Success 200 {object} models.Resources
 // @Router /refresh/resources [post]
 func RefreshResourcesController(c *gin.Context) {
