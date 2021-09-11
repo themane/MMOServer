@@ -27,7 +27,7 @@ var baseURL string
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host https://mmo-server-4xcaklgmnq-el.a.run.app
+// @host mmo-server-4xcaklgmnq-el.a.run.app
 // @BasePath /
 // @schemes https
 func main() {

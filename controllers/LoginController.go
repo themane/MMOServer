@@ -12,8 +12,8 @@ import (
 // Login godoc
 // @Summary Login API
 // @Description login verification and first load of complete user data
-// @Tags root
-// @Accept */*
+// @Tags root, login
+// @Accept json
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Router /login [post]
