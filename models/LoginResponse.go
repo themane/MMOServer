@@ -3,9 +3,7 @@ package models
 type LoginResponse struct {
 	PlanetConfig string     `json:"planet_config" example:"Planet2.json"`
 	Position     Position   `json:"position"`
-	Water        Resource   `json:"water"`
-	Graphene     Resource   `json:"graphene"`
-	Shelio       int        `json:"shelio" example:"23"`
+	Resources    Resources  `json:"resources"`
 	Population   Population `json:"population"`
 	Mines        []Mine     `json:"mines"`
 }
@@ -15,6 +13,12 @@ type Position struct {
 	Sector  int    `json:"sector" example:"49"`
 	Planet  int    `json:"planet" example:"7"`
 	Display string `json:"display" example:"23:49:7"`
+}
+
+type Resources struct {
+	Water    Resource `json:"water"`
+	Graphene Resource `json:"graphene"`
+	Shelio   int      `json:"shelio" example:"23"`
 }
 
 type Resource struct {
