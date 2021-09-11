@@ -25,7 +25,7 @@ func RefreshPopulationController(c *gin.Context) {
 	json.Unmarshal(body, &request)
 	log.Printf("Refreshing population data for: %s", request.Username)
 
-	response := services.RefreshPopulation(request.Username)
+	response := services.RefreshPopulation(request.Username, request.PlanetId)
 	c.JSON(200, response)
 }
 
@@ -45,6 +45,6 @@ func RefreshResourcesController(c *gin.Context) {
 	json.Unmarshal(body, &request)
 	log.Printf("Refreshing resources data for: %s", request.Username)
 
-	response := services.RefreshResources(request.Username)
+	response := services.RefreshResources(request.Username, request.PlanetId)
 	c.JSON(200, response)
 }

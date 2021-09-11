@@ -37,7 +37,7 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	r.GET("/ping", controllers.Ping)
-	r.POST("/login", controllers.Login)
+	r.POST("/login", controllers.LoginController)
 	err := r.Run()
 	if err != nil {
 		log.Println("Error in starting server")
