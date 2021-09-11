@@ -15,7 +15,7 @@ import (
 // @Tags Login
 // @Accept json
 // @Produce json
-// @Param username query string true "valid username for login"
+// @Param username "user identifier" string true "valid username for login"
 // @Success 200 {object} models.LoginResponse
 // @Router /login [post]
 func LoginController(c *gin.Context) {

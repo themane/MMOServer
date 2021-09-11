@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func RefreshPopulation(Username string) models.LoginResponse {
+func RefreshPopulation(Username string, PlanetId string) models.LoginResponse {
 	var response models.LoginResponse
 	switch Username {
 	case "devashish":
@@ -30,7 +30,7 @@ func RefreshPopulation(Username string) models.LoginResponse {
 	return response
 }
 
-func RefreshResources(Username string) models.LoginResponse {
+func RefreshResources(Username string, PlanetId string) models.LoginResponse {
 	var response models.LoginResponse
 	switch Username {
 	case "devashish":

@@ -15,12 +15,13 @@ import (
 // @Tags Refresh
 // @Accept json
 // @Produce json
-// @Param username query string true "valid username for data retrieval"
+// @Param username "user identifier" string true "valid username for data retrieval"
+// @Param planet_id "planet identifier" string true "occupied planet id for data retrieval"
 // @Success 200 {object} models.Population
 // @Router /refresh/population [post]
 func RefreshPopulationController(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request models.LoginRequest
+	var request models.RefreshRequest
 	json.Unmarshal(body, &request)
 	log.Printf("Refreshing population data for: %s", request.Username)
 
@@ -34,12 +35,13 @@ func RefreshPopulationController(c *gin.Context) {
 // @Tags Refresh
 // @Accept json
 // @Produce json
-// @Param username query string true "valid username for data retrieval"
+// @Param username "user identifier" string true "valid username for data retrieval"
+// @Param planet_id "planet identifier" string true "occupied planet id for data retrieval"
 // @Success 200 {object} models.Resources
 // @Router /refresh/resources [post]
 func RefreshResourcesController(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request models.LoginRequest
+	var request models.RefreshRequest
 	json.Unmarshal(body, &request)
 	log.Printf("Refreshing resources data for: %s", request.Username)
 

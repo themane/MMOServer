@@ -1,18 +1,44 @@
 package models
 
 type LoginResponse struct {
-	PlanetConfig string     `json:"planet_config" example:"Planet2.json"`
-	Position     Position   `json:"position"`
-	Resources    Resources  `json:"resources"`
-	Population   Population `json:"population"`
-	Mines        []Mine     `json:"mines"`
+	Profile Profile  `json:"profile"`
+	Sectors []Sector `json:"occupied_sectors"`
 }
 
-type Position struct {
-	System  int    `json:"system" example:"23"`
-	Sector  int    `json:"sector" example:"49"`
-	Planet  int    `json:"planet" example:"7"`
-	Display string `json:"display" example:"23:49:7"`
+type Profile struct {
+	Username string `json:"username"`
+}
+
+type Sector struct {
+	OccupiedPlanets   []OccupiedPlanet   `json:"occupied_planets"`
+	UnoccupiedPlanets []UnoccupiedPlanet `json:"unoccupied_planets"`
+	Position          SectorPosition     `json:"position"`
+}
+
+type UnoccupiedPlanet struct {
+	PlanetConfig string         `json:"planet_config" example:"Planet2.json"`
+	Position     PlanetPosition `json:"position"`
+}
+
+type OccupiedPlanet struct {
+	PlanetConfig string         `json:"planet_config" example:"Planet2.json"`
+	Position     PlanetPosition `json:"position"`
+	Resources    Resources      `json:"resources"`
+	Population   Population     `json:"population"`
+	Mines        []Mine         `json:"mines"`
+}
+
+type SectorPosition struct {
+	System int    `json:"system" example:"23"`
+	Sector int    `json:"sector" example:"49"`
+	Id     string `json:"id" example:"23:49"`
+}
+
+type PlanetPosition struct {
+	System int    `json:"system" example:"23"`
+	Sector int    `json:"sector" example:"49"`
+	Planet int    `json:"planet" example:"7"`
+	Id     string `json:"id" example:"23:49:7"`
 }
 
 type Resources struct {
