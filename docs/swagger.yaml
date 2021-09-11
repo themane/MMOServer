@@ -1,5 +1,142 @@
-basePath: /
-host: https://mmo-server-4xcaklgmnq-el.a.run.app
+definitions:
+  controllers.PongResponse:
+    properties:
+      message:
+        example: pong
+        type: string
+    type: object
+  models.EmployedPopulation:
+    properties:
+      idle:
+        example: 4
+        type: integer
+      total:
+        example: 21
+        type: integer
+    type: object
+  models.LoginResponse:
+    properties:
+      graphene:
+        $ref: '#/definitions/models.Resource'
+      mines:
+        items:
+          $ref: '#/definitions/models.Mine'
+        type: array
+      planet_config:
+        example: Planet2.json
+        type: string
+      population:
+        $ref: '#/definitions/models.Population'
+      position:
+        $ref: '#/definitions/models.Position'
+      shelio:
+        example: 23
+        type: integer
+      water:
+        $ref: '#/definitions/models.Resource'
+    type: object
+  models.Mine:
+    properties:
+      _id:
+        example: W101
+        type: string
+      max_limit:
+        example: 550
+        type: integer
+      mined:
+        example: 125
+        type: integer
+      mining_plant:
+        $ref: '#/definitions/models.MiningPlant'
+      type:
+        example: WATER
+        type: string
+    type: object
+  models.MiningPlant:
+    properties:
+      building_id:
+        example: WMP101
+        type: string
+      building_level:
+        example: 3
+        type: integer
+      next_level:
+        $ref: '#/definitions/models.NextLevelAttributes'
+      workers:
+        example: 12
+        type: integer
+    type: object
+  models.NextLevelAttributes:
+    properties:
+      current_mining_rate_per_worker:
+        example: 1
+        type: integer
+      current_workers_max_limit:
+        example: 40
+        type: integer
+      graphene_required:
+        example: 101
+        type: integer
+      next_mining_rate_per_worker:
+        example: 1
+        type: integer
+      next_workers_max_limit:
+        example: 65
+        type: integer
+      shelio_required:
+        example: 0
+        type: integer
+      water_required:
+        example: 5
+        type: integer
+    type: object
+  models.Population:
+    properties:
+      generation_rate:
+        example: 3
+        type: integer
+      soldiers:
+        $ref: '#/definitions/models.EmployedPopulation'
+      total:
+        example: 45
+        type: integer
+      unemployed:
+        example: 3
+        type: integer
+      workers:
+        $ref: '#/definitions/models.EmployedPopulation'
+    type: object
+  models.Position:
+    properties:
+      display:
+        example: "23:49:7"
+        type: string
+      planet:
+        example: 7
+        type: integer
+      sector:
+        example: 49
+        type: integer
+      system:
+        example: 23
+        type: integer
+    type: object
+  models.Resource:
+    properties:
+      amount:
+        example: 23
+        type: integer
+      generation_rate:
+        example: 3
+        type: integer
+      max_limit:
+        example: 100
+        type: integer
+      reserved:
+        example: 14
+        type: integer
+    type: object
+host: mmo-server-4xcaklgmnq-el.a.run.app
 info:
   contact:
     email: devagpta@gmail.com
@@ -15,32 +152,36 @@ paths:
   /login:
     post:
       consumes:
-      - '*/*'
-      description: login verification and first load of complete user data
+      - application/json
+      description: Login verification and first load of complete user data
+      parameters:
+      - description: valid username for login
+        in: query
+        name: username
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.LoginResponse'
       summary: Login API
       tags:
-      - root
+      - Login
   /ping:
     get:
       consumes:
       - '*/*'
-      description: get the version and check the health of server.
+      description: Pings the server for checking the health of the server
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/controllers.PongResponse'
       summary: Pings the server
       tags:
       - root

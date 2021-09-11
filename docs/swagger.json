@@ -17,28 +17,35 @@
         },
         "version": "1.0.0"
     },
-    "host": "https://mmo-server-4xcaklgmnq-el.a.run.app",
-    "basePath": "/",
+    "host": "mmo-server-4xcaklgmnq-el.a.run.app",
     "paths": {
         "/login": {
             "post": {
-                "description": "login verification and first load of complete user data",
+                "description": "Login verification and first load of complete user data",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "Login"
                 ],
                 "summary": "Login API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "valid username for login",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.LoginResponse"
                         }
                     }
                 }
@@ -46,7 +53,7 @@
         },
         "/ping": {
             "get": {
-                "description": "get the version and check the health of server.",
+                "description": "Pings the server for checking the health of the server",
                 "consumes": [
                     "*/*"
                 ],
@@ -61,10 +68,206 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/controllers.PongResponse"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controllers.PongResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "pong"
+                }
+            }
+        },
+        "models.EmployedPopulation": {
+            "type": "object",
+            "properties": {
+                "idle": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 21
+                }
+            }
+        },
+        "models.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "graphene": {
+                    "$ref": "#/definitions/models.Resource"
+                },
+                "mines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Mine"
+                    }
+                },
+                "planet_config": {
+                    "type": "string",
+                    "example": "Planet2.json"
+                },
+                "population": {
+                    "$ref": "#/definitions/models.Population"
+                },
+                "position": {
+                    "$ref": "#/definitions/models.Position"
+                },
+                "shelio": {
+                    "type": "integer",
+                    "example": 23
+                },
+                "water": {
+                    "$ref": "#/definitions/models.Resource"
+                }
+            }
+        },
+        "models.Mine": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "example": "W101"
+                },
+                "max_limit": {
+                    "type": "integer",
+                    "example": 550
+                },
+                "mined": {
+                    "type": "integer",
+                    "example": 125
+                },
+                "mining_plant": {
+                    "$ref": "#/definitions/models.MiningPlant"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "WATER"
+                }
+            }
+        },
+        "models.MiningPlant": {
+            "type": "object",
+            "properties": {
+                "building_id": {
+                    "type": "string",
+                    "example": "WMP101"
+                },
+                "building_level": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "next_level": {
+                    "$ref": "#/definitions/models.NextLevelAttributes"
+                },
+                "workers": {
+                    "type": "integer",
+                    "example": 12
+                }
+            }
+        },
+        "models.NextLevelAttributes": {
+            "type": "object",
+            "properties": {
+                "current_mining_rate_per_worker": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "current_workers_max_limit": {
+                    "type": "integer",
+                    "example": 40
+                },
+                "graphene_required": {
+                    "type": "integer",
+                    "example": 101
+                },
+                "next_mining_rate_per_worker": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "next_workers_max_limit": {
+                    "type": "integer",
+                    "example": 65
+                },
+                "shelio_required": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "water_required": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
+        "models.Population": {
+            "type": "object",
+            "properties": {
+                "generation_rate": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "soldiers": {
+                    "$ref": "#/definitions/models.EmployedPopulation"
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 45
+                },
+                "unemployed": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "workers": {
+                    "$ref": "#/definitions/models.EmployedPopulation"
+                }
+            }
+        },
+        "models.Position": {
+            "type": "object",
+            "properties": {
+                "display": {
+                    "type": "string",
+                    "example": "23:49:7"
+                },
+                "planet": {
+                    "type": "integer",
+                    "example": 7
+                },
+                "sector": {
+                    "type": "integer",
+                    "example": 49
+                },
+                "system": {
+                    "type": "integer",
+                    "example": 23
+                }
+            }
+        },
+        "models.Resource": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "example": 23
+                },
+                "generation_rate": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "max_limit": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "reserved": {
+                    "type": "integer",
+                    "example": 14
                 }
             }
         }

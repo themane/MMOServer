@@ -11,11 +11,12 @@ import (
 
 // Login godoc
 // @Summary Login API
-// @Description login verification and first load of complete user data
-// @Tags root, login
+// @Description Login verification and first load of complete user data
+// @Tags Login
 // @Accept json
 // @Produce json
-// @Success 200 {object} map[string]interface{}
+// @Param username query string true "valid username for login"
+// @Success 200 {object} models.LoginResponse
 // @Router /login [post]
 func Login(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)

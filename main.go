@@ -28,7 +28,6 @@ var baseURL string
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host mmo-server-4xcaklgmnq-el.a.run.app
-// @BasePath /
 // @schemes https
 func main() {
 	r := gin.Default()
