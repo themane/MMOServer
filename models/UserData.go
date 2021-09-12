@@ -1,19 +1,19 @@
 package models
 
 type UserData struct {
-	Profile         Profile      `json:"profile"`
-	OccupiedPlanets []PlanetUser `json:"occupied_planets"`
+	Profile         Profile               `json:"profile"`
+	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets"`
 }
 
 type PlanetUser struct {
-	PlanetConfig string         `json:"planet_config" example:"Planet2.json"`
-	Position     PlanetPosition `json:"position"`
-	Water        ResourceUser   `json:"water"`
-	Graphene     ResourceUser   `json:"graphene"`
-	Shelio       int            `json:"shelio" example:"23"`
-	Population   PopulationUser `json:"population"`
-	Mines        []MineUser     `json:"mines"`
-	Home         bool           `json:"home" example:"true"`
+	PlanetConfig string              `json:"planet_config" example:"Planet2.json"`
+	Position     PlanetPosition      `json:"position"`
+	Water        ResourceUser        `json:"water"`
+	Graphene     ResourceUser        `json:"graphene"`
+	Shelio       int                 `json:"shelio" example:"23"`
+	Population   PopulationUser      `json:"population"`
+	Mines        map[string]MineUser `json:"mines"`
+	Home         bool                `json:"home" example:"true"`
 }
 
 type ResourceUser struct {
@@ -29,10 +29,10 @@ type PopulationUser struct {
 }
 
 type MineUser struct {
-	Id          string      `json:"_id" example:"W101"`
-	Type        string      `json:"type" example:"WATER"`
-	Mined       int         `json:"mined" example:"125"`
-	MiningPlant MiningPlant `json:"mining_plant"`
+	Id          string          `json:"_id" example:"W101"`
+	Type        ResourceType    `json:"type" example:"WATER"`
+	Mined       int             `json:"mined" example:"125"`
+	MiningPlant MiningPlantUser `json:"mining_plant"`
 }
 
 type MiningPlantUser struct {

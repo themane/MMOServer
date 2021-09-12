@@ -1,4 +1,5 @@
 {
+  "max_level": 10,
   "levels": {
     "1": {
       "water_required": 5,

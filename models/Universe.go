@@ -18,14 +18,14 @@ type SectorUni struct {
 }
 
 type PlanetUni struct {
-	Planet       int       `json:"planet"`
-	Mines        []MineUni `json:"mines"`
-	PlanetConfig string    `json:"planet_config"`
+	Planet       int                `json:"planet"`
+	Mines        map[string]MineUni `json:"mines"`
+	PlanetConfig string             `json:"planet_config"`
 }
 
 type MineUni struct {
-	Id           string `json:"_id"`
-	Type         string `json:"type"`
-	MaxLimit     int    `json:"max_limit"`
-	IncreaseRate int    `json:"increase_rate"`
+	Id           string       `json:"_id"`
+	Type         ResourceType `json:"type"`
+	MaxLimit     int          `json:"max_limit"`
+	IncreaseRate int          `json:"increase_rate"`
 }
