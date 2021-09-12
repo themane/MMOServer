@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 type Universe struct {
 	NumSystems int       `json:"num_systems"`
 	Systems    []SystemU `json:"systems"`
@@ -28,4 +30,16 @@ type MineU struct {
 	Type         string `json:"type"`
 	MaxLimit     int    `json:"max_limit"`
 	IncreaseRate int    `json:"increase_rate"`
+}
+
+func SystemId(System int) string {
+	return fmt.Sprintf("%03d", System)
+}
+
+func SectorId(Sector int) string {
+	return fmt.Sprintf("%03d", Sector)
+}
+
+func PlanetId(System int, Sector int, Planet int) string {
+	return fmt.Sprintf("%03d:%03d:%02d", System, Sector, Planet)
 }
