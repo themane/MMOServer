@@ -1,5 +1,17 @@
 package models
 
+type Planet struct {
+	Mines    []StaticMineData `json:"mines"`
+	Position PlanetPosition   `json:"position"`
+}
+
+type StaticMineData struct {
+	Id           string `json:"_id"`
+	Type         string `json:"type"`
+	MaxLimit     int    `json:"max_limit"`
+	IncreaseRate int    `json:"increase_rate"`
+}
+
 type UnoccupiedPlanet struct {
 	PlanetConfig string         `json:"planet_config" example:"Planet2.json"`
 	Position     PlanetPosition `json:"position"`
