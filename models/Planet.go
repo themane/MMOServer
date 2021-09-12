@@ -35,6 +35,10 @@ func (position PlanetPosition) PlanetId() string {
 	return fmt.Sprintf("%03d:%03d:%02d", position.System, position.Sector, position.Planet)
 }
 
+func PlanetId(system int, sector int, planet int) string {
+	return fmt.Sprintf("%03d:%03d:%02d", system, sector, planet)
+}
+
 func (position PlanetPosition) Clone() PlanetPosition {
 	return PlanetPosition{Id: position.PlanetId(), System: position.System, Sector: position.Sector, Planet: position.Planet}
 }
