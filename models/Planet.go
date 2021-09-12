@@ -1,17 +1,5 @@
 package models
 
-type Planet struct {
-	Mines    []StaticMineData `json:"mines"`
-	Position PlanetPosition   `json:"position"`
-}
-
-type StaticMineData struct {
-	Id           string `json:"_id"`
-	Type         string `json:"type"`
-	MaxLimit     int    `json:"max_limit"`
-	IncreaseRate int    `json:"increase_rate"`
-}
-
 type UnoccupiedPlanet struct {
 	PlanetConfig string         `json:"planet_config" example:"Planet2.json"`
 	Position     PlanetPosition `json:"position"`
@@ -23,13 +11,15 @@ type OccupiedPlanet struct {
 	Resources    Resources      `json:"resources"`
 	Population   Population     `json:"population"`
 	Mines        []Mine         `json:"mines"`
+	Home         bool           `json:"home" example:"true"`
 }
 
 type PlanetPosition struct {
-	System int    `json:"system" example:"23"`
-	Sector int    `json:"sector" example:"49"`
-	Planet int    `json:"planet" example:"7"`
-	Id     string `json:"id" example:"23:49:7"`
+	System   int    `json:"system" example:"23"`
+	Sector   int    `json:"sector" example:"49"`
+	Planet   int    `json:"planet" example:"7"`
+	Id       string `json:"_id" example:"023:049:07"`
+	SectorId string `json:"sector_id" example:"023:049"`
 }
 
 type Resources struct {
