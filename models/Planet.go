@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 type UnoccupiedPlanet struct {
 	PlanetConfig string         `json:"planet_config" example:"Planet2.json"`
 	Position     PlanetPosition `json:"position"`
@@ -20,6 +22,18 @@ type PlanetPosition struct {
 	Planet   int    `json:"planet" example:"7"`
 	Id       string `json:"_id" example:"023:049:07"`
 	SectorId string `json:"sector_id" example:"023:049"`
+}
+
+func SystemId(position PlanetPosition) string {
+	return fmt.Sprintf("%03d", position.System)
+}
+
+func SectorId(position PlanetPosition) string {
+	return fmt.Sprintf("%03d:%03d", position.System, position.Sector)
+}
+
+func PlanetId(position PlanetPosition) string {
+	return fmt.Sprintf("%03d:%03d:%02d", position.System, position.Sector, position.Planet)
 }
 
 type Resources struct {
