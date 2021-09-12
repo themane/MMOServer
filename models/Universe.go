@@ -32,14 +32,24 @@ type MineU struct {
 	IncreaseRate int    `json:"increase_rate"`
 }
 
-func SystemId(System int) string {
+func SystemIdString(System int) string {
 	return fmt.Sprintf("%03d", System)
 }
 
-func SectorId(Sector int) string {
-	return fmt.Sprintf("%03d", Sector)
+func SystemId(Position PlanetPosition) string {
+	return SystemIdString(Position.System)
 }
 
-func PlanetId(System int, Sector int, Planet int) string {
+func SectorIdString(Sector int) string {
+	return fmt.Sprintf("%03d", Sector)
+}
+func SectorId(Position PlanetPosition) string {
+	return SectorIdString(Position.Sector)
+}
+func PlanetIdString(System int, Sector int, Planet int) string {
 	return fmt.Sprintf("%03d:%03d:%02d", System, Sector, Planet)
+}
+
+func PlanetId(Position PlanetPosition) string {
+	return PlanetIdString(Position.System, Position.Sector, Position.Planet)
 }
