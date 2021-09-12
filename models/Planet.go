@@ -17,23 +17,26 @@ type OccupiedPlanet struct {
 }
 
 type PlanetPosition struct {
-	System   int    `json:"system" example:"23"`
-	Sector   int    `json:"sector" example:"49"`
-	Planet   int    `json:"planet" example:"7"`
-	Id       string `json:"_id" example:"023:049:07"`
-	SectorId string `json:"sector_id" example:"023:049"`
+	System int    `json:"system" example:"23"`
+	Sector int    `json:"sector" example:"49"`
+	Planet int    `json:"planet" example:"7"`
+	Id     string `json:"_id" example:"023:049:07"`
 }
 
-func SystemId(position PlanetPosition) string {
+func (position PlanetPosition) SystemId() string {
 	return fmt.Sprintf("%03d", position.System)
 }
 
-func SectorId(position PlanetPosition) string {
+func (position PlanetPosition) SectorId() string {
 	return fmt.Sprintf("%03d:%03d", position.System, position.Sector)
 }
 
-func PlanetId(position PlanetPosition) string {
+func (position PlanetPosition) PlanetId() string {
 	return fmt.Sprintf("%03d:%03d:%02d", position.System, position.Sector, position.Planet)
+}
+
+func (position PlanetPosition) Clone() PlanetPosition {
+	return PlanetPosition{Id: position.PlanetId(), System: position.System, Sector: position.Sector, Planet: position.Planet}
 }
 
 type Resources struct {
