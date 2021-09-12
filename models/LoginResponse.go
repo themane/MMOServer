@@ -12,3 +12,9 @@ type StaticPlanetData struct {
 	Position     PlanetPosition `json:"position"`
 	Home         bool           `json:"home" example:"true"`
 }
+
+func (p *StaticPlanetData) Init(planetUser PlanetUser, planetUni PlanetUni, homeSectorId string) {
+	p.PlanetConfig = planetUni.PlanetConfig
+	p.Home = homeSectorId == planetUser.Position.SectorId()
+	p.Position = planetUser.Position.Clone()
+}

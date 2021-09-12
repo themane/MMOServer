@@ -7,7 +7,13 @@ type Sector struct {
 }
 
 type SectorPosition struct {
+	Id     string `json:"_id" example:"023:049"`
 	System int    `json:"system" example:"23"`
 	Sector int    `json:"sector" example:"49"`
-	Id     string `json:"_id" example:"023:049"`
+}
+
+func (sp *SectorPosition) Init(planetPosition PlanetPosition) {
+	sp.Id = planetPosition.SectorId()
+	sp.System = planetPosition.System
+	sp.Sector = planetPosition.Sector
 }
