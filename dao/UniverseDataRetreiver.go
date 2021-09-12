@@ -14,3 +14,19 @@ func GetUniverse() models.Universe {
 	json.Unmarshal(responseByteValue, &universe)
 	return universe
 }
+
+func GetWaterConstants() models.ResourceConstants {
+	var waterConstants models.ResourceConstants
+	constantsFile, _ := os.Open("resources/WaterConstants.json")
+	responseByteValue, _ := ioutil.ReadAll(constantsFile)
+	json.Unmarshal(responseByteValue, &waterConstants)
+	return waterConstants
+}
+
+func GetGrapheneConstants() models.ResourceConstants {
+	var grapheneConstants models.ResourceConstants
+	constantsFile, _ := os.Open("resources/GrapheneConstants.json")
+	responseByteValue, _ := ioutil.ReadAll(constantsFile)
+	json.Unmarshal(responseByteValue, &grapheneConstants)
+	return grapheneConstants
+}
