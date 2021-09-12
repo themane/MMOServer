@@ -1,31 +1,66 @@
 package services
 
 import (
-	"encoding/json"
+	"github.com/themane/MMOServer/dao"
 	"github.com/themane/MMOServer/models"
-	"io/ioutil"
-	"os"
 )
 
 func Login(Username string) models.LoginResponse {
+	universe := dao.GetUniverse()
+	waterConstants := dao.GetWaterConstants()
+	grapheneConstants := dao.GetGrapheneConstants()
+	userData := dao.GetUserData(Username)
+	homePlanetPosition := findHomePlanet(userData.OccupiedPlanets)
+
 	var response models.LoginResponse
-	switch Username {
-	case "devashish":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse1.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "nehal":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse2.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "parth":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse3.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "sneha":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse4.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	}
+	response.Profile = userData.Profile
+	response.HomeSector, response.HomePlanet = home(userData.OccupiedPlanets, *homePlanetPosition, universe, waterConstants, grapheneConstants)
+	response.OccupiedPlanets = occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), universe)
+
 	return response
+}
+
+func home(allOccupiedPlanetIds map[string]models.PlanetUser, homePlanetPosition models.PlanetPosition, universe models.Universe,
+	waterConstants models.ResourceConstants, grapheneConstants models.ResourceConstants) (models.Sector, models.OccupiedPlanet) {
+	sectorU := universe.Systems[homePlanetPosition.SystemId()].Sectors[homePlanetPosition.SectorId()]
+	var homeSector models.Sector
+	var homePlanet models.OccupiedPlanet
+
+	homeSector.Position.Init(homePlanetPosition)
+
+	for key, planetUni := range sectorU.Planets {
+		if planetUser, ok := allOccupiedPlanetIds[key]; ok {
+			planetData := models.OccupiedPlanet{}
+			planetData.Init(planetUni, planetUser, homeSector.Position, waterConstants, grapheneConstants)
+			if planetData.Home {
+				homePlanet = planetData
+			}
+			homeSector.OccupiedPlanets = append(homeSector.OccupiedPlanets, planetData)
+			continue
+		}
+		planetData := models.UnoccupiedPlanet{}
+		planetData.Init(planetUni, homeSector.Position)
+		homeSector.UnoccupiedPlanets = append(homeSector.UnoccupiedPlanets, planetData)
+	}
+	return homeSector, homePlanet
+}
+
+func occupiedPlanets(occupiedPlanets map[string]models.PlanetUser, homeSectorId string, universe models.Universe) []models.StaticPlanetData {
+	var staticPlanets []models.StaticPlanetData
+	for _, planetUser := range occupiedPlanets {
+		planetUni := universe.Systems[planetUser.Position.SystemId()].Sectors[planetUser.Position.SectorId()].Planets[planetUser.Position.PlanetId()]
+		staticPlanet := models.StaticPlanetData{}
+		staticPlanet.Init(planetUser, planetUni, homeSectorId)
+		staticPlanets = append(staticPlanets, staticPlanet)
+	}
+	return staticPlanets
+}
+
+func findHomePlanet(occupiedPlanets map[string]models.PlanetUser) *models.PlanetPosition {
+	for _, planet := range occupiedPlanets {
+		if planet.Home {
+			return &planet.Position
+		}
+	}
+	return nil
 }
