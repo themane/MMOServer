@@ -8,7 +8,6 @@ import (
 )
 
 func GetUserData(Username string) models.UserData {
-
 	var userData models.UserData
 	switch Username {
 	case "devashish":
