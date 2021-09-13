@@ -48,13 +48,15 @@ func (m *MiningPlant) Init(miningPlantUser MiningPlantUser, resourceConstants Re
 }
 
 func (n *NextLevelAttributes) Init(currentLevel int, resourceConstants ResourceConstants) {
-	n.CurrentWorkersMaxLimit = resourceConstants.Levels[strconv.Itoa(currentLevel)].WorkersMaxLimit
-	n.CurrentMiningRatePerWorker = resourceConstants.Levels[strconv.Itoa(currentLevel)].MiningRatePerWorker
+	currentLevelString := strconv.Itoa(currentLevel)
+	n.CurrentWorkersMaxLimit = resourceConstants.Levels[currentLevelString].WorkersMaxLimit
+	n.CurrentMiningRatePerWorker = resourceConstants.Levels[currentLevelString].MiningRatePerWorker
 	if currentLevel+1 < resourceConstants.MaxLevel {
-		n.NextWorkersMaxLimit = resourceConstants.Levels[strconv.Itoa(currentLevel+1)].WorkersMaxLimit
-		n.NextMiningRatePerWorker = resourceConstants.Levels[strconv.Itoa(currentLevel+1)].MiningRatePerWorker
-		n.GrapheneRequired = resourceConstants.Levels[strconv.Itoa(currentLevel)].GrapheneRequired
-		n.WaterRequired = resourceConstants.Levels[strconv.Itoa(currentLevel)].WaterRequired
-		n.ShelioRequired = resourceConstants.Levels[strconv.Itoa(currentLevel)].ShelioRequired
+		nextLevelString := strconv.Itoa(currentLevel + 1)
+		n.NextWorkersMaxLimit = resourceConstants.Levels[nextLevelString].WorkersMaxLimit
+		n.NextMiningRatePerWorker = resourceConstants.Levels[nextLevelString].MiningRatePerWorker
+		n.GrapheneRequired = resourceConstants.Levels[nextLevelString].GrapheneRequired
+		n.WaterRequired = resourceConstants.Levels[nextLevelString].WaterRequired
+		n.ShelioRequired = resourceConstants.Levels[nextLevelString].ShelioRequired
 	}
 }
