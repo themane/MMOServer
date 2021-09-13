@@ -6,14 +6,13 @@ type UserData struct {
 }
 
 type PlanetUser struct {
-	PlanetConfig string              `json:"planet_config" example:"Planet2.json"`
-	Position     PlanetPosition      `json:"position"`
-	Water        ResourceUser        `json:"water"`
-	Graphene     ResourceUser        `json:"graphene"`
-	Shelio       int                 `json:"shelio" example:"23"`
-	Population   PopulationUser      `json:"population"`
-	Mines        map[string]MineUser `json:"mines"`
-	Home         bool                `json:"home" example:"true"`
+	Position   PlanetPosition      `json:"position"`
+	Water      ResourceUser        `json:"water"`
+	Graphene   ResourceUser        `json:"graphene"`
+	Shelio     int                 `json:"shelio" example:"23"`
+	Population PopulationUser      `json:"population"`
+	Mines      map[string]MineUser `json:"mines"`
+	Home       bool                `json:"home" example:"true"`
 }
 
 type ResourceUser struct {

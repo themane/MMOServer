@@ -1,152 +1,159 @@
 {
-    "profile": {
-        "username": "parth"
-    },
-    "occupied_planets": [
-        {
-            "shelio": 8,
-            "graphene": 27,
-            "mines": [
-                {
-                    "available": 1132,
-                    "_id": "G102",
-                    "type": "GRAPHENE",
-                    "mining_plant": {
-                        "building_level": 0,
-                        "building_id": null,
-                        "current_workers": 0
-                    }
-                },
-                {
-                    "available": 274,
-                    "_id": "G104",
-                    "type": "GRAPHENE",
-                    "mining_plant": {
-                        "building_level": 1,
-                        "building_id": "GMP104",
-                        "current_workers": 14
-                    }
-                },
-                {
-                    "available": 819,
-                    "_id": "G106",
-                    "type": "GRAPHENE",
-                    "mining_plant": {
-                        "building_level": 8,
-                        "building_id": "GMP106",
-                        "current_workers": 8
-                    }
-                },
-                {
-                    "available": 537,
-                    "_id": "G108",
-                    "type": "GRAPHENE",
-                    "mining_plant": {
-                        "building_level": 2,
-                        "building_id": "GMP108",
-                        "current_workers": 10
-                    }
-                },
-                {
-                    "available": 1669,
-                    "_id": "W102",
-                    "type": "WATER",
-                    "mining_plant": {
-                        "building_level": 3,
-                        "building_id": "WMP102",
-                        "current_workers": 5
-                    }
-                },
-                {
-                    "available": 364,
-                    "_id": "W104",
-                    "type": "WATER",
-                    "mining_plant": {
-                        "building_level": 9,
-                        "building_id": "WMP104",
-                        "current_workers": 14
-                    }
-                },
-                {
-                    "available": 370,
-                    "_id": "W106",
-                    "type": "WATER",
-                    "mining_plant": {
-                        "building_level": 8,
-                        "building_id": "WMP106",
-                        "current_workers": 14
-                    }
-                },
-                {
-                    "available": 406,
-                    "_id": "W108",
-                    "type": "WATER",
-                    "mining_plant": {
-                        "building_level": 9,
-                        "building_id": "WMP108",
-                        "current_workers": 12
-                    }
-                },
-                {
-                    "available": 102,
-                    "_id": "W110",
-                    "type": "WATER",
-                    "mining_plant": {
-                        "building_level": 6,
-                        "building_id": "WMP110",
-                        "current_workers": 14
-                    }
-                },
-                {
-                    "available": 233,
-                    "_id": "W112",
-                    "type": "WATER",
-                    "mining_plant": {
-                        "building_level": 0,
-                        "building_id": null,
-                        "current_workers": 0
-                    }
-                },
-                {
-                    "available": 61,
-                    "_id": "W114",
-                    "type": "WATER",
-                    "mining_plant": {
-                        "building_level": 4,
-                        "building_id": "WMP114",
-                        "current_workers": 11
-                    }
-                },
-                {
-                    "available": 194,
-                    "_id": "W116",
-                    "type": "WATER",
-                    "mining_plant": {
-                        "building_level": 2,
-                        "building_id": "WMP116",
-                        "current_workers": 9
-                    }
-                }
-            ],
-            "water": 22,
-            "position": {
-                "sector": 6,
-                "planet": 2,
-                "system": 0,
-                "display": "000:006:02"
-            },
-            "population": {
-                "soldiers": {
-                    "idle": 1,
-                    "total": 16
-                },
-                "unemployed": 8,
-                "generation_rate": 1,
-                "workers": {
-                    "idle": 2,
-                    "total": 15
-                }
-            }
+  "profile": {
+    "username": "parth"
+  }, 
+  "occupied_planets": {
+    "003:007:04": {
+      "shelio": 5, 
+      "graphene": {
+        "amount": 35, 
+        "reserved": 6
+      }, 
+      "mines": {
+        "G112": {
+          "mined": 207, 
+          "_id": "G112", 
+          "type": "GRAPHENE", 
+          "mining_plant": {
+            "building_level": 4, 
+            "workers": 14, 
+            "building_id": "GMP112"
+          }
+        }, 
+        "G102": {
+          "mined": 931, 
+          "_id": "G102", 
+          "type": "GRAPHENE", 
+          "mining_plant": {
+            "building_level": 8, 
+            "workers": 12, 
+            "building_id": "GMP102"
+          }
+        }, 
+        "G110": {
+          "mined": 190, 
+          "_id": "G110", 
+          "type": "GRAPHENE", 
+          "mining_plant": {
+            "building_level": 0, 
+            "workers": 0, 
+            "building_id": null
+          }
+        }, 
+        "G104": {
+          "mined": 308, 
+          "_id": "G104", 
+          "type": "GRAPHENE", 
+          "mining_plant": {
+            "building_level": 4, 
+            "workers": 11, 
+            "building_id": "GMP104"
+          }
+        }, 
+        "G106": {
+          "mined": 1255, 
+          "_id": "G106", 
+          "type": "GRAPHENE", 
+          "mining_plant": {
+            "building_level": 8, 
+            "workers": 5, 
+            "building_id": "GMP106"
+          }
+        }, 
+        "G108": {
+          "mined": 1280, 
+          "_id": "G108", 
+          "type": "GRAPHENE", 
+          "mining_plant": {
+            "building_level": 2, 
+            "workers": 8, 
+            "building_id": "GMP108"
+          }
+        }, 
+        "W112": {
+          "mined": 133, 
+          "_id": "W112", 
+          "type": "WATER", 
+          "mining_plant": {
+            "building_level": 5, 
+            "workers": 7, 
+            "building_id": "WMP112"
+          }
+        }, 
+        "W102": {
+          "mined": 588, 
+          "_id": "W102", 
+          "type": "WATER", 
+          "mining_plant": {
+            "building_level": 9, 
+            "workers": 5, 
+            "building_id": "WMP102"
+          }
+        }, 
+        "W110": {
+          "mined": 1095, 
+          "_id": "W110", 
+          "type": "WATER", 
+          "mining_plant": {
+            "building_level": 3, 
+            "workers": 6, 
+            "building_id": "WMP110"
+          }
+        }, 
+        "W104": {
+          "mined": 140, 
+          "_id": "W104", 
+          "type": "WATER", 
+          "mining_plant": {
+            "building_level": 0, 
+            "workers": 0, 
+            "building_id": null
+          }
+        }, 
+        "W106": {
+          "mined": 798, 
+          "_id": "W106", 
+          "type": "WATER", 
+          "mining_plant": {
+            "building_level": 4, 
+            "workers": 9, 
+            "building_id": "WMP106"
+          }
+        }, 
+        "W108": {
+          "mined": 209, 
+          "_id": "W108", 
+          "type": "WATER", 
+          "mining_plant": {
+            "building_level": 8, 
+            "workers": 8, 
+            "building_id": "WMP108"
+          }
         }
-    ]
+      }, 
+      "water": {
+        "amount": 29, 
+        "reserved": 23
+      }, 
+      "home": true, 
+      "position": {
+        "sector": 7, 
+        "planet": 4, 
+        "_id": "003:007:04", 
+        "system": 3
+      }, 
+      "population": {
+        "soldiers": {
+          "idle": 3, 
+          "total": 17
+        }, 
+        "unemployed": 6, 
+        "generation_rate": 0, 
+        "workers": {
+          "idle": 2, 
+          "total": 19
+        }
+      }
+    }
+  }
 }
