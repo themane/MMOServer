@@ -11,20 +11,20 @@ type Mine struct {
 }
 
 type MiningPlant struct {
-	BuildingId          string              `json:"building_id" example:"WMP101"`
+	BuildingId          string              `json:"building_id,omitempty" example:"WMP101"`
 	BuildingLevel       int                 `json:"building_level" example:"3"`
-	Workers             int                 `json:"workers" example:"12"`
+	Workers             int                 `json:"workers,omitempty" example:"12"`
 	NextLevelAttributes NextLevelAttributes `json:"next_level"`
 }
 
 type NextLevelAttributes struct {
-	GrapheneRequired           int `json:"graphene_required" example:"101"`
-	WaterRequired              int `json:"water_required" example:"5"`
-	ShelioRequired             int `json:"shelio_required" example:"0"`
-	CurrentMiningRatePerWorker int `json:"current_mining_rate_per_worker" example:"1"`
-	NextMiningRatePerWorker    int `json:"next_mining_rate_per_worker" example:"1"`
-	CurrentWorkersMaxLimit     int `json:"current_workers_max_limit" example:"40"`
-	NextWorkersMaxLimit        int `json:"next_workers_max_limit" example:"65"`
+	GrapheneRequired           int `json:"graphene_required,omitempty" example:"101"`
+	WaterRequired              int `json:"water_required,omitempty" example:"5"`
+	ShelioRequired             int `json:"shelio_required,omitempty" example:"0"`
+	CurrentMiningRatePerWorker int `json:"current_mining_rate_per_worker,omitempty" example:"1"`
+	NextMiningRatePerWorker    int `json:"next_mining_rate_per_worker,omitempty" example:"1"`
+	CurrentWorkersMaxLimit     int `json:"current_workers_max_limit,omitempty" example:"40"`
+	NextWorkersMaxLimit        int `json:"next_workers_max_limit,omitempty" example:"65"`
 }
 
 func (m *Mine) Init(mineUni MineUni, mineUser MineUser, waterConstants ResourceConstants, grapheneConstants ResourceConstants) {
