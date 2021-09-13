@@ -9,11 +9,13 @@ func Login(username string) models.LoginResponse {
 	universe := dao.GetUniverse()
 	waterConstants := dao.GetWaterConstants()
 	grapheneConstants := dao.GetGrapheneConstants()
+	experienceConstants := dao.GetExperienceConstants()
 	userData := dao.GetUserData(username)
+	clanData := dao.GetClan(userData.Profile.ClanId)
 	homePlanetPosition := findHomePlanet(userData.OccupiedPlanets)
 
 	var response models.LoginResponse
-	response.Profile = userData.Profile
+	response.Profile.Init(userData.Profile, clanData, experienceConstants)
 	response.HomeSector, response.HomePlanet = home(userData.OccupiedPlanets, *homePlanetPosition, universe, waterConstants, grapheneConstants)
 	response.OccupiedPlanets = occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), universe)
 

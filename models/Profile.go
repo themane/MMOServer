@@ -13,12 +13,12 @@ const (
 type Profile struct {
 	Username   string     `json:"username"`
 	Experience Experience `json:"experience"`
-	Clan       Clan       `json:"clan"`
+	Clan       *Clan      `json:"clan,omitempty"`
 }
 
 type Clan struct {
-	Name string         `json:"name"`
-	Role MembershipRole `json:"role"`
+	Name string         `json:"name,omitempty"`
+	Role MembershipRole `json:"role,omitempty"`
 }
 
 type Experience struct {
