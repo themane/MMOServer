@@ -2,12 +2,10 @@ package models
 
 import "strconv"
 
-type MembershipRole string
-
 const (
-	LEADER MembershipRole = "LEADER"
-	SUB_LEADER
-	MEMBER
+	LEADER     string = "LEADER"
+	SUB_LEADER string = "SUB_LEADER"
+	MEMBER     string = "MEMBER"
 )
 
 type Profile struct {
@@ -17,8 +15,8 @@ type Profile struct {
 }
 
 type Clan struct {
-	Name string         `json:"name,omitempty"`
-	Role MembershipRole `json:"role,omitempty"`
+	Name string `json:"name,omitempty"`
+	Role string `json:"role,omitempty"`
 }
 
 type Experience struct {
@@ -46,7 +44,7 @@ func (e *Experience) Init(profileUser ProfileUser, experienceConstants Experienc
 	e.Required = experienceConstants.User.ExperiencesRequired[nextLevelString].ExperienceRequired
 }
 
-func (c *Clan) Init(profileUser ProfileUser, clan ClanData) {
+func (c Clan) Init(profileUser ProfileUser, clan ClanData) {
 	if len(profileUser.ClanId) > 0 {
 		c.Name = clan.Name
 		for _, clanMember := range clan.Members {
