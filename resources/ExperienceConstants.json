@@ -1,0 +1,57 @@
+{
+  "user": {
+    "max_level": 10,
+    "experiences_required": {
+      "1": {
+        "experience_required": 10
+      },
+      "2": {
+        "experience_required": 20
+      },
+      "3": {
+        "experience_required": 40
+      },
+      "4": {
+        "experience_required": 80
+      },
+      "5": {
+        "experience_required": 160
+      },
+      "6": {
+        "experience_required": 320
+      },
+      "7": {
+        "experience_required": 640
+      },
+      "8": {
+        "experience_required": 1280
+      },
+      "9": {
+        "experience_required": 2560
+      },
+      "10": {
+        "experience_required": 5120
+      }
+    }
+  },
+  "clan": {
+    "max_level": 5,
+    "experiences_required": {
+      "1": {
+        "experience_required": 100
+      },
+      "2": {
+        "experience_required": 200
+      },
+      "3": {
+        "experience_required": 400
+      },
+      "4": {
+        "experience_required": 800
+      },
+      "5": {
+        "experience_required": 1600
+      }
+    }
+  }
+}
