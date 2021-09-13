@@ -28,7 +28,8 @@ type Experience struct {
 func (p *Profile) Init(profileUser ProfileUser, clan ClanData, experienceConstants ExperienceConstants) {
 	p.Username = profileUser.Username
 	p.Experience.Init(profileUser, experienceConstants)
-	p.Clan = &Clan{Name: clan.Name, Role: getRole(profileUser, clan)}
+	c := Clan{Name: clan.Name, Role: getRole(profileUser, clan)}
+	p.Clan = &c
 }
 
 func (e *Experience) Init(profileUser ProfileUser, experienceConstants ExperienceConstants) {
