@@ -8,6 +8,6 @@ type ClanData struct {
 }
 
 type ClanMember struct {
-	Id   string         `json:"_id"`
-	Role MembershipRole `json:"role"`
+	Id   string `json:"_id"`
+	Role string `json:"role"`
 }
