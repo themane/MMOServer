@@ -1,7 +1,7 @@
 package models
 
 type UserData struct {
-	Profile         Profile               `json:"profile"`
+	Profile         ProfileUser           `json:"profile"`
 	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets"`
 }
 
