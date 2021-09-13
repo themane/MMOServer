@@ -5,6 +5,13 @@ type UserData struct {
 	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets"`
 }
 
+type ProfileUser struct {
+	Id         string `json:"_id"`
+	Username   string `json:"username" example:"nehal"`
+	Experience int    `json:"experience" example:"153"`
+	ClanId     Clan   `json:"clan_id" example:"MindKrackers"`
+}
+
 type PlanetUser struct {
 	Position   PlanetPosition      `json:"position"`
 	Water      ResourceUser        `json:"water"`

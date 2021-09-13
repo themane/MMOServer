@@ -43,3 +43,15 @@ func GetGrapheneConstants() models.ResourceConstants {
 	}
 	return grapheneConstants
 }
+
+func GetExperienceConstants() models.ExperienceConstants {
+	var experienceConstants models.ExperienceConstants
+	constantsFile, _ := os.Open("resources/ExperienceConstants.json")
+	responseByteValue, _ := ioutil.ReadAll(constantsFile)
+	err := json.Unmarshal(responseByteValue, &experienceConstants)
+	if err != nil {
+		log.Print(err)
+		return models.ExperienceConstants{}
+	}
+	return experienceConstants
+}
