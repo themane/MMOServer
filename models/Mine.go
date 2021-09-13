@@ -3,11 +3,11 @@ package models
 import "strconv"
 
 type Mine struct {
-	Id          string       `json:"_id" example:"W101"`
-	Type        ResourceType `json:"type" example:"WATER"`
-	MaxLimit    int          `json:"max_limit" example:"550"`
-	Mined       int          `json:"mined" example:"125"`
-	MiningPlant MiningPlant  `json:"mining_plant"`
+	Id          string      `json:"_id" example:"W101"`
+	Type        string      `json:"type" example:"WATER"`
+	MaxLimit    int         `json:"max_limit" example:"550"`
+	Mined       int         `json:"mined" example:"125"`
+	MiningPlant MiningPlant `json:"mining_plant"`
 }
 
 type MiningPlant struct {

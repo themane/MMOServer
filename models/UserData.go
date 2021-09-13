@@ -36,7 +36,7 @@ type PopulationUser struct {
 
 type MineUser struct {
 	Id          string          `json:"_id" example:"W101"`
-	Type        ResourceType    `json:"type" example:"WATER"`
+	Type        string          `json:"type" example:"WATER"`
 	Mined       int             `json:"mined" example:"125"`
 	MiningPlant MiningPlantUser `json:"mining_plant"`
 }

@@ -5,12 +5,10 @@ import (
 	"strconv"
 )
 
-type ResourceType string
-
 const (
-	WATER ResourceType = "WATER"
-	GRAPHENE
-	SHELIO
+	WATER    string = "WATER"
+	GRAPHENE string = "GRAPHENE"
+	SHELIO   string = "SHELIO"
 )
 
 type Resources struct {
