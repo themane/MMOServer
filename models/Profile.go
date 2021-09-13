@@ -28,7 +28,10 @@ type Experience struct {
 func (p *Profile) Init(profileUser ProfileUser, clan ClanData, experienceConstants ExperienceConstants) {
 	p.Username = profileUser.Username
 	p.Experience.Init(profileUser, experienceConstants)
-	p.Clan.Init(profileUser, clan)
+	if len(profileUser.ClanId) > 0 {
+		p.Clan = &Clan{}
+		p.Clan.Init(profileUser, clan)
+	}
 }
 
 func (e *Experience) Init(profileUser ProfileUser, experienceConstants ExperienceConstants) {
@@ -44,14 +47,12 @@ func (e *Experience) Init(profileUser ProfileUser, experienceConstants Experienc
 	e.Required = experienceConstants.User.ExperiencesRequired[nextLevelString].ExperienceRequired
 }
 
-func (c Clan) Init(profileUser ProfileUser, clan ClanData) {
-	if len(profileUser.ClanId) > 0 {
-		c.Name = clan.Name
-		for _, clanMember := range clan.Members {
-			if clanMember.Id == profileUser.Id {
-				c.Role = clanMember.Role
-				break
-			}
+func (c *Clan) Init(profileUser ProfileUser, clan ClanData) {
+	c.Name = clan.Name
+	for _, clanMember := range clan.Members {
+		if clanMember.Id == profileUser.Id {
+			c.Role = clanMember.Role
+			break
 		}
 	}
 }
