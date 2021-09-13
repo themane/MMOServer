@@ -9,7 +9,7 @@ type ProfileUser struct {
 	Id         string `json:"_id"`
 	Username   string `json:"username" example:"nehal"`
 	Experience int    `json:"experience" example:"153"`
-	ClanId     Clan   `json:"clan_id" example:"MindKrackers"`
+	ClanId     string `json:"clan_id" example:"MindKrackers"`
 }
 
 type PlanetUser struct {
