@@ -41,13 +41,13 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Login"
+                    "data retrieval"
                 ],
                 "summary": "Login API",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "valid username for login",
+                        "description": "user identifier",
                         "name": "username",
                         "in": "query",
                         "required": true
@@ -85,6 +85,84 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/refresh/population": {
+            "post": {
+                "description": "Refresh endpoint to quickly refresh population data with the latest values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data retrieval"
+                ],
+                "summary": "Refresh population API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user identifier",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "planet identifier",
+                        "name": "planet_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Population"
+                        }
+                    }
+                }
+            }
+        },
+        "/refresh/resources": {
+            "post": {
+                "description": "Refresh endpoint to quickly refresh resources data with the latest values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data retrieval"
+                ],
+                "summary": "Refresh resources API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user identifier",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "planet identifier",
+                        "name": "planet_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Resources"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -113,31 +191,20 @@ var doc = `{
         "models.LoginResponse": {
             "type": "object",
             "properties": {
-                "graphene": {
-                    "$ref": "#/definitions/models.Resource"
+                "home_planet": {
+                    "$ref": "#/definitions/models.OccupiedPlanet"
                 },
-                "mines": {
+                "home_sector": {
+                    "$ref": "#/definitions/models.Sector"
+                },
+                "occupied_planets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Mine"
+                        "$ref": "#/definitions/models.StaticPlanetData"
                     }
                 },
-                "planet_config": {
-                    "type": "string",
-                    "example": "Planet2.json"
-                },
-                "population": {
-                    "$ref": "#/definitions/models.Population"
-                },
-                "position": {
-                    "$ref": "#/definitions/models.Position"
-                },
-                "shelio": {
-                    "type": "integer",
-                    "example": 23
-                },
-                "water": {
-                    "$ref": "#/definitions/models.Resource"
+                "profile": {
+                    "$ref": "#/definitions/models.Profile"
                 }
             }
         },
@@ -218,6 +285,55 @@ var doc = `{
                 }
             }
         },
+        "models.OccupiedPlanet": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "mines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Mine"
+                    }
+                },
+                "planet_config": {
+                    "type": "string",
+                    "example": "Planet2.json"
+                },
+                "population": {
+                    "$ref": "#/definitions/models.Population"
+                },
+                "position": {
+                    "$ref": "#/definitions/models.PlanetPosition"
+                },
+                "resources": {
+                    "$ref": "#/definitions/models.Resources"
+                }
+            }
+        },
+        "models.PlanetPosition": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "example": "023:049:07"
+                },
+                "planet": {
+                    "type": "integer",
+                    "example": 7
+                },
+                "sector": {
+                    "type": "integer",
+                    "example": 49
+                },
+                "system": {
+                    "type": "integer",
+                    "example": 23
+                }
+            }
+        },
         "models.Population": {
             "type": "object",
             "properties": {
@@ -241,16 +357,72 @@ var doc = `{
                 }
             }
         },
-        "models.Position": {
+        "models.Profile": {
             "type": "object",
             "properties": {
-                "display": {
-                    "type": "string",
-                    "example": "23:49:7"
-                },
-                "planet": {
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Resource": {
+            "type": "object",
+            "properties": {
+                "amount": {
                     "type": "integer",
-                    "example": 7
+                    "example": 23
+                },
+                "max_limit": {
+                    "type": "number",
+                    "example": 100
+                },
+                "reserved": {
+                    "type": "integer",
+                    "example": 14
+                }
+            }
+        },
+        "models.Resources": {
+            "type": "object",
+            "properties": {
+                "graphene": {
+                    "$ref": "#/definitions/models.Resource"
+                },
+                "shelio": {
+                    "type": "integer",
+                    "example": 23
+                },
+                "water": {
+                    "$ref": "#/definitions/models.Resource"
+                }
+            }
+        },
+        "models.Sector": {
+            "type": "object",
+            "properties": {
+                "occupied_planets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OccupiedPlanet"
+                    }
+                },
+                "position": {
+                    "$ref": "#/definitions/models.SectorPosition"
+                },
+                "unoccupied_planets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UnoccupiedPlanet"
+                    }
+                }
+            }
+        },
+        "models.SectorPosition": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "example": "023:049"
                 },
                 "sector": {
                     "type": "integer",
@@ -262,24 +434,31 @@ var doc = `{
                 }
             }
         },
-        "models.Resource": {
+        "models.StaticPlanetData": {
             "type": "object",
             "properties": {
-                "amount": {
-                    "type": "integer",
-                    "example": 23
+                "home": {
+                    "type": "boolean",
+                    "example": true
                 },
-                "generation_rate": {
-                    "type": "integer",
-                    "example": 3
+                "planet_config": {
+                    "type": "string",
+                    "example": "Planet2.json"
                 },
-                "max_limit": {
-                    "type": "integer",
-                    "example": 100
+                "position": {
+                    "$ref": "#/definitions/models.PlanetPosition"
+                }
+            }
+        },
+        "models.UnoccupiedPlanet": {
+            "type": "object",
+            "properties": {
+                "planet_config": {
+                    "type": "string",
+                    "example": "Planet2.json"
                 },
-                "reserved": {
-                    "type": "integer",
-                    "example": 14
+                "position": {
+                    "$ref": "#/definitions/models.PlanetPosition"
                 }
             }
         }

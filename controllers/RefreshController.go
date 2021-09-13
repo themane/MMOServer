@@ -12,11 +12,11 @@ import (
 // RefreshPopulationController godoc
 // @Summary Refresh population API
 // @Description Refresh endpoint to quickly refresh population data with the latest values
-// @Tags Refresh
+// @Tags data retrieval
 // @Accept json
 // @Produce json
-// @Param username "user identifier" string true "valid username for data retrieval"
-// @Param planet_id "planet identifier" string true "identifier of occupied planet for data retrieval"
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
 // @Success 200 {object} models.Population
 // @Router /refresh/population [post]
 func RefreshPopulationController(c *gin.Context) {
@@ -32,11 +32,11 @@ func RefreshPopulationController(c *gin.Context) {
 // RefreshResourcesController godoc
 // @Summary Refresh resources API
 // @Description Refresh endpoint to quickly refresh resources data with the latest values
-// @Tags Refresh
+// @Tags data retrieval
 // @Accept json
 // @Produce json
-// @Param username "user identifier" string true "valid username for data retrieval"
-// @Param planet_id "planet identifier" string true "identifier of occupied planet for data retrieval"
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
 // @Success 200 {object} models.Resources
 // @Router /refresh/resources [post]
 func RefreshResourcesController(c *gin.Context) {

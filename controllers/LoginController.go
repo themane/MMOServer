@@ -12,10 +12,10 @@ import (
 // LoginController godoc
 // @Summary Login API
 // @Description Login verification and first load of complete user data
-// @Tags Login
+// @Tags data retrieval
 // @Accept json
 // @Produce json
-// @Param username "user identifier" string true "valid username for login"
+// @Param username query string true "user identifier"
 // @Success 200 {object} models.LoginResponse
 // @Router /login [post]
 func LoginController(c *gin.Context) {

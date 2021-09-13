@@ -16,24 +16,16 @@ definitions:
     type: object
   models.LoginResponse:
     properties:
-      graphene:
-        $ref: '#/definitions/models.Resource'
-      mines:
+      home_planet:
+        $ref: '#/definitions/models.OccupiedPlanet'
+      home_sector:
+        $ref: '#/definitions/models.Sector'
+      occupied_planets:
         items:
-          $ref: '#/definitions/models.Mine'
+          $ref: '#/definitions/models.StaticPlanetData'
         type: array
-      planet_config:
-        example: Planet2.json
-        type: string
-      population:
-        $ref: '#/definitions/models.Population'
-      position:
-        $ref: '#/definitions/models.Position'
-      shelio:
-        example: 23
-        type: integer
-      water:
-        $ref: '#/definitions/models.Resource'
+      profile:
+        $ref: '#/definitions/models.Profile'
     type: object
   models.Mine:
     properties:
@@ -90,6 +82,40 @@ definitions:
         example: 5
         type: integer
     type: object
+  models.OccupiedPlanet:
+    properties:
+      home:
+        example: true
+        type: boolean
+      mines:
+        items:
+          $ref: '#/definitions/models.Mine'
+        type: array
+      planet_config:
+        example: Planet2.json
+        type: string
+      population:
+        $ref: '#/definitions/models.Population'
+      position:
+        $ref: '#/definitions/models.PlanetPosition'
+      resources:
+        $ref: '#/definitions/models.Resources'
+    type: object
+  models.PlanetPosition:
+    properties:
+      _id:
+        example: 023:049:07
+        type: string
+      planet:
+        example: 7
+        type: integer
+      sector:
+        example: 49
+        type: integer
+      system:
+        example: 23
+        type: integer
+    type: object
   models.Population:
     properties:
       generation_rate:
@@ -106,14 +132,51 @@ definitions:
       workers:
         $ref: '#/definitions/models.EmployedPopulation'
     type: object
-  models.Position:
+  models.Profile:
     properties:
-      display:
-        example: "23:49:7"
+      username:
         type: string
-      planet:
-        example: 7
+    type: object
+  models.Resource:
+    properties:
+      amount:
+        example: 23
         type: integer
+      max_limit:
+        example: 100
+        type: number
+      reserved:
+        example: 14
+        type: integer
+    type: object
+  models.Resources:
+    properties:
+      graphene:
+        $ref: '#/definitions/models.Resource'
+      shelio:
+        example: 23
+        type: integer
+      water:
+        $ref: '#/definitions/models.Resource'
+    type: object
+  models.Sector:
+    properties:
+      occupied_planets:
+        items:
+          $ref: '#/definitions/models.OccupiedPlanet'
+        type: array
+      position:
+        $ref: '#/definitions/models.SectorPosition'
+      unoccupied_planets:
+        items:
+          $ref: '#/definitions/models.UnoccupiedPlanet'
+        type: array
+    type: object
+  models.SectorPosition:
+    properties:
+      _id:
+        example: 023:049
+        type: string
       sector:
         example: 49
         type: integer
@@ -121,20 +184,24 @@ definitions:
         example: 23
         type: integer
     type: object
-  models.Resource:
+  models.StaticPlanetData:
     properties:
-      amount:
-        example: 23
-        type: integer
-      generation_rate:
-        example: 3
-        type: integer
-      max_limit:
-        example: 100
-        type: integer
-      reserved:
-        example: 14
-        type: integer
+      home:
+        example: true
+        type: boolean
+      planet_config:
+        example: Planet2.json
+        type: string
+      position:
+        $ref: '#/definitions/models.PlanetPosition'
+    type: object
+  models.UnoccupiedPlanet:
+    properties:
+      planet_config:
+        example: Planet2.json
+        type: string
+      position:
+        $ref: '#/definitions/models.PlanetPosition'
     type: object
 host: mmo-server-4xcaklgmnq-el.a.run.app
 info:
@@ -155,7 +222,7 @@ paths:
       - application/json
       description: Login verification and first load of complete user data
       parameters:
-      - description: valid username for login
+      - description: user identifier
         in: query
         name: username
         required: true
@@ -169,7 +236,7 @@ paths:
             $ref: '#/definitions/models.LoginResponse'
       summary: Login API
       tags:
-      - Login
+      - data retrieval
   /ping:
     get:
       consumes:
@@ -185,6 +252,60 @@ paths:
       summary: Pings the server
       tags:
       - root
+  /refresh/population:
+    post:
+      consumes:
+      - application/json
+      description: Refresh endpoint to quickly refresh population data with the latest
+        values
+      parameters:
+      - description: user identifier
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: planet identifier
+        in: query
+        name: planet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Population'
+      summary: Refresh population API
+      tags:
+      - data retrieval
+  /refresh/resources:
+    post:
+      consumes:
+      - application/json
+      description: Refresh endpoint to quickly refresh resources data with the latest
+        values
+      parameters:
+      - description: user identifier
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: planet identifier
+        in: query
+        name: planet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Resources'
+      summary: Refresh resources API
+      tags:
+      - data retrieval
 schemes:
 - https
 swagger: "2.0"

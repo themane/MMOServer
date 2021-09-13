@@ -5,10 +5,10 @@ import (
 	"strconv"
 )
 
-type ResourceType int
+type ResourceType string
 
 const (
-	WATER ResourceType = iota
+	WATER ResourceType = "WATER"
 	GRAPHENE
 	SHELIO
 )
