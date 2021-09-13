@@ -1,54 +1,30 @@
 package services
 
 import (
-	"encoding/json"
+	"github.com/themane/MMOServer/dao"
 	"github.com/themane/MMOServer/models"
-	"io/ioutil"
-	"os"
 )
 
-func RefreshPopulation(Username string, PlanetId string) models.LoginResponse {
-	var response models.LoginResponse
-	switch Username {
-	case "devashish":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse1.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "nehal":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse2.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "parth":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse3.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "sneha":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse4.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
+func RefreshPopulation(username string, planetId string) *models.Population {
+	userData := dao.GetUserData(username)
+	for _, planetUser := range userData.OccupiedPlanets {
+		if planetUser.Position.PlanetId() == planetId {
+			response := models.Population{}
+			response.Init(planetUser)
+			return &response
+		}
 	}
-	return response
+	return nil
 }
 
-func RefreshResources(Username string, PlanetId string) models.LoginResponse {
-	var response models.LoginResponse
-	switch Username {
-	case "devashish":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse1.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "nehal":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse2.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "parth":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse3.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
-	case "sneha":
-		jsonFile, _ := os.Open("sample_responses/PlanetConfigResponse4.json")
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		json.Unmarshal(responseByteValue, &response)
+func RefreshResources(username string, planetId string) *models.Resources {
+	userData := dao.GetUserData(username)
+	for _, planetUser := range userData.OccupiedPlanets {
+		if planetUser.Position.PlanetId() == planetId {
+			response := models.Resources{}
+			response.Init(planetUser)
+			return &response
+		}
 	}
-	return response
+	return nil
 }

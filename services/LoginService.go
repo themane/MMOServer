@@ -5,11 +5,11 @@ import (
 	"github.com/themane/MMOServer/models"
 )
 
-func Login(Username string) models.LoginResponse {
+func Login(username string) models.LoginResponse {
 	universe := dao.GetUniverse()
 	waterConstants := dao.GetWaterConstants()
 	grapheneConstants := dao.GetGrapheneConstants()
-	userData := dao.GetUserData(Username)
+	userData := dao.GetUserData(username)
 	homePlanetPosition := findHomePlanet(userData.OccupiedPlanets)
 
 	var response models.LoginResponse
