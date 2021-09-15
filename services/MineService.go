@@ -5,28 +5,33 @@ import (
 	"strconv"
 )
 
-func upgradeMiningPlant(planetUser models.PlanetUser, buildingId string, waterConstants models.ResourceConstants, grapheneConstants models.ResourceConstants) (string, string) {
-	for _, mine := range planetUser.Mines {
+func upgradeMiningPlant(planetUser *models.PlanetUser, buildingId string, waterConstants models.ResourceConstants, grapheneConstants models.ResourceConstants) (string, string) {
+	for key, mine := range planetUser.Mines {
 		if mine.MiningPlant.BuildingId == buildingId {
 			buildingLevelString := strconv.Itoa(mine.MiningPlant.BuildingLevel + 1)
 			if mine.Type == models.WATER {
 				waterRequired := waterConstants.Levels[buildingLevelString].WaterRequired
 				grapheneRequired := waterConstants.Levels[buildingLevelString].GrapheneRequired
 				shelioRequired := waterConstants.Levels[buildingLevelString].ShelioRequired
-				return upgradeMine(planetUser, buildingId, waterConstants.MaxLevel, mine.MiningPlant, waterRequired, grapheneRequired, shelioRequired)
+				msg, err := upgradeMine(planetUser, buildingId, waterConstants.MaxLevel, &mine.MiningPlant, waterRequired, grapheneRequired, shelioRequired)
+				planetUser.Mines[key] = mine
+				return msg, err
+
 			}
 			if mine.Type == models.GRAPHENE {
 				waterRequired := grapheneConstants.Levels[buildingLevelString].WaterRequired
 				grapheneRequired := grapheneConstants.Levels[buildingLevelString].GrapheneRequired
 				shelioRequired := grapheneConstants.Levels[buildingLevelString].ShelioRequired
-				return upgradeMine(planetUser, buildingId, grapheneConstants.MaxLevel, mine.MiningPlant, waterRequired, grapheneRequired, shelioRequired)
+				msg, err := upgradeMine(planetUser, buildingId, grapheneConstants.MaxLevel, &mine.MiningPlant, waterRequired, grapheneRequired, shelioRequired)
+				planetUser.Mines[key] = mine
+				return msg, err
 			}
 		}
 	}
 	return "", "Invalid building_id"
 }
 
-func upgradeMine(planetUser models.PlanetUser, buildingId string, maxLevel int, miningPlant models.MiningPlantUser, waterRequired int, grapheneRequired int, shelioRequired int) (string, string) {
+func upgradeMine(planetUser *models.PlanetUser, buildingId string, maxLevel int, miningPlant *models.MiningPlantUser, waterRequired int, grapheneRequired int, shelioRequired int) (string, string) {
 	if miningPlant.BuildingLevel >= maxLevel {
 		return "", "Max level Reached"
 	}

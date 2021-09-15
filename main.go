@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/controllers"
+	"github.com/themane/MMOServer/schedulers"
 	"log"
 	"os"
 	"sync"
@@ -38,11 +39,15 @@ func main() {
 
 	r.GET("/ping", controllers.Ping)
 	r.POST("/login", controllers.LoginController)
+	r.POST("/refresh/population", controllers.RefreshPopulationController)
+	r.POST("/refresh/resources", controllers.RefreshResourcesController)
+	r.POST("/upgrade/building", controllers.UpgradeBuildingController)
 	err := r.Run()
 	if err != nil {
 		log.Println("Error in starting server")
 		return
 	}
+	schedulers.SchedulePlanetUpdates()
 }
 
 func GetBaseURL() {

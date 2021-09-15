@@ -1,172 +1,162 @@
 {
   "profile": {
-    "username": "devashish",
     "_id": "4cdcb85a-c073-4022-a354-808696f22942",
-    "experience": 923,
-    "clan_id": "6f744cf6-c873-4c80-8fa6-62da47d87090"
+    "username": "devashish",
+    "experience": 1826,
+    "clan_id": ""
   },
   "occupied_planets": {
-    "007:000:04": {
-      "shelio": 5,
+    "008:009:01": {
+      "position": {
+        "_id": "008:009:01",
+        "system": 8,
+        "sector": 9,
+        "planet": 1
+      },
+      "water": {
+        "amount": 36,
+        "reserved": 18
+      },
       "graphene": {
-        "amount": 42,
-        "reserved": 22
+        "amount": 21,
+        "reserved": 7
+      },
+      "shelio": 6,
+      "population": {
+        "generation_rate": 1,
+        "unemployed": 8,
+        "workers": {
+          "total": 16,
+          "idle": 3
+        },
+        "soldiers": {
+          "total": 16,
+          "idle": 3
+        }
       },
       "mines": {
         "G101": {
-          "mined": 625,
           "_id": "G101",
           "type": "GRAPHENE",
+          "mined": 481,
           "mining_plant": {
-            "building_level": 4,
-            "workers": 6,
-            "building_id": "GMP101"
+            "building_id": "GMP101",
+            "building_level": 5,
+            "workers": 8
           }
         },
         "G102": {
-          "mined": 1116,
           "_id": "G102",
           "type": "GRAPHENE",
+          "mined": 191,
           "mining_plant": {
-            "building_level": 0,
-            "workers": 0,
-            "building_id": null
+            "building_id": "GMP102",
+            "building_level": 4,
+            "workers": 8
           }
         },
         "G103": {
-          "mined": 180,
           "_id": "G103",
           "type": "GRAPHENE",
+          "mined": 169,
           "mining_plant": {
-            "building_level": 4,
-            "workers": 9,
-            "building_id": "GMP103"
+            "building_id": "GMP103",
+            "building_level": 1,
+            "workers": 0
           }
         },
         "G104": {
-          "mined": 667,
           "_id": "G104",
           "type": "GRAPHENE",
+          "mined": 209,
           "mining_plant": {
-            "building_level": 3,
-            "workers": 8,
-            "building_id": "GMP104"
+            "building_id": "GMP104",
+            "building_level": 1,
+            "workers": 11
+          }
+        },
+        "G105": {
+          "_id": "G105",
+          "type": "GRAPHENE",
+          "mined": 134,
+          "mining_plant": {
+            "building_id": "GMP105",
+            "building_level": 0,
+            "workers": 0
+          }
+        },
+        "G106": {
+          "_id": "G106",
+          "type": "GRAPHENE",
+          "mined": 924,
+          "mining_plant": {
+            "building_id": "GMP106",
+            "building_level": 0,
+            "workers": 0
           }
         },
         "W101": {
-          "mined": 840,
           "_id": "W101",
           "type": "WATER",
+          "mined": 329,
           "mining_plant": {
-            "building_level": 5,
-            "workers": 12,
-            "building_id": "WMP101"
+            "building_id": "WMP101",
+            "building_level": 0,
+            "workers": 0
           }
         },
         "W102": {
-          "mined": 371,
           "_id": "W102",
           "type": "WATER",
+          "mined": 969,
           "mining_plant": {
-            "building_level": 0,
-            "workers": 0,
-            "building_id": null
+            "building_id": "WMP102",
+            "building_level": 8,
+            "workers": 11
           }
         },
         "W103": {
-          "mined": 856,
           "_id": "W103",
           "type": "WATER",
+          "mined": 81,
           "mining_plant": {
-            "building_level": 7,
-            "workers": 9,
-            "building_id": "WMP103"
+            "building_id": "WMP103",
+            "building_level": 1,
+            "workers": 7
           }
         },
         "W104": {
-          "mined": 33,
           "_id": "W104",
           "type": "WATER",
+          "mined": 1411,
           "mining_plant": {
-            "building_level": 0,
-            "workers": 0,
-            "building_id": null
+            "building_id": "WMP104",
+            "building_level": 3,
+            "workers": 10
           }
         },
         "W105": {
-          "mined": 537,
           "_id": "W105",
           "type": "WATER",
+          "mined": 580,
           "mining_plant": {
-            "building_level": 7,
-            "workers": 12,
-            "building_id": "WMP105"
+            "building_id": "WMP105",
+            "building_level": 0,
+            "workers": 0
           }
         },
         "W106": {
-          "mined": 984,
           "_id": "W106",
           "type": "WATER",
+          "mined": 871,
           "mining_plant": {
-            "building_level": 9,
-            "workers": 14,
-            "building_id": "WMP106"
-          }
-        },
-        "W107": {
-          "mined": 363,
-          "_id": "W107",
-          "type": "WATER",
-          "mining_plant": {
-            "building_level": 1,
-            "workers": 7,
-            "building_id": "WMP107"
-          }
-        },
-        "W108": {
-          "mined": 497,
-          "_id": "W108",
-          "type": "WATER",
-          "mining_plant": {
-            "building_level": 2,
-            "workers": 6,
-            "building_id": "WMP108"
-          }
-        },
-        "W109": {
-          "mined": 582,
-          "_id": "W109",
-          "type": "WATER",
-          "mining_plant": {
+            "building_id": "WMP106",
             "building_level": 0,
-            "workers": 0,
-            "building_id": null
+            "workers": 0
           }
         }
       },
-      "water": {
-        "amount": 32,
-        "reserved": 28
-      },
-      "home": true,
-      "position": {
-        "sector": 0,
-        "planet": 4,
-        "_id": "007:000:04",
-        "system": 7
-      },
-      "population": {
-        "soldiers": {
-          "idle": 3,
-          "total": 18
-        },
-        "unemployed": 8,
-        "generation_rate": 2,
-        "workers": {
-          "idle": 1,
-          "total": 18
-        }
-      }
+      "home": true
     }
   }
 }
