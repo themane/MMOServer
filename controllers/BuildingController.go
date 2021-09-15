@@ -31,6 +31,10 @@ func UpgradeBuildingController(c *gin.Context) {
 	}
 	log.Printf("Upgrading: %s, %s, %s", request.Username, request.PlanetId, request.BuildingId)
 
-	response := services.UpgradeBuilding(request.Username, request.PlanetId, request.BuildingId)
-	c.JSON(200, response)
+	response, err2 := services.UpgradeBuilding(request.Username, request.PlanetId, request.BuildingId)
+	if len(err2) > 0 {
+		c.JSON(500, models.UpdateResponse{Message: response, Error: err2})
+		return
+	}
+	c.JSON(200, models.UpdateResponse{Message: response, Error: err2})
 }
