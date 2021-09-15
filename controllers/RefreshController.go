@@ -22,7 +22,12 @@ import (
 func RefreshPopulationController(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request models.RefreshRequest
-	json.Unmarshal(body, &request)
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, "Request not parseable")
+		return
+	}
 	log.Printf("Refreshing population data for: %s", request.Username)
 
 	response := services.RefreshPopulation(request.Username, request.PlanetId)
@@ -42,7 +47,12 @@ func RefreshPopulationController(c *gin.Context) {
 func RefreshResourcesController(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request models.RefreshRequest
-	json.Unmarshal(body, &request)
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, "Request not parseable")
+		return
+	}
 	log.Printf("Refreshing resources data for: %s", request.Username)
 
 	response := services.RefreshResources(request.Username, request.PlanetId)

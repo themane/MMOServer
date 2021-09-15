@@ -2,17 +2,32 @@ package services
 
 import (
 	"github.com/themane/MMOServer/dao"
-	"github.com/themane/MMOServer/models"
+	"strings"
 )
 
-func UpgradeBuilding(username string, planetId string, buildingId string) *models.Population {
+const (
+	MINE = "MINE"
+)
+
+func UpgradeBuilding(username string, planetId string, buildingId string) (string, string) {
+	waterConstants := dao.GetWaterConstants()
+	grapheneConstants := dao.GetGrapheneConstants()
 	userData := dao.GetUserData(username)
+	buildingType := getBuildingType(buildingId)
 	for _, planetUser := range userData.OccupiedPlanets {
 		if planetUser.Position.PlanetId() == planetId {
-			response := models.Population{}
-			response.Init(planetUser)
-			return &response
+			switch buildingType {
+			case MINE:
+				upgradeMiningPlant(planetUser, buildingId, waterConstants, grapheneConstants)
+			}
 		}
 	}
-	return nil
+	return "", "Invalid username or planet_id or building_id"
+}
+
+func getBuildingType(buildingId string) string {
+	if strings.HasPrefix(buildingId, "WMP") || strings.HasPrefix(buildingId, "GMP") {
+		return MINE
+	}
+	return ""
 }

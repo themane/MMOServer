@@ -21,7 +21,12 @@ import (
 func LoginController(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request models.LoginRequest
-	json.Unmarshal(body, &request)
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, "Request not parseable")
+		return
+	}
 	log.Printf("Logged in user: %s", request.Username)
 
 	response := services.Login(request.Username)
