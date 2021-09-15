@@ -23,8 +23,10 @@ type NextLevelAttributes struct {
 	ShelioRequired             int `json:"shelio_required" example:"0"`
 	CurrentMiningRatePerWorker int `json:"current_mining_rate_per_worker" example:"1"`
 	NextMiningRatePerWorker    int `json:"next_mining_rate_per_worker" example:"1"`
+	MaxMiningRatePerWorker     int `json:"max_mining_rate_per_worker" example:"12"`
 	CurrentWorkersMaxLimit     int `json:"current_workers_max_limit" example:"40"`
 	NextWorkersMaxLimit        int `json:"next_workers_max_limit" example:"65"`
+	MaxWorkersMaxLimit         int `json:"max_workers_max_limit" example:"130"`
 }
 
 func (m *Mine) Init(mineUni MineUni, mineUser MineUser, waterConstants ResourceConstants, grapheneConstants ResourceConstants) {
@@ -49,8 +51,11 @@ func (m *MiningPlant) Init(miningPlantUser MiningPlantUser, resourceConstants Re
 
 func (n *NextLevelAttributes) Init(currentLevel int, resourceConstants ResourceConstants) {
 	currentLevelString := strconv.Itoa(currentLevel)
+	maxLevelString := strconv.Itoa(resourceConstants.MaxLevel)
 	n.CurrentWorkersMaxLimit = resourceConstants.Levels[currentLevelString].WorkersMaxLimit
 	n.CurrentMiningRatePerWorker = resourceConstants.Levels[currentLevelString].MiningRatePerWorker
+	n.MaxMiningRatePerWorker = resourceConstants.Levels[maxLevelString].MiningRatePerWorker
+	n.MaxWorkersMaxLimit = resourceConstants.Levels[maxLevelString].WorkersMaxLimit
 	if currentLevel+1 < resourceConstants.MaxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		n.NextWorkersMaxLimit = resourceConstants.Levels[nextLevelString].WorkersMaxLimit
