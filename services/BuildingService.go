@@ -18,7 +18,9 @@ func UpgradeBuilding(username string, planetId string, buildingId string) (strin
 		if planetUser.Position.PlanetId() == planetId {
 			switch buildingType {
 			case MINE:
-				upgradeMiningPlant(planetUser, buildingId, waterConstants, grapheneConstants)
+				msg, err := upgradeMiningPlant(planetUser, buildingId, waterConstants, grapheneConstants)
+				dao.UpdateUserData(username, userData)
+				return msg, err
 			}
 		}
 	}

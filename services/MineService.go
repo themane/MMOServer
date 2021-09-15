@@ -8,7 +8,7 @@ import (
 func upgradeMiningPlant(planetUser models.PlanetUser, buildingId string, waterConstants models.ResourceConstants, grapheneConstants models.ResourceConstants) (string, string) {
 	for _, mine := range planetUser.Mines {
 		if mine.MiningPlant.BuildingId == buildingId {
-			buildingLevelString := strconv.Itoa(mine.MiningPlant.BuildingLevel)
+			buildingLevelString := strconv.Itoa(mine.MiningPlant.BuildingLevel + 1)
 			if mine.Type == models.WATER {
 				waterRequired := waterConstants.Levels[buildingLevelString].WaterRequired
 				grapheneRequired := waterConstants.Levels[buildingLevelString].GrapheneRequired
@@ -32,6 +32,9 @@ func upgradeMine(planetUser models.PlanetUser, buildingId string, maxLevel int, 
 	}
 	if waterRequired <= planetUser.Water.Amount && grapheneRequired <= planetUser.Graphene.Amount && shelioRequired <= planetUser.Shelio {
 		miningPlant.BuildingLevel += 1
+		planetUser.Water.Amount -= waterRequired
+		planetUser.Graphene.Amount -= grapheneRequired
+		planetUser.Shelio -= shelioRequired
 		return "Successfully updated: " + buildingId, ""
 	}
 	return "", "Insufficient resources"
