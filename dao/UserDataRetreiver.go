@@ -12,7 +12,7 @@ func GetUserData(Username string) models.UserData {
 	var userData models.UserData
 	switch Username {
 	case "devashish":
-		jsonFile, _ := os.Open("sample_user_data/devashish.json")
+		jsonFile, _ := os.Open("sample_data/users/devashish.json")
 		responseByteValue, _ := ioutil.ReadAll(jsonFile)
 		err := json.Unmarshal(responseByteValue, &userData)
 		if err != nil {
@@ -20,7 +20,7 @@ func GetUserData(Username string) models.UserData {
 			return models.UserData{}
 		}
 	case "nehal":
-		jsonFile, _ := os.Open("sample_user_data/nehal.json")
+		jsonFile, _ := os.Open("sample_data/users/nehal.json")
 		responseByteValue, _ := ioutil.ReadAll(jsonFile)
 		err := json.Unmarshal(responseByteValue, &userData)
 		if err != nil {
@@ -28,7 +28,7 @@ func GetUserData(Username string) models.UserData {
 			return models.UserData{}
 		}
 	case "parth":
-		jsonFile, _ := os.Open("sample_user_data/parth.json")
+		jsonFile, _ := os.Open("sample_data/users/parth.json")
 		responseByteValue, _ := ioutil.ReadAll(jsonFile)
 		err := json.Unmarshal(responseByteValue, &userData)
 		if err != nil {
@@ -36,7 +36,7 @@ func GetUserData(Username string) models.UserData {
 			return models.UserData{}
 		}
 	case "sneha":
-		jsonFile, _ := os.Open("sample_user_data/sneha.json")
+		jsonFile, _ := os.Open("sample_data/users/sneha.json")
 		responseByteValue, _ := ioutil.ReadAll(jsonFile)
 		err := json.Unmarshal(responseByteValue, &userData)
 		if err != nil {
@@ -44,7 +44,7 @@ func GetUserData(Username string) models.UserData {
 			return models.UserData{}
 		}
 	case "sweta":
-		jsonFile, _ := os.Open("sample_user_data/sweta.json")
+		jsonFile, _ := os.Open("sample_data/users/sweta.json")
 		responseByteValue, _ := ioutil.ReadAll(jsonFile)
 		err := json.Unmarshal(responseByteValue, &userData)
 		if err != nil {
