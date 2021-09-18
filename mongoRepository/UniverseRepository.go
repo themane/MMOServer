@@ -3,6 +3,7 @@ package mongoRepository
 import (
 	"context"
 	"github.com/themane/MMOServer/models"
+	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
@@ -28,15 +29,15 @@ func (u *UniverseRepositoryImpl) getCollection() *mongo.Collection {
 	return u.client.Database(u.mongoDB).Collection("universe")
 }
 
-func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]models.PlanetUni, error) {
+func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]repoModels.PlanetUni, error) {
 	defer disconnect(u.client, u.ctx)
-	var result map[string]models.PlanetUni
+	var result map[string]repoModels.PlanetUni
 	cursor, err := u.getCollection().Find(u.ctx, bson.D{{"position.system", system}, {"position.sector", sector}})
 	if err != nil {
 		return nil, err
 	}
 	for cursor.Next(u.ctx) {
-		var planet models.PlanetUni
+		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
 			return nil, err
@@ -46,9 +47,9 @@ func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]m
 	return result, nil
 }
 
-func (u *UniverseRepositoryImpl) GetPlanet(system int, sector int, planet int) (*models.PlanetUni, error) {
+func (u *UniverseRepositoryImpl) GetPlanet(system int, sector int, planet int) (*repoModels.PlanetUni, error) {
 	defer disconnect(u.client, u.ctx)
-	var result *models.PlanetUni
+	var result *repoModels.PlanetUni
 	filter := bson.D{{"position.system", system}, {"position.sector", sector}, {"position.planet", planet}}
 	err := u.getCollection().FindOne(u.ctx, filter).Decode(result)
 	if err != nil {

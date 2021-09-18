@@ -2,7 +2,7 @@ package mongoRepository
 
 import (
 	"context"
-	"github.com/themane/MMOServer/models"
+	"github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
