@@ -1,12 +1,14 @@
 package models
 
+import "github.com/themane/MMOServer/models"
+
 type PlanetUni struct {
-	Id           string             `json:"_id"`
-	Position     PlanetPosition     `json:"position"`
-	Mines        map[string]MineUni `json:"mines"`
-	PlanetConfig string             `json:"planet_config"`
-	Occupied     bool               `json:"occupied"`
-	Distance     int                `json:"distance"`
+	Id           string                `json:"_id"`
+	Position     models.PlanetPosition `json:"position"`
+	Mines        map[string]MineUni    `json:"mines"`
+	PlanetConfig string                `json:"planet_config"`
+	Occupied     bool                  `json:"occupied"`
+	Distance     int                   `json:"distance"`
 }
 
 type MineUni struct {

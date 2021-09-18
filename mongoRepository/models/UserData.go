@@ -1,5 +1,7 @@
 package models
 
+import "github.com/themane/MMOServer/models"
+
 type UserData struct {
 	Id              string                `json:"_id"`
 	Profile         ProfileUser           `json:"profile"`
@@ -27,10 +29,10 @@ type ResourceUser struct {
 }
 
 type PopulationUser struct {
-	GenerationRate int                `json:"generation_rate" example:"3"`
-	Unemployed     int                `json:"unemployed" example:"3"`
-	Workers        EmployedPopulation `json:"workers"`
-	Soldiers       EmployedPopulation `json:"soldiers"`
+	GenerationRate int                       `json:"generation_rate" example:"3"`
+	Unemployed     int                       `json:"unemployed" example:"3"`
+	Workers        models.EmployedPopulation `json:"workers"`
+	Soldiers       models.EmployedPopulation `json:"soldiers"`
 }
 
 type MineUser struct {
