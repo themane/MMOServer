@@ -1,6 +1,11 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"strconv"
+	"strings"
+)
 
 type PlanetPosition struct {
 	Id     string `json:"_id" example:"023:049:07"`
@@ -14,6 +19,32 @@ func (p *PlanetPosition) Init(system int, sector int, planet int) {
 	p.Sector = sector
 	p.Planet = planet
 	p.Id = PlanetId(system, sector, planet)
+}
+
+func InitByPosition(system int, sector int, planet int) PlanetPosition {
+	position := PlanetPosition{}
+	position.Init(system, sector, planet)
+	return position
+}
+
+func InitById(id string) PlanetPosition {
+	split := strings.Split(id, ":")
+	system, err := strconv.Atoi(split[0])
+	if err != nil {
+		log.Print(err)
+		return PlanetPosition{}
+	}
+	sector, err := strconv.Atoi(split[1])
+	if err != nil {
+		log.Print(err)
+		return PlanetPosition{}
+	}
+	planet, err := strconv.Atoi(split[2])
+	if err != nil {
+		log.Print(err)
+		return PlanetPosition{}
+	}
+	return InitByPosition(system, sector, planet)
 }
 
 func (p PlanetPosition) SystemId() string {
