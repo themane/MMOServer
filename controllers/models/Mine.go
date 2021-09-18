@@ -33,24 +33,24 @@ type NextLevelAttributes struct {
 	MaxWorkersMaxLimit         int `json:"max_workers_max_limit" example:"130"`
 }
 
-func (m *Mine) Init(mineUni models.MineUni, mineUser models.MineUser, waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) {
+func (m *Mine) Init(mineUni models.MineUni, planetUser models.PlanetUser, waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) {
 	m.Id = mineUni.Id
 	m.Type = mineUni.Type
 	m.MaxLimit = mineUni.MaxLimit
-	m.Mined = mineUser.Mined
+	m.Mined = planetUser.Mines[mineUni.Id].Mined
 	if mineUni.Type == WATER {
-		m.MiningPlant.Init(mineUser, waterConstants)
+		m.MiningPlant.Init(planetUser, mineUni.Id, waterConstants)
 	}
 	if mineUni.Type == GRAPHENE {
-		m.MiningPlant.Init(mineUser, grapheneConstants)
+		m.MiningPlant.Init(planetUser, mineUni.Id, grapheneConstants)
 	}
 }
 
-func (m *MiningPlant) Init(mineUser models.MineUser, resourceConstants constants.ResourceConstants) {
-	m.BuildingId = mineUser.MiningPlant.Id
-	m.BuildingLevel = mineUser.MiningPlant.BuildingLevel
-	m.Workers = mineUser.MiningPlant.Workers
-	m.NextLevelAttributes.Init(mineUser.MiningPlant.BuildingLevel, resourceConstants)
+func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string, resourceConstants constants.ResourceConstants) {
+	m.BuildingId = planetUser.Mines[mineId].MiningPlantId
+	m.BuildingLevel = planetUser.Buildings[m.BuildingId].BuildingLevel
+	m.Workers = planetUser.Buildings[m.BuildingId].Workers
+	m.NextLevelAttributes.Init(m.BuildingLevel, resourceConstants)
 }
 
 func (n *NextLevelAttributes) Init(currentLevel int, resourceConstants constants.ResourceConstants) {
