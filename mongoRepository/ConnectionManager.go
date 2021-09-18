@@ -14,7 +14,7 @@ const (
 	connectTimeoutSecs = 5
 )
 
-func getConnection(mongoURL string) (*mongo.Client, context.Context, context.CancelFunc, error) {
+func GetConnection(mongoURL string) (*mongo.Client, context.Context, context.CancelFunc, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURL))
 	if err != nil {
 		log.Fatal(err)
