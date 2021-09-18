@@ -1,4 +1,4 @@
-package dao
+package mongo
 
 import (
 	"encoding/json"

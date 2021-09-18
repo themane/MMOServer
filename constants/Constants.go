@@ -1,4 +1,4 @@
-package models
+package constants
 
 type ExperienceConstants struct {
 	User ExperienceLevelConstants `json:"user"`
