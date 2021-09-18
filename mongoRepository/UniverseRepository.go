@@ -28,9 +28,9 @@ func (u *UniverseRepositoryImpl) getCollection() *mongo.Collection {
 	return u.client.Database(u.mongoDB).Collection("universe")
 }
 
-func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[int]models.PlanetUni, error) {
+func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]models.PlanetUni, error) {
 	defer disconnect(u.client, u.ctx)
-	var result map[int]models.PlanetUni
+	var result map[string]models.PlanetUni
 	cursor, err := u.getCollection().Find(u.ctx, bson.D{{"position.system", system}, {"position.sector", sector}})
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[int]mode
 		if err != nil {
 			return nil, err
 		}
-		result[planet.Position.Planet] = planet
+		result[planet.Position.PlanetId()] = planet
 	}
 	return result, nil
 }

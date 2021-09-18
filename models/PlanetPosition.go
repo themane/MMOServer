@@ -21,13 +21,13 @@ func (p *PlanetPosition) Init(system int, sector int, planet int) {
 	p.Id = PlanetId(system, sector, planet)
 }
 
-func InitByPosition(system int, sector int, planet int) PlanetPosition {
+func InitPlanetPositionByPosition(system int, sector int, planet int) PlanetPosition {
 	position := PlanetPosition{}
 	position.Init(system, sector, planet)
 	return position
 }
 
-func InitById(id string) PlanetPosition {
+func InitPlanetPositionById(id string) PlanetPosition {
 	split := strings.Split(id, ":")
 	system, err := strconv.Atoi(split[0])
 	if err != nil {
@@ -44,7 +44,7 @@ func InitById(id string) PlanetPosition {
 		log.Print(err)
 		return PlanetPosition{}
 	}
-	return InitByPosition(system, sector, planet)
+	return InitPlanetPositionByPosition(system, sector, planet)
 }
 
 func (p PlanetPosition) SystemId() string {
