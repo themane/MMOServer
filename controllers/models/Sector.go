@@ -1,5 +1,7 @@
 package models
 
+import "github.com/themane/MMOServer/models"
+
 type Sector struct {
 	OccupiedPlanets   []OccupiedPlanet   `json:"occupied_planets"`
 	UnoccupiedPlanets []UnoccupiedPlanet `json:"unoccupied_planets"`
@@ -12,7 +14,7 @@ type SectorPosition struct {
 	Sector int    `json:"sector" example:"49"`
 }
 
-func (sp *SectorPosition) Init(planetPosition PlanetPosition) {
+func (sp *SectorPosition) Init(planetPosition models.PlanetPosition) {
 	sp.Id = planetPosition.SectorId()
 	sp.System = planetPosition.System
 	sp.Sector = planetPosition.Sector

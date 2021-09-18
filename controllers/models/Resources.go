@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/themane/MMOServer/mongoRepository/models"
 	"math"
 	"strconv"
 )
@@ -23,7 +24,7 @@ type Resource struct {
 	Reserved int     `json:"reserved" example:"14"`
 }
 
-func (r *Resources) Init(planetUser PlanetUser) {
+func (r *Resources) Init(planetUser models.PlanetUser) {
 	limit := getMaxLimit(planetUser.Water.Amount, planetUser.Graphene.Amount)
 	r.Water = Resource{Amount: planetUser.Water.Amount, Reserved: planetUser.Water.Reserved, MaxLimit: limit}
 	r.Graphene = Resource{Amount: planetUser.Graphene.Amount, Reserved: planetUser.Graphene.Reserved, MaxLimit: limit}

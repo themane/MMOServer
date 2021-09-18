@@ -1,6 +1,10 @@
 package models
 
-import "strconv"
+import (
+	"github.com/themane/MMOServer/constants"
+	"github.com/themane/MMOServer/mongoRepository/models"
+	"strconv"
+)
 
 type Mine struct {
 	Id          string      `json:"_id" example:"W101"`
@@ -29,27 +33,27 @@ type NextLevelAttributes struct {
 	MaxWorkersMaxLimit         int `json:"max_workers_max_limit" example:"130"`
 }
 
-func (m *Mine) Init(mineUni MineUni, mineUser MineUser, waterConstants ResourceConstants, grapheneConstants ResourceConstants) {
+func (m *Mine) Init(mineUni models.MineUni, mineUser models.MineUser, waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) {
 	m.Id = mineUni.Id
 	m.Type = mineUni.Type
 	m.MaxLimit = mineUni.MaxLimit
 	m.Mined = mineUser.Mined
 	if mineUni.Type == WATER {
-		m.MiningPlant.Init(mineUser.MiningPlant, waterConstants)
+		m.MiningPlant.Init(mineUser, waterConstants)
 	}
 	if mineUni.Type == GRAPHENE {
-		m.MiningPlant.Init(mineUser.MiningPlant, grapheneConstants)
+		m.MiningPlant.Init(mineUser, grapheneConstants)
 	}
 }
 
-func (m *MiningPlant) Init(miningPlantUser MiningPlantUser, resourceConstants ResourceConstants) {
-	m.BuildingId = miningPlantUser.BuildingId
-	m.BuildingLevel = miningPlantUser.BuildingLevel
-	m.Workers = miningPlantUser.Workers
-	m.NextLevelAttributes.Init(miningPlantUser.BuildingLevel, resourceConstants)
+func (m *MiningPlant) Init(mineUser models.MineUser, resourceConstants constants.ResourceConstants) {
+	m.BuildingId = mineUser.MiningPlant.Id
+	m.BuildingLevel = mineUser.MiningPlant.BuildingLevel
+	m.Workers = mineUser.MiningPlant.Workers
+	m.NextLevelAttributes.Init(mineUser.MiningPlant.BuildingLevel, resourceConstants)
 }
 
-func (n *NextLevelAttributes) Init(currentLevel int, resourceConstants ResourceConstants) {
+func (n *NextLevelAttributes) Init(currentLevel int, resourceConstants constants.ResourceConstants) {
 	currentLevelString := strconv.Itoa(currentLevel)
 	maxLevelString := strconv.Itoa(resourceConstants.MaxLevel)
 	n.CurrentWorkersMaxLimit = resourceConstants.Levels[currentLevelString].WorkersMaxLimit

@@ -1,6 +1,10 @@
 package models
 
-import "strconv"
+import (
+	"github.com/themane/MMOServer/constants"
+	"github.com/themane/MMOServer/mongoRepository/models"
+	"strconv"
+)
 
 const (
 	LEADER     string = "LEADER"
@@ -25,16 +29,16 @@ type Experience struct {
 	Required int `json:"required"`
 }
 
-func (p *Profile) Init(profileUser ProfileUser, clan ClanData, experienceConstants ExperienceConstants) {
-	p.Username = profileUser.Username
-	p.Experience.Init(profileUser, experienceConstants)
-	if len(profileUser.ClanId) > 0 {
+func (p *Profile) Init(userData models.UserData, clanData *models.ClanData, experienceConstants constants.ExperienceConstants) {
+	p.Username = userData.Profile.Username
+	p.Experience.Init(userData.Profile, experienceConstants)
+	if len(userData.Profile.ClanId) > 0 && clanData != nil {
 		p.Clan = &Clan{}
-		p.Clan.Init(profileUser, clan)
+		p.Clan.Init(userData, *clanData)
 	}
 }
 
-func (e *Experience) Init(profileUser ProfileUser, experienceConstants ExperienceConstants) {
+func (e *Experience) Init(profileUser models.ProfileUser, experienceConstants constants.ExperienceConstants) {
 	var nextLevelString string
 	for key, experienceRequired := range experienceConstants.User.ExperiencesRequired {
 		if experienceRequired.ExperienceRequired > profileUser.Experience {
@@ -47,10 +51,10 @@ func (e *Experience) Init(profileUser ProfileUser, experienceConstants Experienc
 	e.Required = experienceConstants.User.ExperiencesRequired[nextLevelString].ExperienceRequired
 }
 
-func (c *Clan) Init(profileUser ProfileUser, clan ClanData) {
+func (c *Clan) Init(userData models.UserData, clan models.ClanData) {
 	c.Name = clan.Name
 	for _, clanMember := range clan.Members {
-		if clanMember.Id == profileUser.Id {
+		if clanMember.Id == userData.Id {
 			c.Role = clanMember.Role
 			break
 		}
