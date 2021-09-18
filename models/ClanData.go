@@ -11,3 +11,7 @@ type ClanMember struct {
 	Id   string `json:"_id"`
 	Role string `json:"role"`
 }
+
+type ClanRepository interface {
+	FindById(id string) (ClanData, error)
+}

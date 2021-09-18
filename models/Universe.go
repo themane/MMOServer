@@ -15,3 +15,9 @@ type MineUni struct {
 	MaxLimit     int    `json:"max_limit"`
 	IncreaseRate int    `json:"increase_rate"`
 }
+
+type UniverseRepository interface {
+	GetSector(system int, sector int) (map[int]PlanetUni, error)
+	GetPlanet(system int, sector int, planet int) (PlanetUni, error)
+	MarkOccupied(system int, sector int, planet int) error
+}

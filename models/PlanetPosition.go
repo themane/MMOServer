@@ -33,5 +33,7 @@ func PlanetId(system int, sector int, planet int) string {
 }
 
 func (p PlanetPosition) Clone() PlanetPosition {
-	return PlanetPosition{Id: p.PlanetId(), System: p.System, Sector: p.Sector, Planet: p.Planet}
+	position := PlanetPosition{}
+	position.Init(p.System, p.Sector, p.Planet)
+	return position
 }

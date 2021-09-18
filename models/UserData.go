@@ -1,19 +1,18 @@
 package models
 
 type UserData struct {
+	Id              string                `json:"_id"`
 	Profile         ProfileUser           `json:"profile"`
 	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets"`
 }
 
 type ProfileUser struct {
-	Id         string `json:"_id"`
 	Username   string `json:"username" example:"nehal"`
 	Experience int    `json:"experience" example:"153"`
 	ClanId     string `json:"clan_id" example:"MindKrackers"`
 }
 
 type PlanetUser struct {
-	Position   PlanetPosition      `json:"position"`
 	Water      ResourceUser        `json:"water"`
 	Graphene   ResourceUser        `json:"graphene"`
 	Shelio     int                 `json:"shelio" example:"23"`
@@ -35,14 +34,15 @@ type PopulationUser struct {
 }
 
 type MineUser struct {
-	Id          string          `json:"_id" example:"W101"`
-	Type        string          `json:"type" example:"WATER"`
-	Mined       int             `json:"mined" example:"125"`
-	MiningPlant MiningPlantUser `json:"mining_plant"`
+	Mined       int `json:"mined" example:"125"`
+	MiningPlant struct {
+		Id            string `json:"building_id" example:"WMP101"`
+		BuildingLevel int    `json:"building_level" example:"3"`
+		Workers       int    `json:"workers" example:"12"`
+	} `json:"mining_plant"`
 }
 
-type MiningPlantUser struct {
-	BuildingId    string `json:"building_id" example:"WMP101"`
-	BuildingLevel int    `json:"building_level" example:"3"`
-	Workers       int    `json:"workers" example:"12"`
+type UserRepository interface {
+	FindById(id string) (UserData, error)
+	FindByUsername(username string) (UserData, error)
 }
