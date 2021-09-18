@@ -9,16 +9,18 @@ import (
 )
 
 type UniverseRepositoryImpl struct {
-	client  *mongo.Client
-	ctx     context.Context
-	cancel  context.CancelFunc
-	mongoDB string
+	client     *mongo.Client
+	ctx        context.Context
+	cancelFunc context.CancelFunc
+	mongoDB    string
 }
 
-func NewUniverseRepository(client *mongo.Client, mongoDB string) UniverseRepositoryImpl {
+func NewUniverseRepository(client *mongo.Client, ctx context.Context, cancelFunc context.CancelFunc, mongoDB string) UniverseRepositoryImpl {
 	return UniverseRepositoryImpl{
-		client:  client,
-		mongoDB: mongoDB,
+		client:     client,
+		ctx:        ctx,
+		cancelFunc: cancelFunc,
+		mongoDB:    mongoDB,
 	}
 }
 
