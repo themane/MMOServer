@@ -43,6 +43,6 @@ type MineUser struct {
 }
 
 type UserRepository interface {
-	FindById(id string) (UserData, error)
-	FindByUsername(username string) (UserData, error)
+	FindById(id string) (*UserData, error)
+	FindByUsername(username string) (*UserData, error)
 }

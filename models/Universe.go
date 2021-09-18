@@ -18,6 +18,6 @@ type MineUni struct {
 
 type UniverseRepository interface {
 	GetSector(system int, sector int) (map[int]PlanetUni, error)
-	GetPlanet(system int, sector int, planet int) (PlanetUni, error)
+	GetPlanet(system int, sector int, planet int) (*PlanetUni, error)
 	MarkOccupied(system int, sector int, planet int) error
 }

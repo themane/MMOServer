@@ -15,8 +15,8 @@ type UniverseRepositoryImpl struct {
 	mongoDB    string
 }
 
-func NewUniverseRepository(client *mongo.Client, ctx context.Context, cancelFunc context.CancelFunc, mongoDB string) UniverseRepositoryImpl {
-	return UniverseRepositoryImpl{
+func NewUniverseRepository(client *mongo.Client, ctx context.Context, cancelFunc context.CancelFunc, mongoDB string) *UniverseRepositoryImpl {
+	return &UniverseRepositoryImpl{
 		client:     client,
 		ctx:        ctx,
 		cancelFunc: cancelFunc,
@@ -24,11 +24,11 @@ func NewUniverseRepository(client *mongo.Client, ctx context.Context, cancelFunc
 	}
 }
 
-func (u UniverseRepositoryImpl) getCollection() *mongo.Collection {
+func (u *UniverseRepositoryImpl) getCollection() *mongo.Collection {
 	return u.client.Database(u.mongoDB).Collection("universe")
 }
 
-func (u UniverseRepositoryImpl) GetSector(system int, sector int) (map[int]models.PlanetUni, error) {
+func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[int]models.PlanetUni, error) {
 	defer disconnect(u.client, u.ctx)
 	var result map[int]models.PlanetUni
 	cursor, err := u.getCollection().Find(u.ctx, bson.D{{"position.system", system}, {"position.sector", sector}})
@@ -49,7 +49,8 @@ func (u UniverseRepositoryImpl) GetSector(system int, sector int) (map[int]model
 func (u *UniverseRepositoryImpl) GetPlanet(system int, sector int, planet int) (*models.PlanetUni, error) {
 	defer disconnect(u.client, u.ctx)
 	var result *models.PlanetUni
-	err := u.getCollection().FindOne(u.ctx, bson.D{{"position.system", system}, {"position.sector", sector}}).Decode(result)
+	filter := bson.D{{"position.system", system}, {"position.sector", sector}, {"position.planet", planet}}
+	err := u.getCollection().FindOne(u.ctx, filter).Decode(result)
 	if err != nil {
 		return nil, err
 	}

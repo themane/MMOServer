@@ -13,5 +13,5 @@ type ClanMember struct {
 }
 
 type ClanRepository interface {
-	FindById(id string) (ClanData, error)
+	FindById(id string) (*ClanData, error)
 }
