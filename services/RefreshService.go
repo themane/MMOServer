@@ -1,30 +1,36 @@
 package services
 
 import (
-	"github.com/themane/MMOServer/dao"
-	"github.com/themane/MMOServer/models"
+	"github.com/themane/MMOServer/controllers/models"
+	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
 
-func RefreshPopulation(username string, planetId string) *models.Population {
-	userData := dao.GetUserData(username)
-	for _, planetUser := range userData.OccupiedPlanets {
-		if planetUser.Position.PlanetId() == planetId {
+func RefreshPopulation(username string, inputPlanetId string, userRepository repoModels.UserRepository) (*models.Population, error) {
+	userData, err := userRepository.FindByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	for planetId, planetUser := range userData.OccupiedPlanets {
+		if planetId == inputPlanetId {
 			response := models.Population{}
 			response.Init(planetUser)
-			return &response
+			return &response, nil
 		}
 	}
-	return nil
+	return nil, nil
 }
 
-func RefreshResources(username string, planetId string) *models.Resources {
-	userData := dao.GetUserData(username)
-	for _, planetUser := range userData.OccupiedPlanets {
-		if planetUser.Position.PlanetId() == planetId {
+func RefreshResources(username string, inputPlanetId string, userRepository repoModels.UserRepository) (*models.Resources, error) {
+	userData, err := userRepository.FindByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	for planetId, planetUser := range userData.OccupiedPlanets {
+		if planetId == inputPlanetId {
 			response := models.Resources{}
 			response.Init(planetUser)
-			return &response
+			return &response, nil
 		}
 	}
-	return nil
+	return nil, nil
 }
