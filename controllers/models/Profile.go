@@ -6,12 +6,6 @@ import (
 	"strconv"
 )
 
-const (
-	LEADER     string = "LEADER"
-	SUB_LEADER string = "SUB_LEADER"
-	MEMBER     string = "MEMBER"
-)
-
 type Profile struct {
 	Username   string     `json:"username"`
 	Experience Experience `json:"experience"`

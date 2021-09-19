@@ -1,5 +1,15 @@
 package constants
 
+const (
+	WATER    string = "WATER"
+	GRAPHENE string = "GRAPHENE"
+	SHELIO   string = "SHELIO"
+
+	LEADER     string = "LEADER"
+	SUB_LEADER string = "SUB_LEADER"
+	MEMBER     string = "MEMBER"
+)
+
 type ExperienceConstants struct {
 	User ExperienceLevelConstants `json:"user"`
 	Clan ExperienceLevelConstants `json:"clan"`

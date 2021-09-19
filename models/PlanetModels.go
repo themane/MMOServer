@@ -7,12 +7,6 @@ import (
 	"strings"
 )
 
-const (
-	WATER    string = "WATER"
-	GRAPHENE string = "GRAPHENE"
-	SHELIO   string = "SHELIO"
-)
-
 type EmployedPopulation struct {
 	Total int `json:"total" example:"21"`
 	Idle  int `json:"idle" example:"4"`
