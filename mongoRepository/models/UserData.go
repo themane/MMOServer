@@ -50,14 +50,14 @@ type UserRepository interface {
 	FindById(id string) (*UserData, error)
 	FindByUsername(username string) (*UserData, error)
 
-	AddExperience(username string, experience int) error
-	UpdateClanId(username string, clanId string) error
+	AddExperience(id string, experience int) error
+	UpdateClanId(id string, clanId string) error
 
-	UpgradeBuildingLevel(username string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int) error
-	AddResources(username string, planetId string, water int, graphene int, shelio int) error
-	UpdateMineResources(username string, planetId string, water int, graphene int) error
-	UpdateWorkers(username string, planetId string, buildingId string, workers int) error
-	AddPopulation(username string, planetId string, population int) error
-	RecruitWorkers(username string, planetId string, worker int) error
-	RecruitSoldiers(username string, planetId string, soldiers int) error
+	UpgradeBuildingLevel(id string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int) error
+	AddResources(id string, planetId string, water int, graphene int, shelio int) error
+	UpdateMineResources(id string, planetId string, water int, graphene int) error
+	UpdateWorkers(id string, planetId string, buildingId string, workers int) error
+	AddPopulation(id string, planetId string, population int) error
+	RecruitWorkers(id string, planetId string, worker int) error
+	RecruitSoldiers(id string, planetId string, soldiers int) error
 }
