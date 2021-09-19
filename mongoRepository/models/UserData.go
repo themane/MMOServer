@@ -1,9 +1,12 @@
 package models
 
-import "github.com/themane/MMOServer/models"
+import (
+	"github.com/themane/MMOServer/models"
+	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
+)
 
 type UserData struct {
-	Id              string                `json:"_id"`
+	Id              uuid.UUID             `json:"_id"`
 	Profile         ProfileUser           `json:"profile"`
 	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets"`
 }
@@ -47,17 +50,17 @@ type BuildingUser struct {
 }
 
 type UserRepository interface {
-	FindById(id string) (*UserData, error)
+	FindById(id uuid.UUID) (*UserData, error)
 	FindByUsername(username string) (*UserData, error)
 
-	AddExperience(id string, experience int) error
-	UpdateClanId(id string, clanId string) error
+	AddExperience(id uuid.UUID, experience int) error
+	UpdateClanId(id uuid.UUID, clanId string) error
 
-	UpgradeBuildingLevel(id string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int) error
-	AddResources(id string, planetId string, water int, graphene int, shelio int) error
-	UpdateMineResources(id string, planetId string, mineId string, water int, graphene int) error
-	UpdateWorkers(id string, planetId string, buildingId string, workers int) error
-	AddPopulation(id string, planetId string, population int) error
-	RecruitWorkers(id string, planetId string, worker int) error
-	RecruitSoldiers(id string, planetId string, soldiers int) error
+	UpgradeBuildingLevel(id uuid.UUID, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int) error
+	AddResources(id uuid.UUID, planetId string, water int, graphene int, shelio int) error
+	UpdateMineResources(id uuid.UUID, planetId string, mineId string, water int, graphene int) error
+	UpdateWorkers(id uuid.UUID, planetId string, buildingId string, workers int) error
+	AddPopulation(id uuid.UUID, planetId string, population int) error
+	RecruitWorkers(id uuid.UUID, planetId string, worker int) error
+	RecruitSoldiers(id uuid.UUID, planetId string, soldiers int) error
 }
