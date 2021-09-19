@@ -5,18 +5,23 @@ import (
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
+	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 )
 
-func Login(username string, userRepository repoModels.UserRepository, clanRepository repoModels.ClanRepository, universeRepository repoModels.UniverseRepository) (*controllerModels.LoginResponse, error) {
-	waterConstants := constants.GetWaterConstants()
-	grapheneConstants := constants.GetGrapheneConstants()
-	experienceConstants := constants.GetExperienceConstants()
+func Login(username string,
+	userRepository repoModels.UserRepository,
+	clanRepository repoModels.ClanRepository,
+	universeRepository repoModels.UniverseRepository,
+	waterConstants constants.ResourceConstants,
+	grapheneConstants constants.ResourceConstants,
+	experienceConstants constants.ExperienceConstants,
+) (*controllerModels.LoginResponse, error) {
 
 	userData, err := userRepository.FindByUsername(username)
 	if err != nil {
 		return nil, err
 	}
-	clanData, err := getClanData(userData.Profile.ClanId, clanRepository)
+	clanData, err := getClanData(&userData.Profile.ClanId, clanRepository)
 	if err != nil {
 		return nil, err
 	}
@@ -86,11 +91,11 @@ func getHomeSectorData(userData *repoModels.UserData, universeRepository repoMod
 	return &homePlanetPosition, homeSectorData, nil
 }
 
-func getClanData(clanId string, clanRepository repoModels.ClanRepository) (*repoModels.ClanData, error) {
+func getClanData(clanId *uuid.UUID, clanRepository repoModels.ClanRepository) (*repoModels.ClanData, error) {
 	var clanData *repoModels.ClanData
 	var err error
-	if clanId != "" {
-		clanData, err = clanRepository.FindById(clanId)
+	if clanId != nil {
+		clanData, err = clanRepository.FindById(*clanId)
 		if err != nil {
 			return nil, err
 		}

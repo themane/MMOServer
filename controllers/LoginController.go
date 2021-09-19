@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
@@ -11,16 +12,28 @@ import (
 )
 
 type LoginController struct {
-	userRepository     models.UserRepository
-	clanRepository     models.ClanRepository
-	universeRepository models.UniverseRepository
+	userRepository      models.UserRepository
+	clanRepository      models.ClanRepository
+	universeRepository  models.UniverseRepository
+	waterConstants      constants.ResourceConstants
+	grapheneConstants   constants.ResourceConstants
+	experienceConstants constants.ExperienceConstants
 }
 
-func NewLoginController(userRepository *models.UserRepository, clanRepository *models.ClanRepository, universeRepository *models.UniverseRepository) *LoginController {
+func NewLoginController(userRepository *models.UserRepository,
+	clanRepository *models.ClanRepository,
+	universeRepository *models.UniverseRepository,
+	waterConstants constants.ResourceConstants,
+	grapheneConstants constants.ResourceConstants,
+	experienceConstants constants.ExperienceConstants,
+) *LoginController {
 	return &LoginController{
-		userRepository:     *userRepository,
-		clanRepository:     *clanRepository,
-		universeRepository: *universeRepository,
+		userRepository:      *userRepository,
+		clanRepository:      *clanRepository,
+		universeRepository:  *universeRepository,
+		waterConstants:      waterConstants,
+		grapheneConstants:   grapheneConstants,
+		experienceConstants: experienceConstants,
 	}
 }
 
@@ -44,7 +57,8 @@ func (l *LoginController) Login(c *gin.Context) {
 	}
 	log.Printf("Logged in user: %s", request.Username)
 
-	response, err := services.Login(request.Username, l.userRepository, l.clanRepository, l.universeRepository)
+	response, err := services.Login(request.Username, l.userRepository, l.clanRepository, l.universeRepository,
+		l.waterConstants, l.grapheneConstants, l.experienceConstants)
 	if err != nil {
 		c.JSON(500, "Internal Server Error")
 		return
