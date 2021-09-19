@@ -2,20 +2,23 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/themane/MMOServer/controllers"
+	"github.com/themane/MMOServer/mongoRepository"
+	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/schedulers"
 	"log"
 	"os"
 	"sync"
-
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "github.com/themane/MMOServer/docs"
 )
 
 var once = sync.Once{}
 var baseURL string
+var mongoURL string
+var mongoDB string
 
 // @title MMO Game Server
 // @version 1.0.0
@@ -33,26 +36,47 @@ var baseURL string
 func main() {
 	r := gin.Default()
 
-	once.Do(GetBaseURL)
+	once.Do(initialize)
 	url := ginSwagger.URL(baseURL + "/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
+	loginController, buildingController := getControllers()
+
 	r.GET("/ping", controllers.Ping)
-	r.POST("/login", controllers.LoginController)
-	r.POST("/refresh/population", controllers.RefreshPopulationController)
-	r.POST("/refresh/resources", controllers.RefreshResourcesController)
-	r.POST("/upgrade/building", controllers.UpgradeBuildingController)
+	r.POST("/login", loginController.Login)
+	r.POST("/refresh/population", loginController.RefreshPopulation)
+	r.POST("/refresh/resources", loginController.RefreshResources)
+	r.POST("/upgrade/building", buildingController.UpgradeBuilding)
 	err := r.Run()
 	if err != nil {
 		log.Println("Error in starting server")
 		return
 	}
+
 	schedulers.SchedulePlanetUpdates()
 }
 
-func GetBaseURL() {
+func getControllers() (*controllers.LoginController, *controllers.BuildingController) {
+	client, ctx, cancel := mongoRepository.GetConnection(mongoURL)
+	var userRepository models.UserRepository
+	var clanRepository models.ClanRepository
+	var universeRepository models.UniverseRepository
+	userRepository = mongoRepository.NewUserRepository(client, ctx, cancel, mongoDB)
+	clanRepository = mongoRepository.NewClanRepository(client, ctx, cancel, mongoDB)
+	universeRepository = mongoRepository.NewUniverseRepository(client, ctx, cancel, mongoDB)
+	loginController := controllers.NewLoginController(&userRepository, &clanRepository, &universeRepository)
+	buildingController := controllers.NewBuildingController(&userRepository)
+	return loginController, buildingController
+}
+
+func initialize() {
 	baseURL := os.Getenv("BASE_URL")
 	if baseURL == "" {
 		baseURL = "http://localhost:8080"
+	}
+	mongoURL := os.Getenv("MONGO_URL")
+	mongoDB := os.Getenv("MONGO_DB")
+	if mongoURL == "" || mongoDB == "" {
+		log.Fatal("Error in retrieving mongo configurations")
 	}
 }
