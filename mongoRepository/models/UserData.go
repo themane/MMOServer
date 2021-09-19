@@ -12,9 +12,9 @@ type UserData struct {
 }
 
 type ProfileUser struct {
-	Username   string `json:"username" example:"nehal"`
-	Experience int    `json:"experience" example:"153"`
-	ClanId     string `json:"clan_id" example:"MindKrackers"`
+	Username   string    `json:"username" example:"nehal"`
+	Experience int       `json:"experience" example:"153"`
+	ClanId     uuid.UUID `json:"clan_id" example:"MindKrackers"`
 }
 
 type PlanetUser struct {
