@@ -38,10 +38,10 @@ func (m *Mine) Init(mineUni models.MineUni, planetUser models.PlanetUser, waterC
 	m.Type = mineUni.Type
 	m.MaxLimit = mineUni.MaxLimit
 	m.Mined = planetUser.Mines[mineUni.Id].Mined
-	if mineUni.Type == WATER {
+	if mineUni.Type == constants.WATER {
 		m.MiningPlant.Init(planetUser, mineUni.Id, waterConstants)
 	}
-	if mineUni.Type == GRAPHENE {
+	if mineUni.Type == constants.GRAPHENE {
 		m.MiningPlant.Init(planetUser, mineUni.Id, grapheneConstants)
 	}
 }

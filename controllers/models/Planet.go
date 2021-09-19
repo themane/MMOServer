@@ -32,9 +32,9 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.PlanetConfig = planetUni.PlanetConfig
 	o.Resources.Init(planetUser)
 	o.Population.Init(planetUser)
-	for mineId, mineUser := range planetUser.Mines {
+	for mineId := range planetUser.Mines {
 		mine := Mine{}
-		mine.Init(planetUni.Mines[mineId], mineUser, waterConstants, grapheneConstants)
+		mine.Init(planetUni.Mines[mineId], planetUser, waterConstants, grapheneConstants)
 		o.Mines = append(o.Mines, mine)
 	}
 	o.Home = planetUser.Home
