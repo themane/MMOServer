@@ -4,12 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/controllers"
 	"github.com/themane/MMOServer/mongoRepository"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/schedulers"
 	"log"
 	"os"
+	"strconv"
 	"sync"
 
 	_ "github.com/themane/MMOServer/docs"
@@ -19,6 +21,7 @@ var once = sync.Once{}
 var baseURL string
 var mongoURL string
 var mongoDB string
+var maxSystems int
 
 // @title MMO Game Server
 // @version 1.0.0
@@ -40,7 +43,7 @@ func main() {
 	url := ginSwagger.URL(baseURL + "/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	loginController, buildingController := getControllers()
+	loginController, buildingController, scheduledJobManager := getHandlers()
 
 	r.GET("/ping", controllers.Ping)
 	r.POST("/login", loginController.Login)
@@ -52,21 +55,25 @@ func main() {
 		log.Println("Error in starting server")
 		return
 	}
-
-	schedulers.SchedulePlanetUpdates()
+	scheduledJobManager.SchedulePlanetUpdates()
 }
 
-func getControllers() (*controllers.LoginController, *controllers.BuildingController) {
+func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
 	client, ctx, cancel := mongoRepository.GetConnection(mongoURL)
+	waterConstants := constants.GetWaterConstants()
+	grapheneConstants := constants.GetGrapheneConstants()
+	experienceConstants := constants.GetExperienceConstants()
+
 	var userRepository models.UserRepository
 	var clanRepository models.ClanRepository
 	var universeRepository models.UniverseRepository
 	userRepository = mongoRepository.NewUserRepository(client, ctx, cancel, mongoDB)
 	clanRepository = mongoRepository.NewClanRepository(client, ctx, cancel, mongoDB)
 	universeRepository = mongoRepository.NewUniverseRepository(client, ctx, cancel, mongoDB)
-	loginController := controllers.NewLoginController(&userRepository, &clanRepository, &universeRepository)
+	loginController := controllers.NewLoginController(&userRepository, &clanRepository, &universeRepository, waterConstants, grapheneConstants, experienceConstants)
 	buildingController := controllers.NewBuildingController(&userRepository)
-	return loginController, buildingController
+	scheduledJobManager := schedulers.NewScheduledJobManager(&userRepository, &universeRepository, waterConstants, grapheneConstants, maxSystems)
+	return loginController, buildingController, scheduledJobManager
 }
 
 func initialize() {
@@ -76,7 +83,13 @@ func initialize() {
 	}
 	mongoURL := os.Getenv("MONGO_URL")
 	mongoDB := os.Getenv("MONGO_DB")
-	if mongoURL == "" || mongoDB == "" {
+	maxSystemsString := os.Getenv("MAX_SYSTEMS")
+	if mongoURL == "" || mongoDB == "" || maxSystemsString == "" {
 		log.Fatal("Error in retrieving mongo configurations")
+	}
+	var err error
+	maxSystems, err = strconv.Atoi(maxSystemsString)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
