@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -14,12 +15,14 @@ import (
 	"strconv"
 	"sync"
 
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
+
 	_ "github.com/themane/MMOServer/docs"
 )
 
 var once = sync.Once{}
 var baseURL string
-var mongoURL string
 var mongoDB string
 var maxSystems int
 
@@ -59,6 +62,7 @@ func main() {
 }
 
 func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
+	mongoURL := accessSecretVersion()
 	client, ctx, cancel := mongoRepository.GetConnection(mongoURL)
 	waterConstants := constants.GetWaterConstants()
 	grapheneConstants := constants.GetGrapheneConstants()
@@ -77,19 +81,45 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 }
 
 func initialize() {
-	baseURL := os.Getenv("BASE_URL")
+	baseURL = os.Getenv("BASE_URL")
 	if baseURL == "" {
 		baseURL = "http://localhost:8080"
 	}
-	mongoURL := os.Getenv("MONGO_URL")
-	mongoDB := os.Getenv("MONGO_DB")
+	mongoDB = os.Getenv("MONGO_DB")
+	if mongoDB == "" {
+		mongoDB = "mmo-game"
+	}
 	maxSystemsString := os.Getenv("MAX_SYSTEMS")
-	if mongoURL == "" || mongoDB == "" || maxSystemsString == "" {
-		log.Fatal("Error in retrieving mongo configurations")
+	if maxSystemsString == "" {
+		maxSystemsString = "10"
 	}
 	var err error
 	maxSystems, err = strconv.Atoi(maxSystemsString)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func accessSecretVersion() string {
+	ctx := context.Background()
+	client, err := secretmanager.NewClient(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return ""
+	}
+	defer func(client *secretmanager.Client) {
+		err := client.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(client)
+	req := &secretmanagerpb.AccessSecretVersionRequest{
+		Name: "projects/themane/secrets/MONGO_URL/versions/latest",
+	}
+	result, err := client.AccessSecretVersion(ctx, req)
+	if err != nil {
+		log.Fatal(err)
+		return ""
+	}
+	return string(result.Payload.Data)
 }

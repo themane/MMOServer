@@ -3,6 +3,7 @@ module github.com/themane/MMOServer
 go 1.15
 
 require (
+	cloud.google.com/go/secretmanager v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-co-op/gocron v1.9.0 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
@@ -22,5 +23,6 @@ require (
 	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.5 // indirect
+	google.golang.org/genproto v0.0.0-20210917145530-b395a37504d4 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )

@@ -2,3 +2,5 @@ runtime: go115
 
 env_variables:
   BASE_URL: "https://mmo-server-4xcaklgmnq-el.a.run.app"
+  MONGO_DB: "mmo-game"
+  MAX_SYSTEMS: 10
