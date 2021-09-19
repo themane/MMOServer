@@ -5,6 +5,7 @@ import (
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 )
 
 type ClanRepositoryImpl struct {
@@ -27,7 +28,7 @@ func (u *ClanRepositoryImpl) getCollection() *mongo.Collection {
 	return u.client.Database(u.mongoDB).Collection("user_data")
 }
 
-func (u *ClanRepositoryImpl) FindById(id string) (*models.ClanData, error) {
+func (u *ClanRepositoryImpl) FindById(id uuid.UUID) (*models.ClanData, error) {
 	defer disconnect(u.client, u.ctx)
 	var result *models.ClanData
 	filter := bson.D{{"_id", id}}

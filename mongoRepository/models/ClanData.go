@@ -1,17 +1,19 @@
 package models
 
+import "go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
+
 type ClanData struct {
-	Id         string       `json:"_id"`
+	Id         uuid.UUID    `json:"_id"`
 	Name       string       `json:"name"`
 	Experience int          `json:"experience"`
 	Members    []ClanMember `json:"members"`
 }
 
 type ClanMember struct {
-	Id   string `json:"_id"`
-	Role string `json:"role"`
+	Id   uuid.UUID `json:"_id"`
+	Role string    `json:"role"`
 }
 
 type ClanRepository interface {
-	FindById(id string) (*ClanData, error)
+	FindById(id uuid.UUID) (*ClanData, error)
 }
