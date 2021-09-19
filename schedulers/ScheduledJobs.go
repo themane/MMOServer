@@ -1,111 +1,144 @@
 package schedulers
 
 import (
-	"encoding/json"
 	"github.com/go-co-op/gocron"
-	"github.com/themane/MMOServer/dao"
-	"github.com/themane/MMOServer/models"
-	"io/ioutil"
+	"github.com/themane/MMOServer/constants"
+	"github.com/themane/MMOServer/mongoRepository/models"
+	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 	"log"
-	"math/rand"
-	"os"
 	"strconv"
 	"time"
 )
 
-func SchedulePlanetUpdates() {
+type ScheduledJobManager struct {
+	userRepository     models.UserRepository
+	universeRepository models.UniverseRepository
+	waterConstants     constants.ResourceConstants
+	grapheneConstants  constants.ResourceConstants
+	maxSystem          int
+}
+
+func NewScheduledJobManager(userRepository *models.UserRepository, universeRepository *models.UniverseRepository,
+	waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants,
+	maxSystem int) *ScheduledJobManager {
+	return &ScheduledJobManager{
+		userRepository:     *userRepository,
+		universeRepository: *universeRepository,
+		waterConstants:     waterConstants,
+		grapheneConstants:  grapheneConstants,
+		maxSystem:          maxSystem,
+	}
+}
+
+func (j *ScheduledJobManager) SchedulePlanetUpdates() {
 	s := gocron.NewScheduler(time.UTC)
-	_, err := s.Every(1).Hour().Do(scheduledPopulationUpdates)
+	_, err := s.Every(1).Hour().Do(j.scheduledPopulationIncrease)
 	if err != nil {
 		log.Print(err)
 	}
-	_, err1 := s.Every(1).Minutes().Do(scheduledResourcesUpdates)
+	_, err1 := s.Every(1).Minutes().Do(j.scheduledMining)
 	if err1 != nil {
 		log.Print(err1)
 	}
 }
 
-func scheduledPopulationUpdates() {
-	files, err := ioutil.ReadDir("sample_data/users")
-	if err != nil {
-		log.Print(err)
-	}
-	for _, file := range files {
-		var userData models.UserData
-		jsonFile, _ := os.Open(file.Name())
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		err := json.Unmarshal(responseByteValue, &userData)
+func (j *ScheduledJobManager) scheduledPopulationIncrease() {
+	for system := 0; system < j.maxSystem; system++ {
+		occupiedPlanets, err := j.universeRepository.GetAllOccupiedPlanets(system)
 		if err != nil {
 			log.Print(err)
-			continue
+			return
 		}
-		for _, planet := range userData.OccupiedPlanets {
-			totalPopulation := planet.Population.Unemployed + planet.Population.Workers.Total + planet.Population.Soldiers.Total
-			if planet.Water.Amount >= totalPopulation {
-				planet.Water.Amount -= totalPopulation
-			} else {
-				extraPopulation := totalPopulation - planet.Water.Amount
-				for i := 0; i < extraPopulation; i++ {
-					isWorker := rand.Intn(2)
-					if isWorker == 0 {
-						planet.Population.Soldiers.Total -= extraPopulation
-					} else {
-						planet.Population.Workers.Total -= extraPopulation
-					}
-				}
-				planet.Water.Amount = 0
+		var userIdplanetsMap map[uuid.UUID][]string
+		for planetId, occupiedPlanet := range occupiedPlanets {
+			userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], planetId)
+		}
+		for userId, planets := range userIdplanetsMap {
+			planetIdGenerationRateMap := j.getPopulationGenerationRate(userId, planets)
+			err := j.userRepository.ScheduledPopulationIncrease(userId, planetIdGenerationRateMap)
+			if err != nil {
+				log.Print(err)
+				return
 			}
-			planet.Population.Unemployed += planet.Population.GenerationRate
-		}
-		updatedResponse, _ := json.Marshal(userData)
-		err2 := ioutil.WriteFile(file.Name(), updatedResponse, 0644)
-		if err2 != nil {
-			log.Print(err2)
 		}
 	}
 }
 
-func scheduledResourcesUpdates() {
-	waterConstants := dao.GetWaterConstants()
-	grapheneConstants := dao.GetGrapheneConstants()
-
-	files, err := ioutil.ReadDir("sample_data/users")
-	if err != nil {
-		log.Print(err)
-	}
-
-	for _, file := range files {
-		var userData models.UserData
-		jsonFile, _ := os.Open(file.Name())
-		responseByteValue, _ := ioutil.ReadAll(jsonFile)
-		err := json.Unmarshal(responseByteValue, &userData)
+func (j *ScheduledJobManager) scheduledMining() {
+	for system := 0; system < j.maxSystem; system++ {
+		occupiedPlanets, err := j.universeRepository.GetAllOccupiedPlanets(system)
 		if err != nil {
 			log.Print(err)
-			continue
+			return
 		}
-		for _, planet := range userData.OccupiedPlanets {
-			totalWaterMined := 0
-			totalGrapheneMined := 0
-			for _, mine := range planet.Mines {
-				var miningRate int
-				levelString := strconv.Itoa(mine.MiningPlant.BuildingLevel)
-				if mine.Type == models.WATER {
-					miningRate = mine.MiningPlant.Workers * waterConstants.Levels[levelString].MiningRatePerWorker
-					totalWaterMined += miningRate
-				}
-				if mine.Type == models.GRAPHENE {
-					miningRate = mine.MiningPlant.Workers * grapheneConstants.Levels[levelString].MiningRatePerWorker
-					totalGrapheneMined += miningRate
-				}
-				mine.Mined += miningRate
+		var userIdplanetsMap map[uuid.UUID][]models.PlanetUni
+		for _, occupiedPlanet := range occupiedPlanets {
+			userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], occupiedPlanet)
+		}
+		for userId, planets := range userIdplanetsMap {
+			planetIdWaterMiningRateMap, planetIdGrapheneMiningRateMap := j.getMiningRate(userId, planets)
+			err := j.userRepository.ScheduledWaterIncrease(userId, planetIdWaterMiningRateMap)
+			if err != nil {
+				log.Print(err)
+				return
 			}
-			planet.Water.Amount += totalWaterMined
-			planet.Graphene.Amount += totalGrapheneMined
-		}
-		updatedResponse, _ := json.Marshal(userData)
-		err2 := ioutil.WriteFile(file.Name(), updatedResponse, 0644)
-		if err2 != nil {
-			log.Print(err2)
+			err = j.userRepository.ScheduledGrapheneIncrease(userId, planetIdGrapheneMiningRateMap)
+			if err != nil {
+				log.Print(err)
+				return
+			}
 		}
 	}
+}
+
+func (j *ScheduledJobManager) getPopulationGenerationRate(userId uuid.UUID, occupiedPlanets []string) map[string]int {
+	userData, err := j.userRepository.FindById(userId)
+	if err != nil {
+		log.Print(err)
+		return nil
+	}
+	var planetIdGenerationRateMap map[string]int
+	for _, planetId := range occupiedPlanets {
+		generationRate := userData.OccupiedPlanets[planetId].Population.GenerationRate
+		planetIdGenerationRateMap[planetId] = generationRate
+	}
+	return planetIdGenerationRateMap
+}
+
+func (j *ScheduledJobManager) getMiningRate(userId uuid.UUID, occupiedPlanets []models.PlanetUni) (map[string]map[string]int, map[string]map[string]int) {
+	userData, err := j.userRepository.FindById(userId)
+	if err != nil {
+		log.Print(err)
+		return nil, nil
+	}
+	var planetIdWaterMiningRateMap map[string]map[string]int
+	var planetIdGrapheneMiningRateMap map[string]map[string]int
+	for _, planetUni := range occupiedPlanets {
+		planetUser := userData.OccupiedPlanets[planetUni.Id]
+		for _, mineUni := range planetUni.Mines {
+			mineUser := planetUser.Mines[mineUni.Id]
+			miningPlant := planetUser.Buildings[mineUser.MiningPlantId]
+
+			var miningRatePerWorker int
+			if mineUni.Type == constants.WATER {
+				miningRatePerWorker = j.waterConstants.Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
+				miningRate := j.getTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
+				planetIdWaterMiningRateMap[planetUni.Id][mineUni.Id] = miningRate
+			}
+			if mineUni.Type == constants.GRAPHENE {
+				miningRatePerWorker = j.grapheneConstants.Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
+				miningRate := j.getTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
+				planetIdGrapheneMiningRateMap[planetUni.Id][mineUni.Id] = miningRate
+			}
+		}
+	}
+	return planetIdWaterMiningRateMap, planetIdGrapheneMiningRateMap
+}
+
+func (j *ScheduledJobManager) getTotalMiningRate(miningRatePerWorker int, miningPlantWorkers int, maxMinedLimit int, minedResource int) int {
+	miningRate := miningRatePerWorker * miningPlantWorkers
+	if maxMinedLimit < (minedResource + miningRate) {
+		miningRate = maxMinedLimit - (minedResource + miningRate)
+	}
+	return miningRate
 }
