@@ -65,7 +65,7 @@ type UserRepository interface {
 	RecruitSoldiers(id uuid.UUID, planetId string, soldiers int) error
 
 	ScheduledPopulationIncrease(id uuid.UUID, planetIdGenerationRateMap map[string]int) error
-	ScheduledWaterIncrease(id uuid.UUID, planetIdGenerationRateMap map[string]int) error
-	ScheduledGrapheneIncrease(id uuid.UUID, planetIdGenerationRateMap map[string]int) error
+	ScheduledWaterIncrease(id uuid.UUID, planetIdGenerationRateMap map[string]map[string]int) error
+	ScheduledGrapheneIncrease(id uuid.UUID, planetIdGenerationRateMap map[string]map[string]int) error
 	ScheduledPopulationConsumption(id uuid.UUID, planetIdGenerationRateMap map[string]int) error
 }
