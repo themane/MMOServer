@@ -174,3 +174,49 @@ func (u *UserRepositoryImpl) ScheduledPopulationIncrease(id uuid.UUID, planetIdG
 	u.getCollection().FindOneAndUpdate(u.ctx, filter, update)
 	return nil
 }
+
+func (u *UserRepositoryImpl) ScheduledWaterIncrease(id uuid.UUID, planetIdMiningRateMap map[string]map[string]int) error {
+	defer disconnect(u.client, u.ctx)
+	filter := bson.D{{"_id", id}}
+	var miningUpdates bson.D
+	for planetId, miningRates := range planetIdMiningRateMap {
+		for mineId, miningRate := range miningRates {
+			miningUpdates = append(miningUpdates,
+				bson.E{Key: "occupied_planets." + planetId + ".mines." + mineId + ".mined", Value: miningRate},
+				bson.E{Key: "occupied_planets." + planetId + ".water.amount", Value: miningRate},
+			)
+		}
+	}
+	update := bson.D{{"$inc", miningUpdates}}
+	u.getCollection().FindOneAndUpdate(u.ctx, filter, update)
+	return nil
+}
+
+func (u *UserRepositoryImpl) ScheduledGrapheneIncrease(id uuid.UUID, planetIdMiningRateMap map[string]map[string]int) error {
+	defer disconnect(u.client, u.ctx)
+	filter := bson.D{{"_id", id}}
+	var miningUpdates bson.D
+	for planetId, miningRates := range planetIdMiningRateMap {
+		for mineId, miningRate := range miningRates {
+			miningUpdates = append(miningUpdates,
+				bson.E{Key: "occupied_planets." + planetId + ".mines." + mineId + ".mined", Value: miningRate},
+				bson.E{Key: "occupied_planets." + planetId + ".graphene.amount", Value: miningRate},
+			)
+		}
+	}
+	update := bson.D{{"$inc", miningUpdates}}
+	u.getCollection().FindOneAndUpdate(u.ctx, filter, update)
+	return nil
+}
+
+func (u *UserRepositoryImpl) ScheduledPopulationConsumption(id uuid.UUID, planetIdTotalPopulationMap map[string]int) error {
+	defer disconnect(u.client, u.ctx)
+	filter := bson.D{{"_id", id}}
+	var miningUpdates bson.D
+	for planetId, totalPopulation := range planetIdTotalPopulationMap {
+		miningUpdates = append(miningUpdates, bson.E{Key: "occupied_planets." + planetId + ".water.amount", Value: -totalPopulation})
+	}
+	update := bson.D{{"$inc", miningUpdates}}
+	u.getCollection().FindOneAndUpdate(u.ctx, filter, update)
+	return nil
+}
