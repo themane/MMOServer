@@ -6,12 +6,6 @@ import (
 	"strconv"
 )
 
-const (
-	WATER    string = "WATER"
-	GRAPHENE string = "GRAPHENE"
-	SHELIO   string = "SHELIO"
-)
-
 type Resources struct {
 	Water    Resource `json:"water"`
 	Graphene Resource `json:"graphene"`
