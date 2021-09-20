@@ -5,6 +5,7 @@ import (
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 type ClanRepositoryImpl struct {
@@ -14,7 +15,8 @@ type ClanRepositoryImpl struct {
 	mongoDB    string
 }
 
-func NewClanRepository(mongoURL string, ctx context.Context, cancelFunc context.CancelFunc, mongoDB string) *ClanRepositoryImpl {
+func NewClanRepository(mongoURL string, mongoDB string) *ClanRepositoryImpl {
+	ctx, cancelFunc := context.WithTimeout(context.Background(), connectTimeoutSecs*time.Second)
 	return &ClanRepositoryImpl{
 		mongoURL:   mongoURL,
 		ctx:        ctx,

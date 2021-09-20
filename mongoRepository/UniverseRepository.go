@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 type UniverseRepositoryImpl struct {
@@ -17,7 +18,8 @@ type UniverseRepositoryImpl struct {
 	mongoDB    string
 }
 
-func NewUniverseRepository(mongoURL string, ctx context.Context, cancelFunc context.CancelFunc, mongoDB string) *UniverseRepositoryImpl {
+func NewUniverseRepository(mongoURL string, mongoDB string) *UniverseRepositoryImpl {
+	ctx, cancelFunc := context.WithTimeout(context.Background(), connectTimeoutSecs*time.Second)
 	return &UniverseRepositoryImpl{
 		mongoURL:   mongoURL,
 		ctx:        ctx,
