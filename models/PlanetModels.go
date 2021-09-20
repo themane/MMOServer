@@ -8,15 +8,15 @@ import (
 )
 
 type EmployedPopulation struct {
-	Total int `json:"total" example:"21"`
-	Idle  int `json:"idle" example:"4"`
+	Total int `json:"total" bson:"total" example:"21"`
+	Idle  int `json:"idle" bson:"idle" example:"4"`
 }
 
 type PlanetPosition struct {
 	Id     string `json:"_id" example:"023:049:07"`
-	System int    `json:"system" example:"23"`
-	Sector int    `json:"sector" example:"49"`
-	Planet int    `json:"planet" example:"7"`
+	System int    `json:"system" bson:"system" example:"23"`
+	Sector int    `json:"sector" bson:"sector" example:"49"`
+	Planet int    `json:"planet" bson:"planet" example:"7"`
 }
 
 func (p *PlanetPosition) Init(system int, sector int, planet int) {

@@ -5,47 +5,47 @@ import (
 )
 
 type UserData struct {
-	Id              string                `json:"_id"`
-	Profile         ProfileUser           `json:"profile"`
-	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets"`
+	Id              string                `json:"_id" bson:"_id" `
+	Profile         ProfileUser           `json:"profile" bson:"profile"`
+	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets" bson:"occupied_planets"`
 }
 
 type ProfileUser struct {
-	Username   string `json:"username" example:"nehal"`
-	Experience int    `json:"experience" example:"153"`
-	ClanId     string `json:"clan_id" example:"MindKrackers"`
+	Username   string `json:"username" bson:"username"`
+	Experience int    `json:"experience" bson:"experience"`
+	ClanId     string `json:"clan_id" bson:"clan_id"`
 }
 
 type PlanetUser struct {
-	Water      ResourceUser            `json:"water"`
-	Graphene   ResourceUser            `json:"graphene"`
-	Shelio     int                     `json:"shelio" example:"23"`
-	Population PopulationUser          `json:"population"`
-	Mines      map[string]MineUser     `json:"mines"`
-	Buildings  map[string]BuildingUser `json:"buildings"`
-	Home       bool                    `json:"home" example:"true"`
+	Water      ResourceUser            `json:"water" bson:"water"`
+	Graphene   ResourceUser            `json:"graphene" bson:"graphene"`
+	Shelio     int                     `json:"shelio" bson:"shelio"`
+	Population PopulationUser          `json:"population" bson:"population"`
+	Mines      map[string]MineUser     `json:"mines" bson:"mines"`
+	Buildings  map[string]BuildingUser `json:"buildings" bson:"buildings"`
+	Home       bool                    `json:"home" bson:"home"`
 }
 
 type ResourceUser struct {
-	Amount   int `json:"amount" example:"23"`
-	Reserved int `json:"reserved" example:"14"`
+	Amount   int `json:"amount" bson:"amount"`
+	Reserved int `json:"reserved" bson:"reserved"`
 }
 
 type PopulationUser struct {
-	GenerationRate int                       `json:"generation_rate" example:"3"`
-	Unemployed     int                       `json:"unemployed" example:"3"`
-	Workers        models.EmployedPopulation `json:"workers"`
-	Soldiers       models.EmployedPopulation `json:"soldiers"`
+	GenerationRate int                       `json:"generation_rate" bson:"generation_rate"`
+	Unemployed     int                       `json:"unemployed" bson:"unemployed"`
+	Workers        models.EmployedPopulation `json:"workers" bson:"workers"`
+	Soldiers       models.EmployedPopulation `json:"soldiers" bson:"soldiers"`
 }
 
 type MineUser struct {
-	Mined         int    `json:"mined" example:"125"`
-	MiningPlantId string `json:"mining_plant_id"`
+	Mined         int    `json:"mined" bson:"mined"`
+	MiningPlantId string `json:"mining_plant_id" bson:"mining_plant_id"`
 }
 
 type BuildingUser struct {
-	BuildingLevel int `json:"building_level" example:"3"`
-	Workers       int `json:"workers" example:"12"`
+	BuildingLevel int `json:"building_level" bson:"building_level"`
+	Workers       int `json:"workers" bson:"workers"`
 }
 
 type UserRepository interface {
