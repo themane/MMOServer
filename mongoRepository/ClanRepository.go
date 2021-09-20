@@ -8,30 +8,35 @@ import (
 )
 
 type ClanRepositoryImpl struct {
-	client     *mongo.Client
+	mongoURL   string
 	ctx        context.Context
 	cancelFunc context.CancelFunc
 	mongoDB    string
 }
 
-func NewClanRepository(client *mongo.Client, ctx context.Context, cancelFunc context.CancelFunc, mongoDB string) *ClanRepositoryImpl {
+func NewClanRepository(mongoURL string, ctx context.Context, cancelFunc context.CancelFunc, mongoDB string) *ClanRepositoryImpl {
 	return &ClanRepositoryImpl{
-		client:     client,
+		mongoURL:   mongoURL,
 		ctx:        ctx,
 		cancelFunc: cancelFunc,
 		mongoDB:    mongoDB,
 	}
 }
 
-func (u *ClanRepositoryImpl) getCollection() *mongo.Collection {
-	return u.client.Database(u.mongoDB).Collection("user_data")
+func (c *ClanRepositoryImpl) getMongoClient() *mongo.Client {
+	return getConnection(c.mongoURL, c.ctx)
 }
 
-func (u *ClanRepositoryImpl) FindById(id string) (*models.ClanData, error) {
-	defer disconnect(u.client, u.ctx)
+func (c *ClanRepositoryImpl) getCollection(client *mongo.Client) *mongo.Collection {
+	return client.Database(c.mongoDB).Collection("clan_data")
+}
+
+func (c *ClanRepositoryImpl) FindById(id string) (*models.ClanData, error) {
+	client := c.getMongoClient()
+	defer disconnect(client, c.ctx)
 	var result *models.ClanData
 	filter := bson.D{{"_id", id}}
-	err := u.getCollection().FindOne(u.ctx, filter).Decode(result)
+	err := c.getCollection(client).FindOne(c.ctx, filter).Decode(result)
 	if err != nil {
 		return nil, err
 	}

@@ -63,7 +63,6 @@ func main() {
 
 func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
 	mongoURL := accessSecretVersion()
-	client, ctx, cancel := mongoRepository.GetConnection(mongoURL)
 	waterConstants := constants.GetWaterConstants()
 	grapheneConstants := constants.GetGrapheneConstants()
 	experienceConstants := constants.GetExperienceConstants()
@@ -71,9 +70,9 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	var userRepository models.UserRepository
 	var clanRepository models.ClanRepository
 	var universeRepository models.UniverseRepository
-	userRepository = mongoRepository.NewUserRepository(client, ctx, cancel, mongoDB)
-	clanRepository = mongoRepository.NewClanRepository(client, ctx, cancel, mongoDB)
-	universeRepository = mongoRepository.NewUniverseRepository(client, ctx, cancel, mongoDB)
+	userRepository = mongoRepository.NewUserRepository(mongoURL, mongoDB)
+	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB)
+	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB)
 	loginController := controllers.NewLoginController(&userRepository, &clanRepository, &universeRepository, waterConstants, grapheneConstants, experienceConstants)
 	buildingController := controllers.NewBuildingController(&userRepository)
 	scheduledJobManager := schedulers.NewScheduledJobManager(&userRepository, &universeRepository, waterConstants, grapheneConstants, maxSystems)
