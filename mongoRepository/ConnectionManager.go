@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	connectTimeoutSecs = 5
+	connectTimeoutSecs = 100
 )
 
 func GetConnection(mongoURL string) (*mongo.Client, context.Context, context.CancelFunc) {
@@ -30,7 +30,7 @@ func GetConnection(mongoURL string) (*mongo.Client, context.Context, context.Can
 		log.Fatal(err)
 	}
 
-	fmt.Println("Successfully connected to MongoDB")
+	log.Println("Successfully connected to MongoDB")
 	return client, ctx, cancel
 }
 

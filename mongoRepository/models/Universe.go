@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/themane/MMOServer/models"
-	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 )
 
 type PlanetUni struct {
@@ -10,7 +9,7 @@ type PlanetUni struct {
 	Position     models.PlanetPosition `json:"position"`
 	Mines        map[string]MineUni    `json:"mines"`
 	PlanetConfig string                `json:"planet_config"`
-	Occupied     uuid.UUID             `json:"occupied"`
+	Occupied     string                `json:"occupied"`
 	Distance     int                   `json:"distance"`
 }
 
@@ -26,5 +25,5 @@ type UniverseRepository interface {
 	GetPlanet(system int, sector int, planet int) (*PlanetUni, error)
 	GetAllOccupiedPlanets(system int) (map[string]PlanetUni, error)
 	GetRandomUnoccupiedPlanet(system int) (*PlanetUni, error)
-	MarkOccupied(system int, sector int, planet int, userId uuid.UUID) error
+	MarkOccupied(system int, sector int, planet int, userId string) error
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/go-co-op/gocron"
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/mongoRepository/models"
-	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 	"log"
 	"strconv"
 	"time"
@@ -49,7 +48,7 @@ func (j *ScheduledJobManager) scheduledPopulationIncrease() {
 			log.Print(err)
 			return
 		}
-		var userIdplanetsMap map[uuid.UUID][]string
+		var userIdplanetsMap map[string][]string
 		for planetId, occupiedPlanet := range occupiedPlanets {
 			userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], planetId)
 		}
@@ -71,7 +70,7 @@ func (j *ScheduledJobManager) scheduledMining() {
 			log.Print(err)
 			return
 		}
-		var userIdplanetsMap map[uuid.UUID][]models.PlanetUni
+		var userIdplanetsMap map[string][]models.PlanetUni
 		for _, occupiedPlanet := range occupiedPlanets {
 			userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], occupiedPlanet)
 		}
@@ -91,7 +90,7 @@ func (j *ScheduledJobManager) scheduledMining() {
 	}
 }
 
-func (j *ScheduledJobManager) getPopulationGenerationRate(userId uuid.UUID, occupiedPlanets []string) map[string]int {
+func (j *ScheduledJobManager) getPopulationGenerationRate(userId string, occupiedPlanets []string) map[string]int {
 	userData, err := j.userRepository.FindById(userId)
 	if err != nil {
 		log.Print(err)
@@ -105,7 +104,7 @@ func (j *ScheduledJobManager) getPopulationGenerationRate(userId uuid.UUID, occu
 	return planetIdGenerationRateMap
 }
 
-func (j *ScheduledJobManager) getMiningRate(userId uuid.UUID, occupiedPlanets []models.PlanetUni) (map[string]map[string]int, map[string]map[string]int) {
+func (j *ScheduledJobManager) getMiningRate(userId string, occupiedPlanets []models.PlanetUni) (map[string]map[string]int, map[string]map[string]int) {
 	userData, err := j.userRepository.FindById(userId)
 	if err != nil {
 		log.Print(err)

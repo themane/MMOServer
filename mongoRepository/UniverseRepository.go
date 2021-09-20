@@ -7,7 +7,6 @@ import (
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 	"log"
 )
 
@@ -115,7 +114,7 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoMod
 	return nil, errors.New("no new planet could be assigned")
 }
 
-func (u *UniverseRepositoryImpl) MarkOccupied(system int, sector int, planet int, userId uuid.UUID) error {
+func (u *UniverseRepositoryImpl) MarkOccupied(system int, sector int, planet int, userId string) error {
 	defer disconnect(u.client, u.ctx)
 	filter := bson.D{{"position.system", system}, {"position.sector", sector}, {"position.planet", planet}}
 	update := bson.D{{"occupied", userId}}

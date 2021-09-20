@@ -2,19 +2,18 @@ package models
 
 import (
 	"github.com/themane/MMOServer/models"
-	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 )
 
 type UserData struct {
-	Id              uuid.UUID             `json:"_id"`
+	Id              string                `json:"_id"`
 	Profile         ProfileUser           `json:"profile"`
 	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets"`
 }
 
 type ProfileUser struct {
-	Username   string    `json:"username" example:"nehal"`
-	Experience int       `json:"experience" example:"153"`
-	ClanId     uuid.UUID `json:"clan_id" example:"MindKrackers"`
+	Username   string `json:"username" example:"nehal"`
+	Experience int    `json:"experience" example:"153"`
+	ClanId     string `json:"clan_id" example:"MindKrackers"`
 }
 
 type PlanetUser struct {
@@ -50,22 +49,22 @@ type BuildingUser struct {
 }
 
 type UserRepository interface {
-	FindById(id uuid.UUID) (*UserData, error)
+	FindById(id string) (*UserData, error)
 	FindByUsername(username string) (*UserData, error)
 
-	AddExperience(id uuid.UUID, experience int) error
-	UpdateClanId(id uuid.UUID, clanId string) error
+	AddExperience(id string, experience int) error
+	UpdateClanId(id string, clanId string) error
 
-	UpgradeBuildingLevel(id uuid.UUID, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int) error
-	AddResources(id uuid.UUID, planetId string, water int, graphene int, shelio int) error
-	UpdateMineResources(id uuid.UUID, planetId string, mineId string, water int, graphene int) error
-	UpdateWorkers(id uuid.UUID, planetId string, buildingId string, workers int) error
-	AddPopulation(id uuid.UUID, planetId string, population int) error
-	RecruitWorkers(id uuid.UUID, planetId string, worker int) error
-	RecruitSoldiers(id uuid.UUID, planetId string, soldiers int) error
+	UpgradeBuildingLevel(id string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int) error
+	AddResources(id string, planetId string, water int, graphene int, shelio int) error
+	UpdateMineResources(id string, planetId string, mineId string, water int, graphene int) error
+	UpdateWorkers(id string, planetId string, buildingId string, workers int) error
+	AddPopulation(id string, planetId string, population int) error
+	RecruitWorkers(id string, planetId string, worker int) error
+	RecruitSoldiers(id string, planetId string, soldiers int) error
 
-	ScheduledPopulationIncrease(id uuid.UUID, planetIdGenerationRateMap map[string]int) error
-	ScheduledWaterIncrease(id uuid.UUID, planetIdGenerationRateMap map[string]map[string]int) error
-	ScheduledGrapheneIncrease(id uuid.UUID, planetIdGenerationRateMap map[string]map[string]int) error
-	ScheduledPopulationConsumption(id uuid.UUID, planetIdGenerationRateMap map[string]int) error
+	ScheduledPopulationIncrease(id string, planetIdGenerationRateMap map[string]int) error
+	ScheduledWaterIncrease(id string, planetIdGenerationRateMap map[string]map[string]int) error
+	ScheduledGrapheneIncrease(id string, planetIdGenerationRateMap map[string]map[string]int) error
+	ScheduledPopulationConsumption(id string, planetIdGenerationRateMap map[string]int) error
 }

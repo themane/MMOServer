@@ -60,11 +60,14 @@ func (l *LoginController) Login(c *gin.Context) {
 	response, err := services.Login(request.Username, l.userRepository, l.clanRepository, l.universeRepository,
 		l.waterConstants, l.grapheneConstants, l.experienceConstants)
 	if err != nil {
+		log.Print(err)
 		c.JSON(500, "Internal Server Error")
 		return
 	}
 	if response == nil {
-		c.JSON(204, "User data not found")
+		msg := "User data not found"
+		log.Print(msg)
+		c.JSON(204, msg)
 	}
 	c.JSON(200, response)
 }
@@ -92,11 +95,14 @@ func (l *LoginController) RefreshPopulation(c *gin.Context) {
 
 	response, err := services.RefreshPopulation(request.Username, request.PlanetId, l.userRepository)
 	if err != nil {
+		log.Print(err)
 		c.JSON(500, "Internal Server Error")
 		return
 	}
 	if response == nil {
-		c.JSON(204, "User data not found")
+		msg := "User data not found"
+		log.Print(msg)
+		c.JSON(204, msg)
 	}
 	c.JSON(200, response)
 }
@@ -124,11 +130,14 @@ func (l *LoginController) RefreshResources(c *gin.Context) {
 
 	response, err := services.RefreshResources(request.Username, request.PlanetId, l.userRepository)
 	if err != nil {
+		log.Print(err)
 		c.JSON(500, "Internal Server Error")
 		return
 	}
 	if response == nil {
-		c.JSON(204, "User data not found")
+		msg := "User data not found"
+		log.Print(msg)
+		c.JSON(204, msg)
 	}
 	c.JSON(200, response)
 }

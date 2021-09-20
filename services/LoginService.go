@@ -5,7 +5,6 @@ import (
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
-	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 )
 
 func Login(username string,
@@ -91,7 +90,7 @@ func getHomeSectorData(userData *repoModels.UserData, universeRepository repoMod
 	return &homePlanetPosition, homeSectorData, nil
 }
 
-func getClanData(clanId *uuid.UUID, clanRepository repoModels.ClanRepository) (*repoModels.ClanData, error) {
+func getClanData(clanId *string, clanRepository repoModels.ClanRepository) (*repoModels.ClanData, error) {
 	var clanData *repoModels.ClanData
 	var err error
 	if clanId != nil {
