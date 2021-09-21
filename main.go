@@ -64,6 +64,7 @@ func main() {
 }
 
 func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
+	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
 	log.Println("USING MONGO_URL: " + mongoURL)
 	waterConstants := constants.GetWaterConstants()
@@ -79,6 +80,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	loginController := controllers.NewLoginController(&userRepository, &clanRepository, &universeRepository, waterConstants, grapheneConstants, experienceConstants)
 	buildingController := controllers.NewBuildingController(&userRepository)
 	scheduledJobManager := schedulers.NewScheduledJobManager(&userRepository, &universeRepository, waterConstants, grapheneConstants, maxSystems)
+	log.Println("Initialized all handlers")
 	return loginController, buildingController, scheduledJobManager
 }
 
