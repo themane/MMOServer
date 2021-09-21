@@ -7,20 +7,20 @@ import (
 )
 
 type Profile struct {
-	Username   string     `json:"username"`
+	Username   string     `json:"username" example:"devashish"`
 	Experience Experience `json:"experience"`
 	Clan       *Clan      `json:"clan,omitempty"`
 }
 
 type Clan struct {
-	Name string `json:"name,omitempty"`
-	Role string `json:"role,omitempty"`
+	Name string `json:"name,omitempty" example:"Mind Krackers"`
+	Role string `json:"role,omitempty" example:"MEMBER"`
 }
 
 type Experience struct {
-	Level    int `json:"level"`
-	Current  int `json:"current"`
-	Required int `json:"required"`
+	Level    int `json:"level" example:"4"`
+	Current  int `json:"current" example:"185"`
+	Required int `json:"required" example:"368"`
 }
 
 func (p *Profile) Init(userData models.UserData, clanData *models.ClanData, experienceConstants constants.ExperienceConstants) {

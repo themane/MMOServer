@@ -1,24 +1,24 @@
 package models
 
 type LoginRequest struct {
-	Username string `json:"username"`
+	Username string `json:"username" example:"devashish"`
 }
 
 type RefreshRequest struct {
-	Username string `json:"username"`
-	PlanetId string `json:"planet_id"`
+	Username string `json:"username" example:"devashish"`
+	PlanetId string `json:"planet_id" example:"001:002:03"`
 }
 
 type RefreshMineRequest struct {
-	Username string `json:"username"`
-	PlanetId string `json:"planet_id"`
-	MineId   string `json:"mine_id"`
+	Username string `json:"username" example:"devashish"`
+	PlanetId string `json:"planet_id" example:"001:002:03"`
+	MineId   string `json:"mine_id" example:"G018"`
 }
 
 type UpgradeBuildingRequest struct {
-	Username   string `json:"username"`
-	PlanetId   string `json:"planet_id"`
-	BuildingId string `json:"building_id"`
+	Username   string `json:"username" example:"devashish"`
+	PlanetId   string `json:"planet_id" example:"001:002:03"`
+	BuildingId string `json:"building_id" example:"GMP0018"`
 }
 
 type UpdateResponse struct {

@@ -127,7 +127,7 @@ var doc = `{
         },
         "/refresh/resources": {
             "post": {
-                "description": "Refresh endpoint to quickly refresh resources data with the latest values",
+                "description": "Refresh endpoint to quickly refresh mine data with the latest values",
                 "consumes": [
                     "application/json"
                 ],
@@ -137,7 +137,7 @@ var doc = `{
                 "tags": [
                     "data retrieval"
                 ],
-                "summary": "Refresh resources API",
+                "summary": "Refresh mine API",
                 "parameters": [
                     {
                         "type": "string",
@@ -150,6 +150,13 @@ var doc = `{
                         "type": "string",
                         "description": "planet identifier",
                         "name": "planet_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "mine identifier",
+                        "name": "mine_id",
                         "in": "query",
                         "required": true
                     }
@@ -175,6 +182,19 @@ var doc = `{
                 }
             }
         },
+        "models.Clan": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Mind Krackers"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "MEMBER"
+                }
+            }
+        },
         "models.EmployedPopulation": {
             "type": "object",
             "properties": {
@@ -188,12 +208,26 @@ var doc = `{
                 }
             }
         },
+        "models.Experience": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "type": "integer",
+                    "example": 185
+                },
+                "level": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "required": {
+                    "type": "integer",
+                    "example": 368
+                }
+            }
+        },
         "models.LoginResponse": {
             "type": "object",
             "properties": {
-                "home_planet": {
-                    "$ref": "#/definitions/models.OccupiedPlanet"
-                },
                 "home_sector": {
                     "$ref": "#/definitions/models.Sector"
                 },
@@ -266,6 +300,14 @@ var doc = `{
                 "graphene_required": {
                     "type": "integer",
                     "example": 101
+                },
+                "max_mining_rate_per_worker": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "max_workers_max_limit": {
+                    "type": "integer",
+                    "example": 130
                 },
                 "next_mining_rate_per_worker": {
                     "type": "integer",
@@ -360,8 +402,15 @@ var doc = `{
         "models.Profile": {
             "type": "object",
             "properties": {
+                "clan": {
+                    "$ref": "#/definitions/models.Clan"
+                },
+                "experience": {
+                    "$ref": "#/definitions/models.Experience"
+                },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "devashish"
                 }
             }
         },
@@ -437,16 +486,16 @@ var doc = `{
         "models.StaticPlanetData": {
             "type": "object",
             "properties": {
-                "home": {
-                    "type": "boolean",
-                    "example": true
-                },
                 "planet_config": {
                     "type": "string",
                     "example": "Planet2.json"
                 },
                 "position": {
                     "$ref": "#/definitions/models.PlanetPosition"
+                },
+                "same_sector": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },

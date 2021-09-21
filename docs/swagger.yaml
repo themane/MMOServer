@@ -5,6 +5,15 @@ definitions:
         example: pong
         type: string
     type: object
+  models.Clan:
+    properties:
+      name:
+        example: Mind Krackers
+        type: string
+      role:
+        example: MEMBER
+        type: string
+    type: object
   models.EmployedPopulation:
     properties:
       idle:
@@ -14,10 +23,20 @@ definitions:
         example: 21
         type: integer
     type: object
+  models.Experience:
+    properties:
+      current:
+        example: 185
+        type: integer
+      level:
+        example: 4
+        type: integer
+      required:
+        example: 368
+        type: integer
+    type: object
   models.LoginResponse:
     properties:
-      home_planet:
-        $ref: '#/definitions/models.OccupiedPlanet'
       home_sector:
         $ref: '#/definitions/models.Sector'
       occupied_planets:
@@ -68,6 +87,12 @@ definitions:
         type: integer
       graphene_required:
         example: 101
+        type: integer
+      max_mining_rate_per_worker:
+        example: 12
+        type: integer
+      max_workers_max_limit:
+        example: 130
         type: integer
       next_mining_rate_per_worker:
         example: 1
@@ -134,7 +159,12 @@ definitions:
     type: object
   models.Profile:
     properties:
+      clan:
+        $ref: '#/definitions/models.Clan'
+      experience:
+        $ref: '#/definitions/models.Experience'
       username:
+        example: devashish
         type: string
     type: object
   models.Resource:
@@ -186,14 +216,14 @@ definitions:
     type: object
   models.StaticPlanetData:
     properties:
-      home:
-        example: true
-        type: boolean
       planet_config:
         example: Planet2.json
         type: string
       position:
         $ref: '#/definitions/models.PlanetPosition'
+      same_sector:
+        example: true
+        type: boolean
     type: object
   models.UnoccupiedPlanet:
     properties:
@@ -283,8 +313,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Refresh endpoint to quickly refresh resources data with the latest
-        values
+      description: Refresh endpoint to quickly refresh mine data with the latest values
       parameters:
       - description: user identifier
         in: query
@@ -296,6 +325,11 @@ paths:
         name: planet_id
         required: true
         type: string
+      - description: mine identifier
+        in: query
+        name: mine_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -303,7 +337,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Resources'
-      summary: Refresh resources API
+      summary: Refresh mine API
       tags:
       - data retrieval
 schemes:
