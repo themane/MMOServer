@@ -89,7 +89,7 @@ func initialize() {
 	if baseURL == "" {
 		baseURL = "http://localhost:8080"
 	}
-	secretName := os.Getenv("SECRET_NAME")
+	secretName = os.Getenv("SECRET_NAME")
 	if secretName == "" {
 		log.Fatal("Mongo not configured")
 	}
