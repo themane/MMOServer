@@ -54,7 +54,7 @@ func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]r
 	return result, nil
 }
 
-func (u *UniverseRepositoryImpl) GetPlanet(system int, sector int, planet int) (*repoModels.PlanetUni, error) {
+func (u *UniverseRepositoryImpl) GetPlanetByPosition(system int, sector int, planet int) (*repoModels.PlanetUni, error) {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)
 	result := repoModels.PlanetUni{}
@@ -63,6 +63,20 @@ func (u *UniverseRepositoryImpl) GetPlanet(system int, sector int, planet int) (
 		"position.sector": sector,
 		"position.planet": planet,
 	}
+	singleResult := u.getCollection(client).FindOne(ctx, filter)
+	err := singleResult.Decode(&result)
+	if err != nil {
+		log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (u *UniverseRepositoryImpl) GetPlanetById(id string) (*repoModels.PlanetUni, error) {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	result := repoModels.PlanetUni{}
+	filter := bson.M{"_id": id}
 	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
 	if err != nil {

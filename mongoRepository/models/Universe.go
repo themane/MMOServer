@@ -22,7 +22,8 @@ type MineUni struct {
 
 type UniverseRepository interface {
 	GetSector(system int, sector int) (map[string]PlanetUni, error)
-	GetPlanet(system int, sector int, planet int) (*PlanetUni, error)
+	GetPlanetByPosition(system int, sector int, planet int) (*PlanetUni, error)
+	GetPlanetById(id string) (*PlanetUni, error)
 	GetAllOccupiedPlanets(system int) (map[string]PlanetUni, error)
 	GetRandomUnoccupiedPlanet(system int) (*PlanetUni, error)
 	MarkOccupied(system int, sector int, planet int, userId string) error
