@@ -7,18 +7,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"time"
 )
 
 const (
-	connectTimeoutSecs = 100
+	connectTimeoutSecs = 5
 )
 
-func getConnection(mongoURL string, ctx context.Context) *mongo.Client {
+func getConnection(mongoURL string) (*mongo.Client, context.Context) {
 	cmdMonitor := &event.CommandMonitor{
 		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
 			log.Print(evt.Command)
 		},
 	}
+	ctx, _ := context.WithTimeout(context.Background(), connectTimeoutSecs*time.Second)
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURL).SetMonitor(cmdMonitor))
 	if err != nil {
 		log.Fatal(err)
@@ -33,7 +35,7 @@ func getConnection(mongoURL string, ctx context.Context) *mongo.Client {
 		log.Fatal(err)
 	}
 	log.Println("Successfully connected to MongoDB")
-	return client
+	return client, ctx
 }
 
 func disconnect(client *mongo.Client, ctx context.Context) {

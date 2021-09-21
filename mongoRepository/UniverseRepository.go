@@ -8,28 +8,22 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
-	"time"
 )
 
 type UniverseRepositoryImpl struct {
-	mongoURL   string
-	ctx        context.Context
-	cancelFunc context.CancelFunc
-	mongoDB    string
+	mongoURL string
+	mongoDB  string
 }
 
 func NewUniverseRepository(mongoURL string, mongoDB string) *UniverseRepositoryImpl {
-	ctx, cancelFunc := context.WithTimeout(context.Background(), connectTimeoutSecs*time.Second)
 	return &UniverseRepositoryImpl{
-		mongoURL:   mongoURL,
-		ctx:        ctx,
-		cancelFunc: cancelFunc,
-		mongoDB:    mongoDB,
+		mongoURL: mongoURL,
+		mongoDB:  mongoDB,
 	}
 }
 
-func (u *UniverseRepositoryImpl) getMongoClient() *mongo.Client {
-	return getConnection(u.mongoURL, u.ctx)
+func (u *UniverseRepositoryImpl) getMongoClient() (*mongo.Client, context.Context) {
+	return getConnection(u.mongoURL)
 }
 
 func (u *UniverseRepositoryImpl) getCollection(client *mongo.Client) *mongo.Collection {
@@ -37,18 +31,18 @@ func (u *UniverseRepositoryImpl) getCollection(client *mongo.Client) *mongo.Coll
 }
 
 func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]repoModels.PlanetUni, error) {
-	client := u.getMongoClient()
-	defer disconnect(client, u.ctx)
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
 	var result map[string]repoModels.PlanetUni
 	filter := bson.M{
 		"position.system": system,
 		"position.sector": sector,
 	}
-	cursor, err := u.getCollection(client).Find(u.ctx, filter)
+	cursor, err := u.getCollection(client).Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	for cursor.Next(u.ctx) {
+	for cursor.Next(ctx) {
 		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
@@ -61,15 +55,15 @@ func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]r
 }
 
 func (u *UniverseRepositoryImpl) GetPlanet(system int, sector int, planet int) (*repoModels.PlanetUni, error) {
-	client := u.getMongoClient()
-	defer disconnect(client, u.ctx)
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
 	var result repoModels.PlanetUni
 	filter := bson.M{
 		"position.system": system,
 		"position.sector": sector,
 		"position.planet": planet,
 	}
-	singleResult := u.getCollection(client).FindOne(u.ctx, filter)
+	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
 	if err != nil {
 		log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
@@ -79,18 +73,18 @@ func (u *UniverseRepositoryImpl) GetPlanet(system int, sector int, planet int) (
 }
 
 func (u *UniverseRepositoryImpl) GetAllOccupiedPlanets(system int) (map[string]repoModels.PlanetUni, error) {
-	client := u.getMongoClient()
-	defer disconnect(client, u.ctx)
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
 	var result map[string]repoModels.PlanetUni
 	filter := bson.M{
 		"position.system": system,
 		"occupied":        bson.M{"$ne": nil},
 	}
-	cursor, err := u.getCollection(client).Find(u.ctx, filter)
+	cursor, err := u.getCollection(client).Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	for cursor.Next(u.ctx) {
+	for cursor.Next(ctx) {
 		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
@@ -103,8 +97,8 @@ func (u *UniverseRepositoryImpl) GetAllOccupiedPlanets(system int) (map[string]r
 }
 
 func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoModels.PlanetUni, error) {
-	client := u.getMongoClient()
-	defer disconnect(client, u.ctx)
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
 	filter := bson.M{
 		"position.system": system,
 		"occupied":        nil,
@@ -113,11 +107,11 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoMod
 		"$match":  filter,
 		"$sample": bson.M{"size": 1},
 	}
-	cursor, err := u.getCollection(client).Aggregate(u.ctx, randomChoicePipeline)
+	cursor, err := u.getCollection(client).Aggregate(ctx, randomChoicePipeline)
 	if err != nil {
 		return nil, err
 	}
-	for cursor.Next(u.ctx) {
+	for cursor.Next(ctx) {
 		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
@@ -130,15 +124,15 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoMod
 }
 
 func (u *UniverseRepositoryImpl) MarkOccupied(system int, sector int, planet int, userId string) error {
-	client := u.getMongoClient()
-	defer disconnect(client, u.ctx)
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
 	filter := bson.M{
 		"position.system": system,
 		"position.sector": sector,
 		"position.planet": planet,
 	}
 	update := bson.M{"occupied": userId}
-	u.getCollection(client).FindOneAndUpdate(u.ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
 	log.Printf("Marked planet: %s as occupied\n", models.PlanetId(system, sector, planet))
 	return nil
 }
