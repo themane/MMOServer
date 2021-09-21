@@ -1,16 +1,45 @@
 steps:
-  #build docker container
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'build', '-t', 'gcr.io/themane/mmo-server', '.']
-
-  #push container to container registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'push', 'gcr.io/themane/mmo-server']
-
-  #deploy to cloud run
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['run','deploy','mmo-server','--image','gcr.io/themane/mmo-server', '--region', 'asia-south1']
-
+  - name: gcr.io/k8s-skaffold/pack
+    args:
+      - build
+      - 'gcr.io/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '--builder=gcr.io/buildpacks/builder:v1'
+      - '--path=.'
+    id: Buildpack
+    entrypoint: pack
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - 'gcr.io/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+    id: Push
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    args:
+      - run
+      - services
+      - update
+      - $_SERVICE_NAME
+      - '--platform=managed'
+      - '--image=gcr.io/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - >-
+        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS
+      - '--region=$_DEPLOY_REGION'
+      - '--quiet'
+      - '--set-env-vars "MONGO_DB=mmo-game"'
+      - '--set-env-vars "MAX_SYSTEMS=10"'
+    id: Deploy
+    entrypoint: gcloud
 images:
-  - 'gcr.io/themane/mmo-server'
-timeout: "1600s"
+  - 'gcr.io/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+options:
+  substitutionOption: ALLOW_LOOSE
+substitutions:
+  _PLATFORM: managed
+  _SERVICE_NAME: mmo-server-stage
+  _DEPLOY_REGION: asia-south1
+  _LABELS: gcb-trigger-id=e2103a41-e827-49bb-9f80-cc15488b40ce
+  _TRIGGER_ID: e2103a41-e827-49bb-9f80-cc15488b40ce
+  _GCR_HOSTNAME: asia.gcr.io
+tags:
+  - gcp-cloud-build-deploy-cloud-run
+  - gcp-cloud-build-deploy-cloud-run-managed
+  - mmo-server-stage
