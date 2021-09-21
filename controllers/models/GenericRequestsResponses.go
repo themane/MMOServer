@@ -9,6 +9,12 @@ type RefreshRequest struct {
 	PlanetId string `json:"planet_id"`
 }
 
+type RefreshMineRequest struct {
+	Username string `json:"username"`
+	PlanetId string `json:"planet_id"`
+	MineId   string `json:"mine_id"`
+}
+
 type UpgradeBuildingRequest struct {
 	Username   string `json:"username"`
 	PlanetId   string `json:"planet_id"`

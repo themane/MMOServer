@@ -141,3 +141,40 @@ func (l *LoginController) RefreshResources(c *gin.Context) {
 	}
 	c.JSON(200, response)
 }
+
+// RefreshMine godoc
+// @Summary Refresh mine API
+// @Description Refresh endpoint to quickly refresh mine data with the latest values
+// @Tags data retrieval
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Param mine_id query string true "mine identifier"
+// @Success 200 {object} models.Resources
+// @Router /refresh/resources [post]
+func (l *LoginController) RefreshMine(c *gin.Context) {
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	var request controllerModels.RefreshMineRequest
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, "Request not parseable")
+		return
+	}
+	log.Printf("Refreshing resources data for: %s", request.Username)
+
+	response, err := services.RefreshMine(request.Username, request.PlanetId, request.MineId,
+		l.userRepository, l.universeRepository, l.waterConstants, l.grapheneConstants)
+	if err != nil {
+		log.Print(err)
+		c.JSON(500, "Internal Server Error")
+		return
+	}
+	if response == nil {
+		msg := "User data not found"
+		log.Print(msg)
+		c.JSON(204, msg)
+	}
+	c.JSON(200, response)
+}
