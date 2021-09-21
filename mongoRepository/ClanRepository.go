@@ -5,6 +5,7 @@ import (
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"time"
 )
 
@@ -37,9 +38,11 @@ func (c *ClanRepositoryImpl) FindById(id string) (*models.ClanData, error) {
 	client := c.getMongoClient()
 	defer disconnect(client, c.ctx)
 	var result *models.ClanData
-	filter := bson.D{{"_id", id}}
-	err := c.getCollection(client).FindOne(c.ctx, filter).Decode(result)
+	filter := bson.M{"_id": id}
+	singleResult := c.getCollection(client).FindOne(c.ctx, filter)
+	err := singleResult.Decode(result)
 	if err != nil {
+		log.Printf("Error in decoding clan data received from Mongo: %#v\n", err)
 		return nil, err
 	}
 	return result, nil

@@ -40,9 +40,9 @@ func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]r
 	client := u.getMongoClient()
 	defer disconnect(client, u.ctx)
 	var result map[string]repoModels.PlanetUni
-	filter := bson.D{
-		{"position.system", system},
-		{"position.sector", sector},
+	filter := bson.M{
+		"position.system": system,
+		"position.sector": sector,
 	}
 	cursor, err := u.getCollection(client).Find(u.ctx, filter)
 	if err != nil {
@@ -52,6 +52,7 @@ func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]r
 		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
+			log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
 			return nil, err
 		}
 		result[planet.Position.PlanetId()] = planet
@@ -63,13 +64,15 @@ func (u *UniverseRepositoryImpl) GetPlanet(system int, sector int, planet int) (
 	client := u.getMongoClient()
 	defer disconnect(client, u.ctx)
 	var result *repoModels.PlanetUni
-	filter := bson.D{
-		{"position.system", system},
-		{"position.sector", sector},
-		{"position.planet", planet},
+	filter := bson.M{
+		"position.system": system,
+		"position.sector": sector,
+		"position.planet": planet,
 	}
-	err := u.getCollection(client).FindOne(u.ctx, filter).Decode(result)
+	singleResult := u.getCollection(client).FindOne(u.ctx, filter)
+	err := singleResult.Decode(result)
 	if err != nil {
+		log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
 		return nil, err
 	}
 	return result, nil
@@ -79,9 +82,9 @@ func (u *UniverseRepositoryImpl) GetAllOccupiedPlanets(system int) (map[string]r
 	client := u.getMongoClient()
 	defer disconnect(client, u.ctx)
 	var result map[string]repoModels.PlanetUni
-	filter := bson.D{
-		{"position.system", system},
-		{"occupied", bson.D{{"$ne", nil}}},
+	filter := bson.M{
+		"position.system": system,
+		"occupied":        bson.M{"$ne": nil},
 	}
 	cursor, err := u.getCollection(client).Find(u.ctx, filter)
 	if err != nil {
@@ -91,6 +94,7 @@ func (u *UniverseRepositoryImpl) GetAllOccupiedPlanets(system int) (map[string]r
 		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
+			log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
 			return nil, err
 		}
 		result[planet.Position.PlanetId()] = planet
@@ -101,13 +105,13 @@ func (u *UniverseRepositoryImpl) GetAllOccupiedPlanets(system int) (map[string]r
 func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoModels.PlanetUni, error) {
 	client := u.getMongoClient()
 	defer disconnect(client, u.ctx)
-	filter := bson.D{
-		{"position.system", system},
-		{"occupied", nil},
+	filter := bson.M{
+		"position.system": system,
+		"occupied":        nil,
 	}
-	randomChoicePipeline := bson.D{
-		{"$match", filter},
-		{"$sample", bson.E{Key: "size", Value: 1}},
+	randomChoicePipeline := bson.M{
+		"$match":  filter,
+		"$sample": bson.M{"size": 1},
 	}
 	cursor, err := u.getCollection(client).Aggregate(u.ctx, randomChoicePipeline)
 	if err != nil {
@@ -117,6 +121,7 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoMod
 		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
+			log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
 			return nil, err
 		}
 		return &planet, nil
@@ -127,8 +132,12 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoMod
 func (u *UniverseRepositoryImpl) MarkOccupied(system int, sector int, planet int, userId string) error {
 	client := u.getMongoClient()
 	defer disconnect(client, u.ctx)
-	filter := bson.D{{"position.system", system}, {"position.sector", sector}, {"position.planet", planet}}
-	update := bson.D{{"occupied", userId}}
+	filter := bson.M{
+		"position.system": system,
+		"position.sector": sector,
+		"position.planet": planet,
+	}
+	update := bson.M{"occupied": userId}
 	u.getCollection(client).FindOneAndUpdate(u.ctx, filter, update)
 	log.Printf("Marked planet: %s as occupied\n", models.PlanetId(system, sector, planet))
 	return nil
