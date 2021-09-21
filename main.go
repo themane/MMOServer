@@ -66,7 +66,7 @@ func main() {
 func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
-	log.Println("USING MONGO_URL: " + mongoURL)
+	//log.Println("USING MONGO_URL: " + mongoURL)
 	waterConstants := constants.GetWaterConstants()
 	grapheneConstants := constants.GetGrapheneConstants()
 	experienceConstants := constants.GetExperienceConstants()
@@ -128,6 +128,7 @@ func accessSecretVersion() string {
 	req := &secretmanagerpb.AccessSecretVersionRequest{
 		Name: secretName,
 	}
+	log.Println("Request: ", req.String())
 	result, err := client.AccessSecretVersion(ctx, req)
 	if err != nil {
 		log.Fatal("Error in calling access API for retrieving secret data: ", err)
