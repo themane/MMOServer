@@ -31,7 +31,7 @@ func (c *ClanRepositoryImpl) getCollection(client *mongo.Client) *mongo.Collecti
 func (c *ClanRepositoryImpl) FindById(id string) (*models.ClanData, error) {
 	client, ctx := c.getMongoClient()
 	defer disconnect(client, ctx)
-	var result models.ClanData
+	result := models.ClanData{}
 	filter := bson.M{"_id": id}
 	singleResult := c.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)

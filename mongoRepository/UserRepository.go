@@ -31,7 +31,7 @@ func (u *UserRepositoryImpl) getCollection(client *mongo.Client) *mongo.Collecti
 func (u *UserRepositoryImpl) FindById(id string) (*models.UserData, error) {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)
-	var result models.UserData
+	result := models.UserData{}
 	filter := bson.M{"_id": id}
 	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
