@@ -83,10 +83,10 @@ func (u *UserRepositoryImpl) UpgradeBuildingLevel(id string, planetId string, bu
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".buildings." + buildingId: 1,
-		"occupied_planets." + planetId + ".water.amount":            -waterRequired,
-		"occupied_planets." + planetId + ".graphene.":               -grapheneRequired,
-		"occupied_planets." + planetId + ".shelio":                  -shelioRequired,
+		"occupied_planets." + planetId + ".buildings." + buildingId + ".building_level": 1,
+		"occupied_planets." + planetId + ".water.amount":                                -waterRequired,
+		"occupied_planets." + planetId + ".graphene.amount":                             -grapheneRequired,
+		"occupied_planets." + planetId + ".shelio":                                      -shelioRequired,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
 	log.Printf("Upgraded id: %s, planetId: %s, buildingId: %s\n", id, planetId, buildingId)
