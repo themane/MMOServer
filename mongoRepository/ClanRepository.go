@@ -37,13 +37,13 @@ func (c *ClanRepositoryImpl) getCollection(client *mongo.Client) *mongo.Collecti
 func (c *ClanRepositoryImpl) FindById(id string) (*models.ClanData, error) {
 	client := c.getMongoClient()
 	defer disconnect(client, c.ctx)
-	var result *models.ClanData
+	var result models.ClanData
 	filter := bson.M{"_id": id}
 	singleResult := c.getCollection(client).FindOne(c.ctx, filter)
-	err := singleResult.Decode(result)
+	err := singleResult.Decode(&result)
 	if err != nil {
 		log.Printf("Error in decoding clan data received from Mongo: %#v\n", err)
 		return nil, err
 	}
-	return result, nil
+	return &result, nil
 }
