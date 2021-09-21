@@ -85,14 +85,17 @@ func initialize() {
 	if baseURL == "" {
 		baseURL = "http://localhost:8080"
 	}
+	log.Println("USING BASE_URL: " + baseURL)
 	mongoDB = os.Getenv("MONGO_DB")
 	if mongoDB == "" {
-		mongoDB = "mmo-game"
+		mongoDB = "test"
 	}
+	log.Println("USING MONGO_DB: " + mongoDB)
 	maxSystemsString := os.Getenv("MAX_SYSTEMS")
 	if maxSystemsString == "" {
-		maxSystemsString = "10"
+		maxSystemsString = "0"
 	}
+	log.Println("USING MAX_SYSTEMS: " + maxSystemsString)
 	var err error
 	maxSystems, err = strconv.Atoi(maxSystemsString)
 	if err != nil {
