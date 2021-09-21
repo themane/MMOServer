@@ -20,7 +20,7 @@ func Login(username string,
 	if err != nil {
 		return nil, err
 	}
-	clanData, err := getClanData(&userData.Profile.ClanId, clanRepository)
+	clanData, err := getClanData(userData.Profile.ClanId, clanRepository)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func Login(username string,
 
 	var response controllerModels.LoginResponse
 	response.Profile.Init(*userData, clanData, experienceConstants)
-	response.HomeSector, response.HomePlanetId = home(userData.OccupiedPlanets, *homePlanetPosition, homeSectorData, waterConstants, grapheneConstants)
+	response.HomeSector = home(userData.OccupiedPlanets, *homePlanetPosition, homeSectorData, waterConstants, grapheneConstants)
 	response.OccupiedPlanets = occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), homeSectorData)
 	return &response, nil
 }
@@ -40,10 +40,9 @@ func home(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
 	homePlanetPosition models.PlanetPosition,
 	homeSectorData map[string]repoModels.PlanetUni,
 	waterConstants constants.ResourceConstants,
-	grapheneConstants constants.ResourceConstants) (controllerModels.Sector, string) {
+	grapheneConstants constants.ResourceConstants) controllerModels.Sector {
 
 	var homeSector controllerModels.Sector
-	var homePlanetId string
 
 	homeSector.Position.Init(homePlanetPosition)
 
@@ -51,9 +50,6 @@ func home(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
 		if planetUser, ok := allOccupiedPlanetIds[planetId]; ok {
 			planetData := controllerModels.OccupiedPlanet{}
 			planetData.Init(planetUni, planetUser, waterConstants, grapheneConstants)
-			if planetData.Home {
-				homePlanetId = planetId
-			}
 			homeSector.OccupiedPlanets = append(homeSector.OccupiedPlanets, planetData)
 			continue
 		}
@@ -61,7 +57,7 @@ func home(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
 		planetData.Init(planetUni)
 		homeSector.UnoccupiedPlanets = append(homeSector.UnoccupiedPlanets, planetData)
 	}
-	return homeSector, homePlanetId
+	return homeSector
 }
 
 func occupiedPlanets(occupiedPlanets map[string]repoModels.PlanetUser, homeSectorId string, homeSectorData map[string]repoModels.PlanetUni) []controllerModels.StaticPlanetData {
@@ -90,11 +86,11 @@ func getHomeSectorData(userData *repoModels.UserData, universeRepository repoMod
 	return &homePlanetPosition, homeSectorData, nil
 }
 
-func getClanData(clanId *string, clanRepository repoModels.ClanRepository) (*repoModels.ClanData, error) {
+func getClanData(clanId string, clanRepository repoModels.ClanRepository) (*repoModels.ClanData, error) {
 	var clanData *repoModels.ClanData
 	var err error
-	if clanId != nil {
-		clanData, err = clanRepository.FindById(*clanId)
+	if len(clanId) > 0 {
+		clanData, err = clanRepository.FindById(clanId)
 		if err != nil {
 			return nil, err
 		}
