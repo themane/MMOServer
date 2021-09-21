@@ -116,13 +116,13 @@ func accessSecretVersion() string {
 	ctx := context.Background()
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error in initializing client for secret manager: %#v\n", err)
 		return ""
 	}
 	defer func(client *secretmanager.Client) {
 		err := client.Close()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Error in closing client for secret manager: %#v\n", err)
 		}
 	}(client)
 	req := &secretmanagerpb.AccessSecretVersionRequest{
@@ -130,7 +130,7 @@ func accessSecretVersion() string {
 	}
 	result, err := client.AccessSecretVersion(ctx, req)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error in calling access API for retreiving secret data: %#v\n", err)
 		return ""
 	}
 	return string(result.Payload.Data)
