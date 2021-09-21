@@ -21,7 +21,7 @@ func UpgradeBuilding(username string, planetId string, buildingId string, userRe
 	if err != nil {
 		return err
 	}
-	waterRequired, grapheneRequired, shelioRequired, err := verifyAndGetRequiredResources(*userData, planetId, buildingId, getBuildingType(buildingId), waterConstants, grapheneConstants)
+	waterRequired, grapheneRequired, shelioRequired, err := verifyAndGetRequiredResources(*userData, planetId, buildingId, waterConstants, grapheneConstants)
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func UpgradeBuilding(username string, planetId string, buildingId string, userRe
 	return nil
 }
 
-func verifyAndGetRequiredResources(userData repoModels.UserData, planetId string, buildingId string, buildingType string,
+func verifyAndGetRequiredResources(userData repoModels.UserData, planetId string, buildingId string,
 	waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) (int, int, int, error) {
 
 	buildingLevel := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingLevel
