@@ -25,6 +25,7 @@ var once = sync.Once{}
 var baseURL string
 var mongoDB string
 var maxSystems int
+var secretName string
 
 // @title MMO Game Server
 // @version 1.0.0
@@ -86,16 +87,25 @@ func initialize() {
 		baseURL = "http://localhost:8080"
 	}
 	log.Println("USING BASE_URL: " + baseURL)
+
 	mongoDB = os.Getenv("MONGO_DB")
 	if mongoDB == "" {
 		mongoDB = "test"
 	}
 	log.Println("USING MONGO_DB: " + mongoDB)
+
 	maxSystemsString := os.Getenv("MAX_SYSTEMS")
 	if maxSystemsString == "" {
 		maxSystemsString = "0"
 	}
 	log.Println("USING MAX_SYSTEMS: " + maxSystemsString)
+
+	secretName := os.Getenv("SECRET_NAME")
+	if secretName == "" {
+		log.Fatal("Mongo not configured")
+	}
+	log.Println("USING SECRET_NAME: " + secretName)
+
 	var err error
 	maxSystems, err = strconv.Atoi(maxSystemsString)
 	if err != nil {
@@ -117,7 +127,7 @@ func accessSecretVersion() string {
 		}
 	}(client)
 	req := &secretmanagerpb.AccessSecretVersionRequest{
-		Name: "projects/themane/secrets/MONGO_URL/versions/latest",
+		Name: secretName,
 	}
 	result, err := client.AccessSecretVersion(ctx, req)
 	if err != nil {

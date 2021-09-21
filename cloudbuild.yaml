@@ -25,9 +25,11 @@ steps:
       - '--region=$_DEPLOY_REGION'
       - '--quiet'
       - '--set-env-vars'
-      - 'MONGO_DB=mmo-game'
+      - 'MONGO_DB=$_MONGO_DB'
       - '--set-env-vars'
-      - 'MAX_SYSTEMS=10'
+      - 'MAX_SYSTEMS=$_MAX_SYSTEMS'
+      - '--set-env-vars'
+      - 'SECRET_NAME=projects/$PROJECT_ID/secrets/$_SECRET_NAME/versions/latest'
     id: Deploy
     entrypoint: gcloud
 images:
