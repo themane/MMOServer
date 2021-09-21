@@ -65,6 +65,7 @@ func main() {
 
 func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
 	mongoURL := accessSecretVersion()
+	log.Println("USING MONGO_URL: " + mongoURL)
 	waterConstants := constants.GetWaterConstants()
 	grapheneConstants := constants.GetGrapheneConstants()
 	experienceConstants := constants.GetExperienceConstants()
@@ -86,8 +87,6 @@ func initialize() {
 	if baseURL == "" {
 		baseURL = "http://localhost:8080"
 	}
-	log.Println("USING BASE_URL: " + baseURL)
-
 	secretName := os.Getenv("SECRET_NAME")
 	if secretName == "" {
 		log.Fatal("Mongo not configured")
