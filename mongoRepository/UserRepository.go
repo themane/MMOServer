@@ -49,12 +49,12 @@ func (u *UserRepositoryImpl) FindById(id string) (*models.UserData, error) {
 func (u *UserRepositoryImpl) FindByUsername(username string) (*models.UserData, error) {
 	client := u.getMongoClient()
 	defer disconnect(client, u.ctx)
-	var result *models.UserData
-
-	filter := bson.M{"$match": bson.M{"profile.username": username}}
+	result := models.UserData{}
+	filter := bson.M{"profile.username": username}
 	singleResult := u.getCollection(client).FindOne(u.ctx, filter)
-	err := singleResult.Decode(result)
+	err := singleResult.Decode(&result)
 	if err != nil {
+		log.Printf("Error in decoding user data received from Mongo: %#v", err)
 		return nil, err
 	}
 	return result, nil
