@@ -61,9 +61,9 @@ func verifyAndGetRequiredResources(userData repoModels.UserData, planetId string
 		if userData.OccupiedPlanets[planetId].Water.Amount >= waterRequired &&
 			userData.OccupiedPlanets[planetId].Graphene.Amount >= grapheneRequired &&
 			userData.OccupiedPlanets[planetId].Shelio >= shelioRequired {
-			return 0, 0, 0, errors.New("not enough resources")
+			return waterRequired, grapheneRequired, shelioRequired, nil
 		}
-		return waterRequired, grapheneRequired, shelioRequired, nil
+		return 0, 0, 0, errors.New("not enough resources")
 	}
 	return 0, 0, 0, errors.New("building not found")
 }
