@@ -44,8 +44,9 @@ type MineUser struct {
 }
 
 type BuildingUser struct {
-	BuildingLevel int `json:"building_level" bson:"building_level"`
-	Workers       int `json:"workers" bson:"workers"`
+	BuildingLevel int                  `json:"building_level" bson:"building_level"`
+	Workers       int                  `json:"workers" bson:"workers"`
+	BuildingState models.BuildingState `json:"building_state" bson:"building_state"`
 }
 
 type UserRepository interface {

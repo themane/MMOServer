@@ -35,4 +35,5 @@ type LevelConstant struct {
 	ShelioRequired      int `json:"shelio_required"`
 	MiningRatePerWorker int `json:"mining_rate_per_worker"`
 	WorkersMaxLimit     int `json:"workers_max_limit"`
+	MinutesRequired     int `json:"minutes_required"`
 }

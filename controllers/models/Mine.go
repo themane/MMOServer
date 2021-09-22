@@ -18,7 +18,15 @@ type MiningPlant struct {
 	BuildingId          string              `json:"building_id,omitempty" example:"WMP101"`
 	BuildingLevel       int                 `json:"building_level" example:"3"`
 	Workers             int                 `json:"workers" example:"12"`
+	State               string              `json:"state" example:"PRODUCING"`
+	CancelReturns       CancelReturns       `json:"cancel_returns"`
 	NextLevelAttributes NextLevelAttributes `json:"next_level"`
+}
+
+type CancelReturns struct {
+	WaterReturned    int `json:"water_returned" example:"5"`
+	GrapheneReturned int `json:"graphene_returned" example:"101"`
+	ShelioReturned   int `json:"shelio_returned" example:"0"`
 }
 
 type NextLevelAttributes struct {
