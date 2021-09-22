@@ -35,6 +35,9 @@ func UpgradeBuilding(username string, planetId string, buildingId string, userRe
 func verifyAndGetRequiredResources(userData repoModels.UserData, planetId string, buildingId string,
 	waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) (int, int, int, int, error) {
 
+	if userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingMinutesPerWorker > 0 {
+		return 0, 0, 0, 0, errors.New("building already under upgradation")
+	}
 	buildingLevel := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingLevel
 	nextBuildingLevelString := strconv.Itoa(buildingLevel + 1)
 	switch getBuildingType(buildingId) {
