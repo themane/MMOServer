@@ -2,7 +2,6 @@ package mongoRepository
 
 import (
 	"context"
-	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -85,8 +84,7 @@ func (u *UserRepositoryImpl) UpgradeBuildingLevel(id string, planetId string, bu
 	filter := bson.M{"_id": id}
 	update := bson.M{
 		"$set": bson.M{
-			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_state.state":                       models.UPGRADING_STATE,
-			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_state.building_minutes_per_worker": minutesRequired,
+			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_minutes_per_worker": minutesRequired,
 		},
 		"$inc": bson.M{
 			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_level": 1,
@@ -239,6 +237,23 @@ func (u *UserRepositoryImpl) ScheduledPopulationConsumption(id string, planetIdT
 		miningUpdates = append(miningUpdates,
 			bson.E{Key: "occupied_planets." + planetId + ".water.amount", Value: -totalPopulation},
 		)
+	}
+	update := bson.D{{"$inc", miningUpdates}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	return nil
+}
+
+func (u *UserRepositoryImpl) ScheduledBuildingStateUpdate(id string, planetIdBuildingStateMap map[string]map[string]int) error {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	var miningUpdates bson.D
+	for planetId, buildingStates := range planetIdBuildingStateMap {
+		for buildingId, buildingMinutes := range buildingStates {
+			miningUpdates = append(miningUpdates,
+				bson.E{Key: "occupied_planets." + planetId + ".buildings." + buildingId + ".building_minutes_per_worker", Value: -buildingMinutes},
+			)
+		}
 	}
 	update := bson.D{{"$inc", miningUpdates}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
