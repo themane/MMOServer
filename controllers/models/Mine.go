@@ -69,9 +69,13 @@ func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string, resource
 }
 
 func (b *BuildingState) Init(buildingUser models.BuildingUser, resourceConstants constants.ResourceConstants) {
-	b.State = buildingUser.BuildingState.State
-	b.MinutesRemaining = buildingUser.BuildingState.BuildingMinutesPerWorker
-	b.CancelReturns.Init(buildingUser.BuildingState.BuildingMinutesPerWorker, buildingUser.BuildingLevel, resourceConstants)
+	if buildingUser.BuildingMinutesPerWorker > 0 {
+		b.State = constants.UPGRADING_STATE
+	} else {
+		b.State = constants.PRODUCING_STATE
+	}
+	b.MinutesRemaining = buildingUser.BuildingMinutesPerWorker
+	b.CancelReturns.Init(buildingUser.BuildingMinutesPerWorker, buildingUser.BuildingLevel, resourceConstants)
 }
 
 func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, resourceConstants constants.ResourceConstants) {
