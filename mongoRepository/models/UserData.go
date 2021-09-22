@@ -56,7 +56,7 @@ type UserRepository interface {
 	AddExperience(id string, experience int) error
 	UpdateClanId(id string, clanId string) error
 
-	UpgradeBuildingLevel(id string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int) error
+	UpgradeBuildingLevel(id string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int, minutesRequired int) error
 	AddResources(id string, planetId string, water int, graphene int, shelio int) error
 	UpdateMineResources(id string, planetId string, mineId string, water int, graphene int) error
 	UpdateWorkers(id string, planetId string, buildingId string, workers int) error

@@ -2,7 +2,8 @@ package mongoRepository
 
 import (
 	"context"
-	"github.com/themane/MMOServer/mongoRepository/models"
+	"github.com/themane/MMOServer/models"
+	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
@@ -28,10 +29,10 @@ func (u *UserRepositoryImpl) getCollection(client *mongo.Client) *mongo.Collecti
 	return client.Database(u.mongoDB).Collection("user_data")
 }
 
-func (u *UserRepositoryImpl) FindById(id string) (*models.UserData, error) {
+func (u *UserRepositoryImpl) FindById(id string) (*repoModels.UserData, error) {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)
-	result := models.UserData{}
+	result := repoModels.UserData{}
 	filter := bson.M{"_id": id}
 	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
@@ -42,10 +43,10 @@ func (u *UserRepositoryImpl) FindById(id string) (*models.UserData, error) {
 	return &result, nil
 }
 
-func (u *UserRepositoryImpl) FindByUsername(username string) (*models.UserData, error) {
+func (u *UserRepositoryImpl) FindByUsername(username string) (*repoModels.UserData, error) {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)
-	result := models.UserData{}
+	result := repoModels.UserData{}
 	filter := bson.M{"profile.username": username}
 	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
@@ -77,17 +78,23 @@ func (u *UserRepositoryImpl) UpdateClanId(id string, clanId string) error {
 }
 
 func (u *UserRepositoryImpl) UpgradeBuildingLevel(id string, planetId string, buildingId string,
-	waterRequired int, grapheneRequired int, shelioRequired int) error {
+	waterRequired int, grapheneRequired int, shelioRequired int, minutesRequired int) error {
 
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
-	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".buildings." + buildingId + ".building_level": 1,
-		"occupied_planets." + planetId + ".water.amount":                                -waterRequired,
-		"occupied_planets." + planetId + ".graphene.amount":                             -grapheneRequired,
-		"occupied_planets." + planetId + ".shelio":                                      -shelioRequired,
-	}}
+	update := bson.M{
+		"$set": bson.M{
+			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_state.state":                       models.UPGRADING_STATE,
+			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_state.building_minutes_per_worker": minutesRequired,
+		},
+		"$inc": bson.M{
+			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_level": 1,
+			"occupied_planets." + planetId + ".water.amount":                                -waterRequired,
+			"occupied_planets." + planetId + ".graphene.amount":                             -grapheneRequired,
+			"occupied_planets." + planetId + ".shelio":                                      -shelioRequired,
+		},
+	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
 	log.Printf("Upgraded id: %s, planetId: %s, buildingId: %s\n", id, planetId, buildingId)
 	return nil
