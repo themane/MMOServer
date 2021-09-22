@@ -38,7 +38,6 @@ var secretName string
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host mmo-server-4xcaklgmnq-el.a.run.app
 // @schemes https
 func main() {
 	r := gin.Default()
@@ -87,18 +86,13 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 func initialize() {
 	baseURL = os.Getenv("BASE_URL")
 	if baseURL == "" {
-		baseURL = "http://localhost:8080"
+		baseURL = "localhost:8080"
 	}
 	secretName = os.Getenv("SECRET_NAME")
-	if secretName == "" {
+	mongoDB = os.Getenv("MONGO_DB")
+	if secretName == "" || mongoDB == "" {
 		log.Fatal("Mongo not configured")
 	}
-
-	mongoDB = os.Getenv("MONGO_DB")
-	if mongoDB == "" {
-		mongoDB = "test"
-	}
-	log.Println("USING MONGO_DB: " + mongoDB)
 
 	maxSystemsString := os.Getenv("MAX_SYSTEMS")
 	if maxSystemsString == "" {

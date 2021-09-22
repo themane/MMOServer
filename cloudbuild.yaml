@@ -30,6 +30,8 @@ steps:
       - 'MAX_SYSTEMS=$_MAX_SYSTEMS'
       - '--set-env-vars'
       - 'SECRET_NAME=projects/$PROJECT_ID/secrets/$_SECRET_NAME/versions/latest'
+      - '--set-env-vars'
+      - 'BASE_URL=$_BASE_URL'
     id: Deploy
     entrypoint: gcloud
 images:

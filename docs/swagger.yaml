@@ -233,7 +233,6 @@ definitions:
       position:
         $ref: '#/definitions/models.PlanetPosition'
     type: object
-host: mmo-server-4xcaklgmnq-el.a.run.app
 info:
   contact:
     email: devagpta@gmail.com

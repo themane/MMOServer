@@ -17,7 +17,6 @@
         },
         "version": "1.0.0"
     },
-    "host": "mmo-server-4xcaklgmnq-el.a.run.app",
     "paths": {
         "/login": {
             "post": {

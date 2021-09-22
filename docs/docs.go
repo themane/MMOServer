@@ -526,7 +526,7 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0.0",
-	Host:        "mmo-server-4xcaklgmnq-el.a.run.app",
+	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{"https"},
 	Title:       "MMO Game Server",
