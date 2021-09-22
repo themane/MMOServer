@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
@@ -32,7 +33,10 @@ func Login(username string,
 	var response controllerModels.LoginResponse
 	response.Profile.Init(*userData, clanData, experienceConstants)
 	response.HomeSector = home(userData.OccupiedPlanets, *homePlanetPosition, homeSectorData, waterConstants, grapheneConstants)
-	response.OccupiedPlanets = occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), homeSectorData)
+	response.OccupiedPlanets, err = occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), homeSectorData, universeRepository)
+	if err != nil {
+		return nil, err
+	}
 	return &response, nil
 }
 
@@ -60,15 +64,23 @@ func home(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
 	return homeSector
 }
 
-func occupiedPlanets(occupiedPlanets map[string]repoModels.PlanetUser, homeSectorId string, homeSectorData map[string]repoModels.PlanetUni) []controllerModels.StaticPlanetData {
+func occupiedPlanets(occupiedPlanets map[string]repoModels.PlanetUser, homeSectorId string, homeSectorData map[string]repoModels.PlanetUni,
+	universeRepository repoModels.UniverseRepository) ([]controllerModels.StaticPlanetData, error) {
 	var staticPlanets []controllerModels.StaticPlanetData
 	for planetId := range occupiedPlanets {
 		planetUni := homeSectorData[planetId]
+		if planetUni.Id == "" {
+			planet, err := universeRepository.FindById(planetId)
+			if err != nil {
+				return nil, errors.New("Error in retrieving universe data for planetId: " + planetId)
+			}
+			planetUni = *planet
+		}
 		staticPlanet := controllerModels.StaticPlanetData{}
 		staticPlanet.Init(planetUni, homeSectorId)
 		staticPlanets = append(staticPlanets, staticPlanet)
 	}
-	return staticPlanets
+	return staticPlanets, nil
 }
 
 func getHomeSectorData(userData *repoModels.UserData, universeRepository repoModels.UniverseRepository) (*models.PlanetPosition, map[string]repoModels.PlanetUni, error) {

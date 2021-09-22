@@ -17,7 +17,7 @@ const (
 func getConnection(mongoURL string) (*mongo.Client, context.Context) {
 	cmdMonitor := &event.CommandMonitor{
 		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
-			log.Print(evt.Command)
+			//log.Print(evt.Command)
 		},
 	}
 	ctx, _ := context.WithTimeout(context.Background(), connectTimeoutSecs*time.Second)
