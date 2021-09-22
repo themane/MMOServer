@@ -18,9 +18,14 @@ type MiningPlant struct {
 	BuildingId          string              `json:"building_id,omitempty" example:"WMP101"`
 	BuildingLevel       int                 `json:"building_level" example:"3"`
 	Workers             int                 `json:"workers" example:"12"`
-	State               string              `json:"state" example:"PRODUCING"`
-	CancelReturns       CancelReturns       `json:"cancel_returns"`
+	BuildingState       BuildingState       `json:"building_state" example:"PRODUCING"`
 	NextLevelAttributes NextLevelAttributes `json:"next_level"`
+}
+
+type BuildingState struct {
+	State            string        `json:"state" example:"PRODUCING"`
+	MinutesRemaining int           `json:"minutes_remaining_per_worker" example:"1440"`
+	CancelReturns    CancelReturns `json:"cancel_returns"`
 }
 
 type CancelReturns struct {
@@ -33,6 +38,7 @@ type NextLevelAttributes struct {
 	GrapheneRequired           int `json:"graphene_required" example:"101"`
 	WaterRequired              int `json:"water_required" example:"5"`
 	ShelioRequired             int `json:"shelio_required" example:"0"`
+	MinutesRequiredPerWorker   int `json:"minutes_required_per_worker" example:"1440"`
 	CurrentMiningRatePerWorker int `json:"current_mining_rate_per_worker" example:"1"`
 	NextMiningRatePerWorker    int `json:"next_mining_rate_per_worker" example:"1"`
 	MaxMiningRatePerWorker     int `json:"max_mining_rate_per_worker" example:"12"`
@@ -58,7 +64,23 @@ func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string, resource
 	m.BuildingId = planetUser.Mines[mineId].MiningPlantId
 	m.BuildingLevel = planetUser.Buildings[m.BuildingId].BuildingLevel
 	m.Workers = planetUser.Buildings[m.BuildingId].Workers
+	m.BuildingState.Init(planetUser.Buildings[m.BuildingId], resourceConstants)
 	m.NextLevelAttributes.Init(m.BuildingLevel, resourceConstants)
+}
+
+func (b *BuildingState) Init(buildingUser models.BuildingUser, resourceConstants constants.ResourceConstants) {
+	b.State = buildingUser.BuildingState.State
+	b.MinutesRemaining = buildingUser.BuildingState.BuildingMinutesPerWorker
+	b.CancelReturns.Init(buildingUser.BuildingState.BuildingMinutesPerWorker, buildingUser.BuildingLevel, resourceConstants)
+}
+
+func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, resourceConstants constants.ResourceConstants) {
+	nextLevelString := strconv.Itoa(buildingLevel + 1)
+	ratio := buildingMinutesPerWorker / resourceConstants.Levels[nextLevelString].MinutesRequired
+
+	c.WaterReturned = resourceConstants.Levels[nextLevelString].WaterRequired * ratio
+	c.GrapheneReturned = resourceConstants.Levels[nextLevelString].GrapheneRequired * ratio
+	c.ShelioReturned = resourceConstants.Levels[nextLevelString].ShelioRequired * ratio
 }
 
 func (n *NextLevelAttributes) Init(currentLevel int, resourceConstants constants.ResourceConstants) {
@@ -75,5 +97,6 @@ func (n *NextLevelAttributes) Init(currentLevel int, resourceConstants constants
 		n.GrapheneRequired = resourceConstants.Levels[nextLevelString].GrapheneRequired
 		n.WaterRequired = resourceConstants.Levels[nextLevelString].WaterRequired
 		n.ShelioRequired = resourceConstants.Levels[nextLevelString].ShelioRequired
+		n.MinutesRequiredPerWorker = resourceConstants.Levels[nextLevelString].MinutesRequired
 	}
 }
