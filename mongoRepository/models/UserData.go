@@ -46,7 +46,7 @@ type MineUser struct {
 type BuildingUser struct {
 	BuildingLevel            int `json:"building_level" bson:"building_level"`
 	Workers                  int `json:"workers" bson:"workers"`
-	BuildingMinutesPerWorker int `json:"building_minutes_per_worker" example:"1440"`
+	BuildingMinutesPerWorker int `json:"building_minutes_per_worker" bson:"building_level"`
 }
 
 type UserRepository interface {
