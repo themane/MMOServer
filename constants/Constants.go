@@ -8,6 +8,9 @@ const (
 	LEADER     string = "LEADER"
 	SUB_LEADER string = "SUB_LEADER"
 	MEMBER     string = "MEMBER"
+
+	PRODUCING_STATE = "PRODUCING"
+	UPGRADING_STATE = "UPGRADING"
 )
 
 type ExperienceConstants struct {
