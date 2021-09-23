@@ -1,5 +1,5 @@
 {
-  "user": {
+  "USER": {
     "max_level": 10,
     "experiences_required": {
       "1": {
@@ -34,7 +34,7 @@
       }
     }
   },
-  "clan": {
+  "CLAN": {
     "max_level": 5,
     "experiences_required": {
       "1": {

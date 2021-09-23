@@ -7,14 +7,14 @@ import (
 	"os"
 )
 
-func GetExperienceConstants() ExperienceConstants {
-	var experienceConstants ExperienceConstants
+func GetExperienceConstants() map[string]ExperienceConstants {
+	var experienceConstants map[string]ExperienceConstants
 	constantsFile, _ := os.Open("resources/ExperienceConstants.json")
 	responseByteValue, _ := ioutil.ReadAll(constantsFile)
 	err := json.Unmarshal(responseByteValue, &experienceConstants)
 	if err != nil {
 		log.Fatal("Error in initializing experience constants: ", err)
-		return ExperienceConstants{}
+		return nil
 	}
 	return experienceConstants
 }

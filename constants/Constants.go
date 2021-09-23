@@ -7,6 +7,12 @@ const (
 	Shelio   string = "SHELIO"
 )
 
+// Experience Constant Types
+const (
+	UserExperiences string = "USER"
+	ClanExperiences string = "CLAN"
+)
+
 // Paltan Roles
 const (
 	PaltanLeader    string = "LEADER"
