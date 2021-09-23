@@ -77,8 +77,10 @@ func (l *LoginService) home(allOccupiedPlanetIds map[string]repoModels.PlanetUse
 		if planetUser, ok := allOccupiedPlanetIds[planetId]; ok {
 			planetData := controllerModels.OccupiedPlanet{}
 			planetData.Init(planetUni, planetUser,
-				l.buildingConstants[constants.WaterMiningPlant], l.buildingConstants[constants.GrapheneMiningPlant],
-				l.waterConstants, l.grapheneConstants)
+				l.buildingConstants,
+				l.waterConstants, l.grapheneConstants,
+				l.defenceConstants,
+			)
 			homeSector.OccupiedPlanets = append(homeSector.OccupiedPlanets, planetData)
 			continue
 		}
