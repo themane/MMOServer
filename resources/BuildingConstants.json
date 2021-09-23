@@ -130,67 +130,37 @@
     }
   },
   "SHIELD": {
-    "max_level": 10,
+    "max_level": 5,
     "levels": {
       "1": {
-        "water_required": 5,
+        "water_required": 11,
         "graphene_required": 11,
         "shelio_required": 0,
         "minutes_required": 10
       },
       "2": {
-        "water_required": 5,
+        "water_required": 22,
         "graphene_required": 22,
         "shelio_required": 0,
         "minutes_required": 30
       },
       "3": {
-        "water_required": 5,
+        "water_required": 44,
         "graphene_required": 44,
         "shelio_required": 0,
         "minutes_required": 90
       },
       "4": {
-        "water_required": 5,
+        "water_required": 101,
         "graphene_required": 101,
         "shelio_required": 0,
         "minutes_required": 270
       },
       "5": {
-        "water_required": 10,
+        "water_required": 202,
         "graphene_required": 202,
         "shelio_required": 0,
         "minutes_required": 780
-      },
-      "6": {
-        "water_required": 20,
-        "graphene_required": 404,
-        "shelio_required": 0,
-        "minutes_required": 2340
-      },
-      "7": {
-        "water_required": 40,
-        "graphene_required": 1001,
-        "shelio_required": 0,
-        "minutes_required": 7200
-      },
-      "8": {
-        "water_required": 80,
-        "graphene_required": 2002,
-        "shelio_required": 0,
-        "minutes_required": 21600
-      },
-      "9": {
-        "water_required": 160,
-        "graphene_required": 4004,
-        "shelio_required": 0,
-        "minutes_required": 64800
-      },
-      "10": {
-        "water_required": 500,
-        "graphene_required": 10000,
-        "shelio_required": 0,
-        "minutes_required": 259200
       }
     }
   }
