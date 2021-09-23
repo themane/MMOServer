@@ -35,7 +35,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.PlanetConfig = planetUni.PlanetConfig
 	o.Resources.Init(planetUser)
 	o.Population.Init(planetUser)
-	o.Shields = initAllShields(planetUser, defenceConstants[constants.Shield], buildingConstants[constants.Shield])
+	o.Shields = InitAllShields(planetUser, defenceConstants[constants.Shield], buildingConstants[constants.Shield])
 	for mineId := range planetUser.Mines {
 		mine := Mine{}
 		mine.Init(planetUni.Mines[mineId], planetUser,

@@ -21,7 +21,7 @@ type NextLevelShieldAttributes struct {
 	MaxHitPoints     int `json:"max_hit_points" example:"12"`
 }
 
-func initAllShields(planetUser models.PlanetUser,
+func InitAllShields(planetUser models.PlanetUser,
 	shieldConstants constants.DefenceConstants, shieldBuildingConstants constants.BuildingConstants) []Shield {
 
 	var shields []Shield
