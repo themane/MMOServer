@@ -25,14 +25,15 @@ func initAllShields(planetUser models.PlanetUser,
 	shieldConstants constants.DefenceConstants, shieldBuildingConstants constants.BuildingConstants) []Shield {
 
 	var shields []Shield
-	for shieldId, shieldLevel := range planetUser.Shields {
+	shieldIds := []string{"SHLD01", "SHLD02", "SHLD03"}
+	for _, shieldId := range shieldIds {
 		s := Shield{}
 		s.Id = shieldId
-		s.Level = shieldLevel
+		s.Level = planetUser.Buildings[shieldId].BuildingLevel
 		s.BuildingState.Init(planetUser.Buildings[shieldId], shieldBuildingConstants)
 		s.Workers = planetUser.Buildings[shieldId].Workers
-		s.NextLevelRequirements.Init(shieldLevel, shieldBuildingConstants)
-		s.NextLevelShieldAttributes.Init(shieldLevel, shieldConstants)
+		s.NextLevelRequirements.Init(planetUser.Buildings[shieldId].BuildingLevel, shieldBuildingConstants)
+		s.NextLevelShieldAttributes.Init(planetUser.Buildings[shieldId].BuildingLevel, shieldConstants)
 		shields = append(shields, s)
 	}
 	return shields
