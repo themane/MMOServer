@@ -49,12 +49,12 @@ func (j *ScheduledJobManager) getMiningRate(userId string, occupiedPlanets []mod
 			miningPlant := planetUser.Buildings[mineUser.MiningPlantId]
 
 			var miningRatePerWorker int
-			if mineUni.Type == constants.WATER {
+			if mineUni.Type == constants.Water {
 				miningRatePerWorker = j.waterConstants.Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
 				miningRate := j.getTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
 				planetIdWaterMiningRateMap[planetUni.Id][mineUni.Id] = miningRate
 			}
-			if mineUni.Type == constants.GRAPHENE {
+			if mineUni.Type == constants.Graphene {
 				miningRatePerWorker = j.grapheneConstants.Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
 				miningRate := j.getTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
 				planetIdGrapheneMiningRateMap[planetUni.Id][mineUni.Id] = miningRate

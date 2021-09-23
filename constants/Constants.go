@@ -65,8 +65,8 @@ type DefenceLevelConstant struct {
 }
 
 type BuildingConstants struct {
-	MaxLevel int                             `json:"max_level"`
-	Levels   map[string]DefenceLevelConstant `json:"levels"`
+	MaxLevel int                              `json:"max_level"`
+	Levels   map[string]BuildingLevelConstant `json:"levels"`
 }
 
 type BuildingLevelConstant struct {
