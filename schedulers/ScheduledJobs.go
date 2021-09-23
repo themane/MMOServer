@@ -5,6 +5,7 @@ import (
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -17,13 +18,12 @@ type ScheduledJobManager struct {
 }
 
 func NewScheduledJobManager(userRepository *models.UserRepository, universeRepository *models.UniverseRepository,
-	waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants,
-	maxSystem int) *ScheduledJobManager {
+	mineConstants map[string]constants.ResourceConstants, maxSystem int) *ScheduledJobManager {
 	return &ScheduledJobManager{
 		userRepository:     *userRepository,
 		universeRepository: *universeRepository,
-		waterConstants:     waterConstants,
-		grapheneConstants:  grapheneConstants,
+		waterConstants:     mineConstants[strings.ToLower(constants.WATER)],
+		grapheneConstants:  mineConstants[strings.ToLower(constants.GRAPHENE)],
 		maxSystem:          maxSystem,
 	}
 }

@@ -67,8 +67,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
 	//log.Println("USING MONGO_URL: " + mongoURL)
-	waterConstants := constants.GetWaterConstants()
-	grapheneConstants := constants.GetGrapheneConstants()
+	mineConstants := constants.GetMineConstants()
 	experienceConstants := constants.GetExperienceConstants()
 
 	var userRepository models.UserRepository
@@ -77,9 +76,9 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	userRepository = mongoRepository.NewUserRepository(mongoURL, mongoDB)
 	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB)
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB)
-	loginController := controllers.NewLoginController(&userRepository, &clanRepository, &universeRepository, waterConstants, grapheneConstants, experienceConstants)
+	loginController := controllers.NewLoginController(&userRepository, &clanRepository, &universeRepository, mineConstants, experienceConstants)
 	buildingController := controllers.NewBuildingController(&userRepository)
-	scheduledJobManager := schedulers.NewScheduledJobManager(&userRepository, &universeRepository, waterConstants, grapheneConstants, maxSystems)
+	scheduledJobManager := schedulers.NewScheduledJobManager(&userRepository, &universeRepository, mineConstants, maxSystems)
 	log.Println("Initialized all handlers")
 	return loginController, buildingController, scheduledJobManager
 }

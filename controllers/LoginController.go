@@ -9,6 +9,7 @@ import (
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 type LoginController struct {
@@ -23,16 +24,15 @@ type LoginController struct {
 func NewLoginController(userRepository *models.UserRepository,
 	clanRepository *models.ClanRepository,
 	universeRepository *models.UniverseRepository,
-	waterConstants constants.ResourceConstants,
-	grapheneConstants constants.ResourceConstants,
+	mineConstants map[string]constants.ResourceConstants,
 	experienceConstants constants.ExperienceConstants,
 ) *LoginController {
 	return &LoginController{
 		userRepository:      *userRepository,
 		clanRepository:      *clanRepository,
 		universeRepository:  *universeRepository,
-		waterConstants:      waterConstants,
-		grapheneConstants:   grapheneConstants,
+		waterConstants:      mineConstants[strings.ToLower(constants.WATER)],
+		grapheneConstants:   mineConstants[strings.ToLower(constants.GRAPHENE)],
 		experienceConstants: experienceConstants,
 	}
 }
