@@ -12,6 +12,7 @@ type QuickRefreshService struct {
 	buildingConstants  map[string]constants.BuildingConstants
 	waterConstants     constants.MiningConstants
 	grapheneConstants  constants.MiningConstants
+	defenceConstants   map[string]constants.DefenceConstants
 }
 
 func NewQuickRefreshService(
@@ -19,7 +20,7 @@ func NewQuickRefreshService(
 	universeRepository repoModels.UniverseRepository,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
-
+	defenceConstants map[string]constants.DefenceConstants,
 ) *QuickRefreshService {
 	return &QuickRefreshService{
 		userRepository:     userRepository,
@@ -27,6 +28,7 @@ func NewQuickRefreshService(
 		buildingConstants:  buildingConstants,
 		waterConstants:     mineConstants[constants.Water],
 		grapheneConstants:  mineConstants[constants.Graphene],
+		defenceConstants:   defenceConstants,
 	}
 }
 
@@ -80,6 +82,19 @@ func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string,
 					return &response, nil
 				}
 			}
+		}
+	}
+	return nil, nil
+}
+
+func (r *QuickRefreshService) RefreshShields(username string, inputPlanetId string) ([]models.Shield, error) {
+	userData, errUser := r.userRepository.FindByUsername(username)
+	if errUser != nil {
+		return nil, errUser
+	}
+	for planetId, planetUser := range userData.OccupiedPlanets {
+		if planetId == inputPlanetId {
+			return models.InitAllShields(planetUser, r.defenceConstants[constants.Shield], r.buildingConstants[constants.Shield]), nil
 		}
 	}
 	return nil, nil
