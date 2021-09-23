@@ -6,8 +6,32 @@ import (
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
 
-func RefreshPopulation(username string, inputPlanetId string, userRepository repoModels.UserRepository) (*models.Population, error) {
-	userData, err := userRepository.FindByUsername(username)
+type QuickRefreshService struct {
+	userRepository     repoModels.UserRepository
+	universeRepository repoModels.UniverseRepository
+	buildingConstants  map[string]constants.BuildingConstants
+	waterConstants     constants.MiningConstants
+	grapheneConstants  constants.MiningConstants
+}
+
+func NewQuickRefreshService(
+	userRepository repoModels.UserRepository,
+	universeRepository repoModels.UniverseRepository,
+	buildingConstants map[string]constants.BuildingConstants,
+	mineConstants map[string]constants.MiningConstants,
+
+) *QuickRefreshService {
+	return &QuickRefreshService{
+		userRepository:     userRepository,
+		universeRepository: universeRepository,
+		buildingConstants:  buildingConstants,
+		waterConstants:     mineConstants[constants.Water],
+		grapheneConstants:  mineConstants[constants.Graphene],
+	}
+}
+
+func (r *QuickRefreshService) RefreshPopulation(username string, inputPlanetId string) (*models.Population, error) {
+	userData, err := r.userRepository.FindByUsername(username)
 	if err != nil {
 		return nil, err
 	}
@@ -21,8 +45,8 @@ func RefreshPopulation(username string, inputPlanetId string, userRepository rep
 	return nil, nil
 }
 
-func RefreshResources(username string, inputPlanetId string, userRepository repoModels.UserRepository) (*models.Resources, error) {
-	userData, err := userRepository.FindByUsername(username)
+func (r *QuickRefreshService) RefreshResources(username string, inputPlanetId string) (*models.Resources, error) {
+	userData, err := r.userRepository.FindByUsername(username)
 	if err != nil {
 		return nil, err
 	}
@@ -36,23 +60,23 @@ func RefreshResources(username string, inputPlanetId string, userRepository repo
 	return nil, nil
 }
 
-func RefreshMine(username string, inputPlanetId string, inputMineId string,
-	userRepository repoModels.UserRepository, universeRepository repoModels.UniverseRepository,
-	waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) (*models.Mine, error) {
-	userData, errUser := userRepository.FindByUsername(username)
+func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string, inputMineId string) (*models.Mine, error) {
+	userData, errUser := r.userRepository.FindByUsername(username)
 	if errUser != nil {
 		return nil, errUser
 	}
 	for planetId, planetUser := range userData.OccupiedPlanets {
 		if planetId == inputPlanetId {
-			planetUni, errUni := universeRepository.FindById(planetId)
+			planetUni, errUni := r.universeRepository.FindById(planetId)
 			if errUni != nil {
 				return nil, errUni
 			}
 			for mineId, mineUni := range planetUni.Mines {
 				if mineId == inputMineId {
 					response := models.Mine{}
-					response.Init(mineUni, planetUser, waterConstants, grapheneConstants)
+					response.Init(mineUni, planetUser,
+						r.buildingConstants[constants.WaterMiningPlant], r.buildingConstants[constants.GrapheneMiningPlant],
+						r.waterConstants, r.grapheneConstants)
 					return &response, nil
 				}
 			}

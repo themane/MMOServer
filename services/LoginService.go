@@ -20,9 +20,10 @@ type LoginService struct {
 	defenceConstants        map[string]constants.DefenceConstants
 }
 
-func NewLoginService(userRepository *repoModels.UserRepository,
-	clanRepository *repoModels.ClanRepository,
-	universeRepository *repoModels.UniverseRepository,
+func NewLoginService(
+	userRepository repoModels.UserRepository,
+	clanRepository repoModels.ClanRepository,
+	universeRepository repoModels.UniverseRepository,
 	experienceConstants map[string]constants.ExperienceConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
@@ -30,9 +31,9 @@ func NewLoginService(userRepository *repoModels.UserRepository,
 
 ) *LoginService {
 	return &LoginService{
-		userRepository:          *userRepository,
-		clanRepository:          *clanRepository,
-		universeRepository:      *universeRepository,
+		userRepository:          userRepository,
+		clanRepository:          clanRepository,
+		universeRepository:      universeRepository,
 		buildingConstants:       buildingConstants,
 		userExperienceConstants: experienceConstants[constants.UserExperiences],
 		clanExperienceConstants: experienceConstants[constants.ClanExperiences],
@@ -75,7 +76,9 @@ func (l *LoginService) home(allOccupiedPlanetIds map[string]repoModels.PlanetUse
 	for planetId, planetUni := range homeSectorData {
 		if planetUser, ok := allOccupiedPlanetIds[planetId]; ok {
 			planetData := controllerModels.OccupiedPlanet{}
-			planetData.Init(planetUni, planetUser, l.waterConstants, l.grapheneConstants)
+			planetData.Init(planetUni, planetUser,
+				l.buildingConstants[constants.WaterMiningPlant], l.buildingConstants[constants.GrapheneMiningPlant],
+				l.waterConstants, l.grapheneConstants)
 			homeSector.OccupiedPlanets = append(homeSector.OccupiedPlanets, planetData)
 			continue
 		}

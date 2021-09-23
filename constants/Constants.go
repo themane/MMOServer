@@ -1,5 +1,10 @@
 package constants
 
+import (
+	"github.com/themane/MMOServer/constants"
+	"strings"
+)
+
 // Resources
 const (
 	Water    string = "WATER"
@@ -74,4 +79,14 @@ type BuildingLevelConstant struct {
 	GrapheneRequired int `json:"graphene_required"`
 	ShelioRequired   int `json:"shelio_required"`
 	MinutesRequired  int `json:"minutes_required"`
+}
+
+func GetBuildingType(buildingId string) string {
+	if strings.HasPrefix(buildingId, "WMP") {
+		return constants.WaterMiningPlant
+	}
+	if strings.HasPrefix(buildingId, "GMP") {
+		return constants.GrapheneMiningPlant
+	}
+	return ""
 }
