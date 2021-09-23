@@ -17,22 +17,24 @@ type ProfileUser struct {
 }
 
 type PlanetUser struct {
-	Water      ResourceUser            `json:"water" bson:"water"`
-	Graphene   ResourceUser            `json:"graphene" bson:"graphene"`
-	Shelio     int                     `json:"shelio" bson:"shelio"`
-	Population PopulationUser          `json:"population" bson:"population"`
-	Mines      map[string]MineUser     `json:"mines" bson:"mines"`
-	Defences   map[string]DefenceUser  `json:"defences" bson:"defences"`
-	Buildings  map[string]BuildingUser `json:"buildings" bson:"buildings"`
-	Home       bool                    `json:"home" bson:"home"`
+	Water               Resource                      `json:"water" bson:"water"`
+	Graphene            Resource                      `json:"graphene" bson:"graphene"`
+	Shelio              int                           `json:"shelio" bson:"shelio"`
+	Population          Population                    `json:"population" bson:"population"`
+	Mines               map[string]MineUser           `json:"mines" bson:"mines"`
+	Shields             map[string]int                `json:"shields" bson:"shields"`
+	Defences            map[string]Defence            `json:"defences" bson:"defences"`
+	DefenceShipCarriers map[string]DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
+	Buildings           map[string]Building           `json:"buildings" bson:"buildings"`
+	Home                bool                          `json:"home" bson:"home"`
 }
 
-type ResourceUser struct {
+type Resource struct {
 	Amount   int `json:"amount" bson:"amount"`
 	Reserved int `json:"reserved" bson:"reserved"`
 }
 
-type PopulationUser struct {
+type Population struct {
 	GenerationRate int                       `json:"generation_rate" bson:"generation_rate"`
 	Unemployed     int                       `json:"unemployed" bson:"unemployed"`
 	Workers        models.EmployedPopulation `json:"workers" bson:"workers"`
@@ -44,18 +46,24 @@ type MineUser struct {
 	MiningPlantId string `json:"mining_plant_id" bson:"mining_plant_id"`
 }
 
-type BuildingUser struct {
+type Building struct {
 	BuildingLevel            int `json:"building_level" bson:"building_level"`
 	Workers                  int `json:"workers" bson:"workers"`
 	BuildingMinutesPerWorker int `json:"building_minutes_per_worker" bson:"building_minutes_per_worker"`
 }
 
-type DefenceUser struct {
-	HitPoints  int    `json:"hit_points" bson:"hit_points"`
-	Attack     int    `json:"attack" bson:"attack"`
-	Range      int    `json:"range" bson:"range"`
-	Target     int    `json:"target" bson:"target"`
-	BuildingId string `json:"building_id" bson:"building_id"`
+type Defence struct {
+	HitPoints      int            `json:"hit_points" bson:"hit_points"`
+	Attack         int            `json:"attack" bson:"attack"`
+	Range          int            `json:"range" bson:"range"`
+	Target         int            `json:"target" bson:"target"`
+	GuardingShield map[string]int `json:"guarding_shield" bson:"guarding_shield"`
+}
+
+type DefenceShipCarrier struct {
+	HitPoints      int            `json:"hit_points" bson:"hit_points"`
+	HostingShips   map[string]int `json:"hosting_ships" bson:"hosting_ships"`
+	GuardingShield string         `json:"guarding_shield" bson:"guarding_shield"`
 }
 
 type UserRepository interface {
