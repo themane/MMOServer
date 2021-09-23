@@ -26,7 +26,8 @@ type OccupiedPlanet struct {
 }
 
 func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser,
-	waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) {
+	waterMiningPlantConstants constants.BuildingConstants, grapheneMiningPlantConstants constants.BuildingConstants,
+	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants) {
 
 	o.Position = planetUni.Position.Clone()
 	o.PlanetConfig = planetUni.PlanetConfig
@@ -34,7 +35,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.Population.Init(planetUser)
 	for mineId := range planetUser.Mines {
 		mine := Mine{}
-		mine.Init(planetUni.Mines[mineId], planetUser, waterConstants, grapheneConstants)
+		mine.Init(planetUni.Mines[mineId], planetUser, waterMiningPlantConstants, grapheneMiningPlantConstants, waterConstants, grapheneConstants)
 		o.Mines = append(o.Mines, mine)
 	}
 	o.Home = planetUser.Home

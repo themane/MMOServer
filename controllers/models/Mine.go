@@ -47,60 +47,67 @@ type NextLevelAttributes struct {
 	MaxWorkersMaxLimit         int `json:"max_workers_max_limit" example:"130"`
 }
 
-func (m *Mine) Init(mineUni models.MineUni, planetUser models.PlanetUser, waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) {
+func (m *Mine) Init(mineUni models.MineUni, planetUser models.PlanetUser,
+	waterMiningPlantConstants constants.BuildingConstants, grapheneMiningPlantConstants constants.BuildingConstants,
+	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants) {
+
 	m.Id = mineUni.Id
 	m.Type = mineUni.Type
 	m.MaxLimit = mineUni.MaxLimit
 	m.Mined = planetUser.Mines[mineUni.Id].Mined
-	if mineUni.Type == constants.WATER {
-		m.MiningPlant.Init(planetUser, mineUni.Id, waterConstants)
+	if mineUni.Type == constants.Water {
+		m.MiningPlant.Init(planetUser, mineUni.Id, waterConstants, waterMiningPlantConstants)
 	}
-	if mineUni.Type == constants.GRAPHENE {
-		m.MiningPlant.Init(planetUser, mineUni.Id, grapheneConstants)
+	if mineUni.Type == constants.Graphene {
+		m.MiningPlant.Init(planetUser, mineUni.Id, grapheneConstants, grapheneMiningPlantConstants)
 	}
 }
 
-func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string, resourceConstants constants.ResourceConstants) {
+func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string,
+	miningConstants constants.MiningConstants, miningPlantConstants constants.BuildingConstants) {
+
 	m.BuildingId = planetUser.Mines[mineId].MiningPlantId
 	m.BuildingLevel = planetUser.Buildings[m.BuildingId].BuildingLevel
 	m.Workers = planetUser.Buildings[m.BuildingId].Workers
-	m.BuildingState.Init(planetUser.Buildings[m.BuildingId], resourceConstants)
-	m.NextLevelAttributes.Init(m.BuildingLevel, resourceConstants)
+	m.BuildingState.Init(planetUser.Buildings[m.BuildingId], miningPlantConstants)
+	m.NextLevelAttributes.Init(m.BuildingLevel, miningConstants, miningPlantConstants)
 }
 
-func (b *BuildingState) Init(buildingUser models.BuildingUser, resourceConstants constants.ResourceConstants) {
+func (b *BuildingState) Init(buildingUser models.BuildingUser, miningPlantConstants constants.BuildingConstants) {
 	if buildingUser.BuildingMinutesPerWorker > 0 {
-		b.State = constants.UPGRADING_STATE
+		b.State = constants.UpgradingState
 	} else {
-		b.State = constants.PRODUCING_STATE
+		b.State = constants.WorkingState
 	}
 	b.MinutesRemaining = buildingUser.BuildingMinutesPerWorker
-	b.CancelReturns.Init(buildingUser.BuildingMinutesPerWorker, buildingUser.BuildingLevel, resourceConstants)
+	b.CancelReturns.Init(buildingUser.BuildingMinutesPerWorker, buildingUser.BuildingLevel, miningPlantConstants)
 }
 
-func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, resourceConstants constants.ResourceConstants) {
+func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, miningPlantConstants constants.BuildingConstants) {
 	nextLevelString := strconv.Itoa(buildingLevel + 1)
-	ratio := buildingMinutesPerWorker / resourceConstants.Levels[nextLevelString].MinutesRequired
+	ratio := buildingMinutesPerWorker / miningPlantConstants.Levels[nextLevelString].MinutesRequired
 
-	c.WaterReturned = resourceConstants.Levels[nextLevelString].WaterRequired * ratio
-	c.GrapheneReturned = resourceConstants.Levels[nextLevelString].GrapheneRequired * ratio
-	c.ShelioReturned = resourceConstants.Levels[nextLevelString].ShelioRequired * ratio
+	c.WaterReturned = miningPlantConstants.Levels[nextLevelString].WaterRequired * ratio
+	c.GrapheneReturned = miningPlantConstants.Levels[nextLevelString].GrapheneRequired * ratio
+	c.ShelioReturned = miningPlantConstants.Levels[nextLevelString].ShelioRequired * ratio
 }
 
-func (n *NextLevelAttributes) Init(currentLevel int, resourceConstants constants.ResourceConstants) {
+func (n *NextLevelAttributes) Init(currentLevel int,
+	miningConstants constants.MiningConstants, miningPlantConstants constants.BuildingConstants) {
+
 	currentLevelString := strconv.Itoa(currentLevel)
-	maxLevelString := strconv.Itoa(resourceConstants.MaxLevel)
-	n.CurrentWorkersMaxLimit = resourceConstants.Levels[currentLevelString].WorkersMaxLimit
-	n.CurrentMiningRatePerWorker = resourceConstants.Levels[currentLevelString].MiningRatePerWorker
-	n.MaxMiningRatePerWorker = resourceConstants.Levels[maxLevelString].MiningRatePerWorker
-	n.MaxWorkersMaxLimit = resourceConstants.Levels[maxLevelString].WorkersMaxLimit
-	if currentLevel+1 < resourceConstants.MaxLevel {
+	maxLevelString := strconv.Itoa(miningConstants.MaxLevel)
+	n.CurrentWorkersMaxLimit = miningConstants.Levels[currentLevelString].WorkersMaxLimit
+	n.CurrentMiningRatePerWorker = miningConstants.Levels[currentLevelString].MiningRatePerWorker
+	n.MaxMiningRatePerWorker = miningConstants.Levels[maxLevelString].MiningRatePerWorker
+	n.MaxWorkersMaxLimit = miningConstants.Levels[maxLevelString].WorkersMaxLimit
+	if currentLevel+1 < miningConstants.MaxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
-		n.NextWorkersMaxLimit = resourceConstants.Levels[nextLevelString].WorkersMaxLimit
-		n.NextMiningRatePerWorker = resourceConstants.Levels[nextLevelString].MiningRatePerWorker
-		n.GrapheneRequired = resourceConstants.Levels[nextLevelString].GrapheneRequired
-		n.WaterRequired = resourceConstants.Levels[nextLevelString].WaterRequired
-		n.ShelioRequired = resourceConstants.Levels[nextLevelString].ShelioRequired
-		n.MinutesRequiredPerWorker = resourceConstants.Levels[nextLevelString].MinutesRequired
+		n.NextWorkersMaxLimit = miningConstants.Levels[nextLevelString].WorkersMaxLimit
+		n.NextMiningRatePerWorker = miningConstants.Levels[nextLevelString].MiningRatePerWorker
+		n.GrapheneRequired = miningPlantConstants.Levels[nextLevelString].GrapheneRequired
+		n.WaterRequired = miningPlantConstants.Levels[nextLevelString].WaterRequired
+		n.ShelioRequired = miningPlantConstants.Levels[nextLevelString].ShelioRequired
+		n.MinutesRequiredPerWorker = miningPlantConstants.Levels[nextLevelString].MinutesRequired
 	}
 }

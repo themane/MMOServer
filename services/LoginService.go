@@ -8,52 +8,74 @@ import (
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
 
-func Login(username string,
-	userRepository repoModels.UserRepository,
-	clanRepository repoModels.ClanRepository,
-	universeRepository repoModels.UniverseRepository,
-	waterConstants constants.ResourceConstants,
-	grapheneConstants constants.ResourceConstants,
-	experienceConstants constants.ExperienceConstants,
-) (*controllerModels.LoginResponse, error) {
+type LoginService struct {
+	userRepository          repoModels.UserRepository
+	clanRepository          repoModels.ClanRepository
+	universeRepository      repoModels.UniverseRepository
+	userExperienceConstants constants.ExperienceConstants
+	clanExperienceConstants constants.ExperienceConstants
+	buildingConstants       map[string]constants.BuildingConstants
+	waterConstants          constants.MiningConstants
+	grapheneConstants       constants.MiningConstants
+	defenceConstants        map[string]constants.DefenceConstants
+}
 
-	userData, err := userRepository.FindByUsername(username)
+func NewLoginService(userRepository *repoModels.UserRepository,
+	clanRepository *repoModels.ClanRepository,
+	universeRepository *repoModels.UniverseRepository,
+	experienceConstants map[string]constants.ExperienceConstants,
+	buildingConstants map[string]constants.BuildingConstants,
+	mineConstants map[string]constants.MiningConstants,
+	defenceConstants map[string]constants.DefenceConstants,
+
+) *LoginService {
+	return &LoginService{
+		userRepository:          *userRepository,
+		clanRepository:          *clanRepository,
+		universeRepository:      *universeRepository,
+		buildingConstants:       buildingConstants,
+		userExperienceConstants: experienceConstants[constants.UserExperiences],
+		clanExperienceConstants: experienceConstants[constants.ClanExperiences],
+		waterConstants:          mineConstants[constants.Water],
+		grapheneConstants:       mineConstants[constants.Graphene],
+		defenceConstants:        defenceConstants,
+	}
+}
+
+func (l *LoginService) Login(username string) (*controllerModels.LoginResponse, error) {
+	userData, err := l.userRepository.FindByUsername(username)
 	if err != nil {
 		return nil, err
 	}
-	clanData, err := getClanData(userData.Profile.ClanId, clanRepository)
+	clanData, err := getClanData(userData.Profile.ClanId, l.clanRepository)
 	if err != nil {
 		return nil, err
 	}
-	homePlanetPosition, homeSectorData, err := getHomeSectorData(userData, universeRepository)
+	homePlanetPosition, homeSectorData, err := getHomeSectorData(userData, l.universeRepository)
 	if err != nil {
 		return nil, err
 	}
 
 	var response controllerModels.LoginResponse
-	response.Profile.Init(*userData, clanData, experienceConstants)
-	response.HomeSector = home(userData.OccupiedPlanets, *homePlanetPosition, homeSectorData, waterConstants, grapheneConstants)
-	response.OccupiedPlanets, err = occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), homeSectorData, universeRepository)
+	response.Profile.Init(*userData, clanData, l.userExperienceConstants)
+	response.HomeSector = l.home(userData.OccupiedPlanets, *homePlanetPosition, homeSectorData)
+	response.OccupiedPlanets, err = l.occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), homeSectorData)
 	if err != nil {
 		return nil, err
 	}
 	return &response, nil
 }
 
-func home(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
-	homePlanetPosition models.PlanetPosition,
-	homeSectorData map[string]repoModels.PlanetUni,
-	waterConstants constants.ResourceConstants,
-	grapheneConstants constants.ResourceConstants) controllerModels.Sector {
+func (l *LoginService) home(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
+	homePlanetPosition models.PlanetPosition, homeSectorData map[string]repoModels.PlanetUni) controllerModels.Sector {
 
 	var homeSector controllerModels.Sector
-
 	homeSector.Position.Init(homePlanetPosition)
 
 	for planetId, planetUni := range homeSectorData {
 		if planetUser, ok := allOccupiedPlanetIds[planetId]; ok {
 			planetData := controllerModels.OccupiedPlanet{}
-			planetData.Init(planetUni, planetUser, waterConstants, grapheneConstants)
+			planetData.Init(planetUni, planetUser, l.waterConstants, l.grapheneConstants)
 			homeSector.OccupiedPlanets = append(homeSector.OccupiedPlanets, planetData)
 			continue
 		}
@@ -64,13 +86,13 @@ func home(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
 	return homeSector
 }
 
-func occupiedPlanets(occupiedPlanets map[string]repoModels.PlanetUser, homeSectorId string, homeSectorData map[string]repoModels.PlanetUni,
-	universeRepository repoModels.UniverseRepository) ([]controllerModels.StaticPlanetData, error) {
+func (l *LoginService) occupiedPlanets(occupiedPlanets map[string]repoModels.PlanetUser,
+	homeSectorId string, homeSectorData map[string]repoModels.PlanetUni) ([]controllerModels.StaticPlanetData, error) {
 	var staticPlanets []controllerModels.StaticPlanetData
 	for planetId := range occupiedPlanets {
 		planetUni := homeSectorData[planetId]
 		if planetUni.Id == "" {
-			planet, err := universeRepository.FindById(planetId)
+			planet, err := l.universeRepository.FindById(planetId)
 			if err != nil {
 				return nil, errors.New("Error in retrieving universe data for planetId: " + planetId)
 			}

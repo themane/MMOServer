@@ -32,9 +32,9 @@ func (p *Profile) Init(userData models.UserData, clanData *models.ClanData, expe
 	}
 }
 
-func (e *Experience) Init(profileUser models.ProfileUser, experienceConstants constants.ExperienceConstants) {
+func (e *Experience) Init(profileUser models.ProfileUser, userExperienceConstants constants.ExperienceConstants) {
 	var nextLevelString string
-	for key, experienceRequired := range experienceConstants.User.ExperiencesRequired {
+	for key, experienceRequired := range userExperienceConstants.ExperiencesRequired {
 		if experienceRequired.ExperienceRequired > profileUser.Experience {
 			nextLevelString = key
 		}
@@ -42,7 +42,7 @@ func (e *Experience) Init(profileUser models.ProfileUser, experienceConstants co
 	nextLevel, _ := strconv.Atoi(nextLevelString)
 	e.Level = nextLevel - 1
 	e.Current = profileUser.Experience
-	e.Required = experienceConstants.User.ExperiencesRequired[nextLevelString].ExperienceRequired
+	e.Required = userExperienceConstants.ExperiencesRequired[nextLevelString].ExperienceRequired
 }
 
 func (c *Clan) Init(userData models.UserData, clan models.ClanData) {
