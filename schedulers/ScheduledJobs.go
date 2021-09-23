@@ -16,11 +16,11 @@ type ScheduledJobManager struct {
 	maxSystem          int
 }
 
-func NewScheduledJobManager(userRepository *models.UserRepository, universeRepository *models.UniverseRepository,
+func NewScheduledJobManager(userRepository models.UserRepository, universeRepository models.UniverseRepository,
 	mineConstants map[string]constants.MiningConstants, maxSystem int) *ScheduledJobManager {
 	return &ScheduledJobManager{
-		userRepository:     *userRepository,
-		universeRepository: *universeRepository,
+		userRepository:     userRepository,
+		universeRepository: universeRepository,
 		waterConstants:     mineConstants[constants.Water],
 		grapheneConstants:  mineConstants[constants.Graphene],
 		maxSystem:          maxSystem,

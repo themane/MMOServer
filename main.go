@@ -15,8 +15,8 @@ import (
 	"strconv"
 	"sync"
 
-	secretmanager "cloud.google.com/go/secretmanager/apiv1"
-	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
+	secretManager "cloud.google.com/go/secretmanager/apiv1"
+	secretManagerPb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 
 	_ "github.com/themane/MMOServer/docs"
 )
@@ -66,9 +66,11 @@ func main() {
 func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
-	//log.Println("USING MONGO_URL: " + mongoURL)
-	mineConstants := constants.GetMineConstants()
+
+	buildingConstants := constants.GetBuildingConstants()
 	experienceConstants := constants.GetExperienceConstants()
+	mineConstants := constants.GetMineConstants()
+	defenceConstants := constants.GetDefenceConstants()
 
 	var userRepository models.UserRepository
 	var clanRepository models.ClanRepository
@@ -76,9 +78,9 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	userRepository = mongoRepository.NewUserRepository(mongoURL, mongoDB)
 	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB)
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB)
-	loginController := controllers.NewLoginController(&userRepository, &clanRepository, &universeRepository, mineConstants, experienceConstants)
-	buildingController := controllers.NewBuildingController(&userRepository)
-	scheduledJobManager := schedulers.NewScheduledJobManager(&userRepository, &universeRepository, mineConstants, maxSystems)
+	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants)
+	buildingController := controllers.NewBuildingController(userRepository, buildingConstants)
+	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems)
 	log.Println("Initialized all handlers")
 	return loginController, buildingController, scheduledJobManager
 }
@@ -108,18 +110,18 @@ func initialize() {
 
 func accessSecretVersion() string {
 	ctx := context.Background()
-	client, err := secretmanager.NewClient(ctx)
+	client, err := secretManager.NewClient(ctx)
 	if err != nil {
 		log.Fatal("Error in initializing client for secret manager: ", err)
 		return ""
 	}
-	defer func(client *secretmanager.Client) {
+	defer func(client *secretManager.Client) {
 		err := client.Close()
 		if err != nil {
 			log.Fatal("Error in closing client for secret manager: ", err)
 		}
 	}(client)
-	req := &secretmanagerpb.AccessSecretVersionRequest{
+	req := &secretManagerPb.AccessSecretVersionRequest{
 		Name: secretName,
 	}
 	log.Println("Request: ", req.String())
