@@ -1,42 +1,71 @@
 package constants
 
+// Resources
 const (
-	WATER    string = "WATER"
-	GRAPHENE string = "GRAPHENE"
-	SHELIO   string = "SHELIO"
+	Water    string = "WATER"
+	Graphene string = "GRAPHENE"
+	Shelio   string = "SHELIO"
+)
 
-	LEADER     string = "LEADER"
-	SUB_LEADER string = "SUB_LEADER"
-	MEMBER     string = "MEMBER"
+// Paltan Roles
+const (
+	PaltanLeader    string = "LEADER"
+	PaltanSubLeader string = "SUB_LEADER"
+	PaltanMember    string = "MEMBER"
+)
 
-	PRODUCING_STATE = "PRODUCING"
-	UPGRADING_STATE = "UPGRADING"
+//  Building States
+const (
+	WorkingState   = "WORKING"
+	UpgradingState = "UPGRADING"
+)
+
+//  Building Types
+const (
+	WaterMiningPlant    = "WATER_MINING_PLANT"
+	GrapheneMiningPlant = "GRAPHENE_MINING_PLANT"
+	Shield              = "SHIELD"
 )
 
 type ExperienceConstants struct {
-	User ExperienceLevelConstants `json:"user"`
-	Clan ExperienceLevelConstants `json:"clan"`
+	MaxLevel            int                                `json:"max_level"`
+	ExperiencesRequired map[string]ExperienceLevelConstant `json:"experiences_required"`
 }
 
-type ExperienceLevelConstants struct {
-	MaxLevel            int                           `json:"max_level"`
-	ExperiencesRequired map[string]ExperienceRequired `json:"experiences_required"`
-}
-
-type ExperienceRequired struct {
+type ExperienceLevelConstant struct {
 	ExperienceRequired int `json:"experience_required"`
 }
 
-type ResourceConstants struct {
-	MaxLevel int                      `json:"max_level"`
-	Levels   map[string]LevelConstant `json:"levels"`
+type MiningConstants struct {
+	MaxLevel int                            `json:"max_level"`
+	Levels   map[string]MiningLevelConstant `json:"levels"`
 }
 
-type LevelConstant struct {
-	WaterRequired       int `json:"water_required"`
-	GrapheneRequired    int `json:"graphene_required"`
-	ShelioRequired      int `json:"shelio_required"`
+type MiningLevelConstant struct {
 	MiningRatePerWorker int `json:"mining_rate_per_worker"`
 	WorkersMaxLimit     int `json:"workers_max_limit"`
-	MinutesRequired     int `json:"minutes_required"`
+}
+
+type DefenceConstants struct {
+	MaxLevel int                             `json:"max_level"`
+	Levels   map[string]DefenceLevelConstant `json:"levels"`
+}
+
+type DefenceLevelConstant struct {
+	HitPoints        int `json:"hit_points" bson:"hit_points"`
+	Attack           int `json:"attack" bson:"attack"`
+	Range            int `json:"range" bson:"range"`
+	SingleHitTargets int `json:"single_hit_targets" bson:"single_hit_targets"`
+}
+
+type BuildingConstants struct {
+	MaxLevel int                             `json:"max_level"`
+	Levels   map[string]DefenceLevelConstant `json:"levels"`
+}
+
+type BuildingLevelConstant struct {
+	WaterRequired    int `json:"water_required"`
+	GrapheneRequired int `json:"graphene_required"`
+	ShelioRequired   int `json:"shelio_required"`
+	MinutesRequired  int `json:"minutes_required"`
 }

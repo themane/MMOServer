@@ -1,0 +1,37 @@
+{
+  "SHIELD": {
+    "max_level": 10,
+    "levels": {
+      "1": {
+        "hit_points": 5
+      },
+      "2": {
+        "hit_points": 5
+      },
+      "3": {
+        "hit_points": 5
+      },
+      "4": {
+        "hit_points": 5
+      },
+      "5": {
+        "hit_points": 10
+      },
+      "6": {
+        "hit_points": 20
+      },
+      "7": {
+        "hit_points": 40
+      },
+      "8": {
+        "hit_points": 80
+      },
+      "9": {
+        "hit_points": 160
+      },
+      "10": {
+        "hit_points": 500
+      }
+    }
+  }
+}
