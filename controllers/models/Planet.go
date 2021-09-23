@@ -27,16 +27,21 @@ type OccupiedPlanet struct {
 }
 
 func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser,
-	waterMiningPlantConstants constants.BuildingConstants, grapheneMiningPlantConstants constants.BuildingConstants,
-	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants) {
+	buildingConstants map[string]constants.BuildingConstants,
+	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants,
+	defenceConstants map[string]constants.DefenceConstants) {
 
 	o.Position = planetUni.Position.Clone()
 	o.PlanetConfig = planetUni.PlanetConfig
 	o.Resources.Init(planetUser)
 	o.Population.Init(planetUser)
+	o.Shields = initAllShields(planetUser, defenceConstants[constants.Shield], buildingConstants[constants.Shield])
 	for mineId := range planetUser.Mines {
 		mine := Mine{}
-		mine.Init(planetUni.Mines[mineId], planetUser, waterMiningPlantConstants, grapheneMiningPlantConstants, waterConstants, grapheneConstants)
+		mine.Init(planetUni.Mines[mineId], planetUser,
+			buildingConstants[constants.WaterMiningPlant], buildingConstants[constants.GrapheneMiningPlant],
+			waterConstants, grapheneConstants,
+		)
 		o.Mines = append(o.Mines, mine)
 	}
 	o.Home = planetUser.Home
