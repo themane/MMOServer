@@ -22,7 +22,6 @@ type PlanetUser struct {
 	Shelio              int                           `json:"shelio" bson:"shelio"`
 	Population          Population                    `json:"population" bson:"population"`
 	Mines               map[string]MineUser           `json:"mines" bson:"mines"`
-	Shields             map[string]int                `json:"shields" bson:"shields"`
 	Defences            map[string]Defence            `json:"defences" bson:"defences"`
 	DefenceShipCarriers map[string]DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
 	Buildings           map[string]Building           `json:"buildings" bson:"buildings"`
