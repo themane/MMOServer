@@ -69,7 +69,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 
 	buildingConstants := constants.GetBuildingConstants()
 	experienceConstants := constants.GetExperienceConstants()
-	mineConstants := constants.GetMineConstants()
+	mineConstants := constants.GetMiningConstants()
 	defenceConstants := constants.GetDefenceConstants()
 
 	var userRepository models.UserRepository
@@ -124,7 +124,6 @@ func accessSecretVersion() string {
 	req := &secretManagerPb.AccessSecretVersionRequest{
 		Name: secretName,
 	}
-	log.Println("Request: ", req.String())
 	result, err := client.AccessSecretVersion(ctx, req)
 	if err != nil {
 		log.Fatal("Error in calling access API for retrieving secret data: ", err)

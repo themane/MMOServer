@@ -31,9 +31,9 @@ func GetBuildingConstants() map[string]BuildingConstants {
 	return mineConstants
 }
 
-func GetMineConstants() map[string]MiningConstants {
+func GetMiningConstants() map[string]MiningConstants {
 	var mineConstants map[string]MiningConstants
-	constantsFile, _ := os.Open("resources/MineConstants.json")
+	constantsFile, _ := os.Open("resources/MiningConstants.json")
 	responseByteValue, _ := ioutil.ReadAll(constantsFile)
 	err := json.Unmarshal(responseByteValue, &mineConstants)
 	if err != nil {

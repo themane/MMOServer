@@ -46,7 +46,10 @@ func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.User
 	}
 	buildingLevel := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingLevel
 	nextBuildingLevelString := strconv.Itoa(buildingLevel + 1)
-	buildingType := constants.GetBuildingType(buildingId)
+	buildingType, err := constants.GetBuildingType(buildingId)
+	if err != nil {
+		return 0, 0, 0, 0, errors.New("building not found")
+	}
 	if buildingConstants, ok := b.buildingConstants[buildingType]; ok {
 		if buildingConstants.MaxLevel <= buildingLevel {
 			return 0, 0, 0, 0, errors.New("max level reached")
