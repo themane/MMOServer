@@ -54,6 +54,7 @@ func main() {
 	r.POST("/refresh/population", loginController.RefreshPopulation)
 	r.POST("/refresh/resources", loginController.RefreshResources)
 	r.POST("/refresh/mine", loginController.RefreshMine)
+	r.POST("/refresh/shields", loginController.RefreshShields)
 	r.POST("/upgrade/building", buildingController.UpgradeBuilding)
 	err := r.Run()
 	if err != nil {

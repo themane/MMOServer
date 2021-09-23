@@ -27,7 +27,7 @@ func NewLoginController(userRepository models.UserRepository,
 	return &LoginController{
 		loginService: services.NewLoginService(userRepository, clanRepository, universeRepository,
 			experienceConstants, buildingConstants, mineConstants, defenceConstants),
-		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, buildingConstants, mineConstants),
+		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, buildingConstants, mineConstants, defenceConstants),
 	}
 }
 
@@ -144,8 +144,8 @@ func (l *LoginController) RefreshResources(c *gin.Context) {
 // @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param mine_id query string true "mine identifier"
-// @Success 200 {object} models.Resources
-// @Router /refresh/resources [post]
+// @Success 200 {object} models.Mine
+// @Router /refresh/mines [post]
 func (l *LoginController) RefreshMine(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request controllerModels.RefreshMineRequest
@@ -158,6 +158,41 @@ func (l *LoginController) RefreshMine(c *gin.Context) {
 	log.Printf("Refreshing resources data for: %s", request.Username)
 
 	response, err := l.refreshService.RefreshMine(request.Username, request.PlanetId, request.MineId)
+	if err != nil {
+		log.Print(err)
+		c.JSON(500, "Internal Server Error")
+		return
+	}
+	if response == nil {
+		msg := "User data not found"
+		log.Print(msg)
+		c.JSON(204, msg)
+	}
+	c.JSON(200, response)
+}
+
+// RefreshShields godoc
+// @Summary Refresh shields API
+// @Description Refresh endpoint to quickly refresh shields data with the latest values
+// @Tags data retrieval
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Success 200 {object} []models.Shield
+// @Router /refresh/shields [post]
+func (l *LoginController) RefreshShields(c *gin.Context) {
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	var request controllerModels.RefreshRequest
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, "Request not parseable")
+		return
+	}
+	log.Printf("Refreshing resources data for: %s", request.Username)
+
+	response, err := l.refreshService.RefreshShields(request.Username, request.PlanetId)
 	if err != nil {
 		log.Print(err)
 		c.JSON(500, "Internal Server Error")
