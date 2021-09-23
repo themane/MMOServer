@@ -7,28 +7,16 @@ import (
 	"os"
 )
 
-func GetWaterConstants() ResourceConstants {
-	var waterConstants ResourceConstants
-	constantsFile, _ := os.Open("resources/WaterConstants.json")
+func GetMineConstants() map[string]ResourceConstants {
+	var mineConstants map[string]ResourceConstants
+	constantsFile, _ := os.Open("resources/MineConstants.json")
 	responseByteValue, _ := ioutil.ReadAll(constantsFile)
-	err := json.Unmarshal(responseByteValue, &waterConstants)
+	err := json.Unmarshal(responseByteValue, &mineConstants)
 	if err != nil {
-		log.Print(err)
-		return ResourceConstants{}
+		log.Fatal("Error in initializing mine constants: ", err)
+		return nil
 	}
-	return waterConstants
-}
-
-func GetGrapheneConstants() ResourceConstants {
-	var grapheneConstants ResourceConstants
-	constantsFile, _ := os.Open("resources/GrapheneConstants.json")
-	responseByteValue, _ := ioutil.ReadAll(constantsFile)
-	err := json.Unmarshal(responseByteValue, &grapheneConstants)
-	if err != nil {
-		log.Print(err)
-		return ResourceConstants{}
-	}
-	return grapheneConstants
+	return mineConstants
 }
 
 func GetExperienceConstants() ExperienceConstants {
@@ -37,7 +25,7 @@ func GetExperienceConstants() ExperienceConstants {
 	responseByteValue, _ := ioutil.ReadAll(constantsFile)
 	err := json.Unmarshal(responseByteValue, &experienceConstants)
 	if err != nil {
-		log.Print(err)
+		log.Fatal("Error in initializing experience constants: ", err)
 		return ExperienceConstants{}
 	}
 	return experienceConstants

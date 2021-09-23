@@ -22,6 +22,7 @@ type PlanetUser struct {
 	Shelio     int                     `json:"shelio" bson:"shelio"`
 	Population PopulationUser          `json:"population" bson:"population"`
 	Mines      map[string]MineUser     `json:"mines" bson:"mines"`
+	Defences   map[string]DefenceUser  `json:"defences" bson:"defences"`
 	Buildings  map[string]BuildingUser `json:"buildings" bson:"buildings"`
 	Home       bool                    `json:"home" bson:"home"`
 }
@@ -47,6 +48,14 @@ type BuildingUser struct {
 	BuildingLevel            int `json:"building_level" bson:"building_level"`
 	Workers                  int `json:"workers" bson:"workers"`
 	BuildingMinutesPerWorker int `json:"building_minutes_per_worker" bson:"building_minutes_per_worker"`
+}
+
+type DefenceUser struct {
+	HitPoints  int    `json:"hit_points" bson:"hit_points"`
+	Attack     int    `json:"attack" bson:"attack"`
+	Range      int    `json:"range" bson:"range"`
+	Target     int    `json:"target" bson:"target"`
+	BuildingId string `json:"building_id" bson:"building_id"`
 }
 
 type UserRepository interface {
