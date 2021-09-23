@@ -5,80 +5,62 @@ import (
 	"github.com/themane/MMOServer/constants"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"strconv"
-	"strings"
 )
 
-const (
-	WATER_MINE    = "WATER_MINE"
-	GRAPHENE_MINE = "GRAPHENE_MINE"
-)
+type BuildingService struct {
+	userRepository    repoModels.UserRepository
+	buildingConstants map[string]constants.BuildingConstants
+}
 
-func UpgradeBuilding(username string, planetId string, buildingId string, userRepository repoModels.UserRepository) error {
-	waterConstants := constants.GetWaterConstants()
-	grapheneConstants := constants.GetGrapheneConstants()
+func NewBuildingService(
+	userRepository repoModels.UserRepository,
+	buildingConstants map[string]constants.BuildingConstants,
+) *BuildingService {
+	return &BuildingService{
+		userRepository:    userRepository,
+		buildingConstants: buildingConstants,
+	}
+}
 
-	userData, err := userRepository.FindByUsername(username)
+func (b *BuildingService) UpgradeBuilding(username string, planetId string, buildingId string) error {
+	userData, err := b.userRepository.FindByUsername(username)
 	if err != nil {
 		return err
 	}
-	waterRequired, grapheneRequired, shelioRequired, minutesRequired, err := verifyAndGetRequiredResources(*userData, planetId, buildingId, waterConstants, grapheneConstants)
+	waterRequired, grapheneRequired, shelioRequired, minutesRequired, err := b.verifyAndGetRequiredResources(*userData, planetId, buildingId)
 	if err != nil {
 		return err
 	}
-	err = userRepository.UpgradeBuildingLevel(userData.Id, planetId, buildingId, waterRequired, grapheneRequired, shelioRequired, minutesRequired)
+	err = b.userRepository.UpgradeBuildingLevel(userData.Id, planetId, buildingId, waterRequired, grapheneRequired, shelioRequired, minutesRequired)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func verifyAndGetRequiredResources(userData repoModels.UserData, planetId string, buildingId string,
-	waterConstants constants.ResourceConstants, grapheneConstants constants.ResourceConstants) (int, int, int, int, error) {
+func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.UserData,
+	planetId string, buildingId string) (int, int, int, int, error) {
 
 	if userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingMinutesPerWorker > 0 {
 		return 0, 0, 0, 0, errors.New("building already under upgradation")
 	}
 	buildingLevel := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingLevel
 	nextBuildingLevelString := strconv.Itoa(buildingLevel + 1)
-	switch getBuildingType(buildingId) {
-	case WATER_MINE:
-		if waterConstants.MaxLevel <= buildingLevel {
+	buildingType := constants.GetBuildingType(buildingId)
+	if buildingConstants, ok := b.buildingConstants[buildingType]; ok {
+		if buildingConstants.MaxLevel <= buildingLevel {
 			return 0, 0, 0, 0, errors.New("max level reached")
 		}
-		waterRequired := waterConstants.Levels[nextBuildingLevelString].WaterRequired
-		grapheneRequired := waterConstants.Levels[nextBuildingLevelString].GrapheneRequired
-		shelioRequired := waterConstants.Levels[nextBuildingLevelString].ShelioRequired
-		minutesRequired := waterConstants.Levels[nextBuildingLevelString].MinutesRequired
+		waterRequired := buildingConstants.Levels[nextBuildingLevelString].WaterRequired
+		grapheneRequired := buildingConstants.Levels[nextBuildingLevelString].GrapheneRequired
+		shelioRequired := buildingConstants.Levels[nextBuildingLevelString].ShelioRequired
+		minutesRequired := buildingConstants.Levels[nextBuildingLevelString].MinutesRequired
 		if userData.OccupiedPlanets[planetId].Water.Amount >= waterRequired &&
 			userData.OccupiedPlanets[planetId].Graphene.Amount >= grapheneRequired &&
 			userData.OccupiedPlanets[planetId].Shelio >= shelioRequired {
 			return 0, 0, 0, 0, errors.New("not enough resources")
 		}
 		return waterRequired, grapheneRequired, shelioRequired, minutesRequired, nil
-	case GRAPHENE_MINE:
-		if grapheneConstants.MaxLevel <= buildingLevel {
-			return 0, 0, 0, 0, errors.New("max level reached")
-		}
-		waterRequired := grapheneConstants.Levels[nextBuildingLevelString].WaterRequired
-		grapheneRequired := grapheneConstants.Levels[nextBuildingLevelString].GrapheneRequired
-		shelioRequired := grapheneConstants.Levels[nextBuildingLevelString].ShelioRequired
-		minutesRequired := grapheneConstants.Levels[nextBuildingLevelString].MinutesRequired
-		if userData.OccupiedPlanets[planetId].Water.Amount >= waterRequired &&
-			userData.OccupiedPlanets[planetId].Graphene.Amount >= grapheneRequired &&
-			userData.OccupiedPlanets[planetId].Shelio >= shelioRequired {
-			return waterRequired, grapheneRequired, shelioRequired, minutesRequired, nil
-		}
-		return 0, 0, 0, 0, errors.New("not enough resources")
 	}
 	return 0, 0, 0, 0, errors.New("building not found")
-}
-
-func getBuildingType(buildingId string) string {
-	if strings.HasPrefix(buildingId, "WMP") {
-		return WATER_MINE
-	}
-	if strings.HasPrefix(buildingId, "GMP") {
-		return GRAPHENE_MINE
-	}
-	return ""
 }
