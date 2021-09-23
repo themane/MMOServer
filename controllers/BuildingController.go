@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
@@ -11,12 +12,15 @@ import (
 )
 
 type BuildingController struct {
-	userRepository repoModels.UserRepository
+	buildingService *services.BuildingService
 }
 
-func NewBuildingController(userRepository *repoModels.UserRepository) *BuildingController {
+func NewBuildingController(
+	userRepository repoModels.UserRepository,
+	buildingConstants map[string]constants.BuildingConstants,
+) *BuildingController {
 	return &BuildingController{
-		userRepository: *userRepository,
+		buildingService: services.NewBuildingService(userRepository, buildingConstants),
 	}
 }
 
@@ -42,7 +46,7 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 	}
 	log.Printf("Upgrading: %s, %s, %s", request.Username, request.PlanetId, request.BuildingId)
 
-	err = services.UpgradeBuilding(request.Username, request.PlanetId, request.BuildingId, b.userRepository)
+	err = b.buildingService.UpgradeBuilding(request.Username, request.PlanetId, request.BuildingId)
 	if err != nil {
 		c.JSON(500, controllerModels.UpdateResponse{Error: err.Error()})
 		return

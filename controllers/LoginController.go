@@ -9,31 +9,25 @@ import (
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
 	"log"
-	"strings"
 )
 
 type LoginController struct {
-	userRepository      models.UserRepository
-	clanRepository      models.ClanRepository
-	universeRepository  models.UniverseRepository
-	waterConstants      constants.ResourceConstants
-	grapheneConstants   constants.ResourceConstants
-	experienceConstants constants.ExperienceConstants
+	loginService   *services.LoginService
+	refreshService *services.QuickRefreshService
 }
 
-func NewLoginController(userRepository *models.UserRepository,
-	clanRepository *models.ClanRepository,
-	universeRepository *models.UniverseRepository,
-	mineConstants map[string]constants.ResourceConstants,
-	experienceConstants constants.ExperienceConstants,
+func NewLoginController(userRepository models.UserRepository,
+	clanRepository models.ClanRepository,
+	universeRepository models.UniverseRepository,
+	experienceConstants map[string]constants.ExperienceConstants,
+	buildingConstants map[string]constants.BuildingConstants,
+	mineConstants map[string]constants.MiningConstants,
+	defenceConstants map[string]constants.DefenceConstants,
 ) *LoginController {
 	return &LoginController{
-		userRepository:      *userRepository,
-		clanRepository:      *clanRepository,
-		universeRepository:  *universeRepository,
-		waterConstants:      mineConstants[strings.ToLower(constants.WATER)],
-		grapheneConstants:   mineConstants[strings.ToLower(constants.GRAPHENE)],
-		experienceConstants: experienceConstants,
+		loginService: services.NewLoginService(userRepository, clanRepository, universeRepository,
+			experienceConstants, buildingConstants, mineConstants, defenceConstants),
+		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, buildingConstants, mineConstants),
 	}
 }
 
@@ -57,8 +51,7 @@ func (l *LoginController) Login(c *gin.Context) {
 	}
 	log.Printf("Logged in user: %s", request.Username)
 
-	response, err := services.Login(request.Username, l.userRepository, l.clanRepository, l.universeRepository,
-		l.waterConstants, l.grapheneConstants, l.experienceConstants)
+	response, err := l.loginService.Login(request.Username)
 	if err != nil {
 		log.Print(err)
 		c.JSON(500, "Internal Server Error")
@@ -93,7 +86,7 @@ func (l *LoginController) RefreshPopulation(c *gin.Context) {
 	}
 	log.Printf("Refreshing population data for: %s", request.Username)
 
-	response, err := services.RefreshPopulation(request.Username, request.PlanetId, l.userRepository)
+	response, err := l.refreshService.RefreshPopulation(request.Username, request.PlanetId)
 	if err != nil {
 		log.Print(err)
 		c.JSON(500, "Internal Server Error")
@@ -128,7 +121,7 @@ func (l *LoginController) RefreshResources(c *gin.Context) {
 	}
 	log.Printf("Refreshing resources data for: %s", request.Username)
 
-	response, err := services.RefreshResources(request.Username, request.PlanetId, l.userRepository)
+	response, err := l.refreshService.RefreshResources(request.Username, request.PlanetId)
 	if err != nil {
 		log.Print(err)
 		c.JSON(500, "Internal Server Error")
@@ -164,8 +157,7 @@ func (l *LoginController) RefreshMine(c *gin.Context) {
 	}
 	log.Printf("Refreshing resources data for: %s", request.Username)
 
-	response, err := services.RefreshMine(request.Username, request.PlanetId, request.MineId,
-		l.userRepository, l.universeRepository, l.waterConstants, l.grapheneConstants)
+	response, err := l.refreshService.RefreshMine(request.Username, request.PlanetId, request.MineId)
 	if err != nil {
 		log.Print(err)
 		c.JSON(500, "Internal Server Error")
