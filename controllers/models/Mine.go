@@ -15,30 +15,15 @@ type Mine struct {
 }
 
 type MiningPlant struct {
-	BuildingId          string              `json:"building_id,omitempty" example:"WMP101"`
-	BuildingLevel       int                 `json:"building_level" example:"3"`
-	Workers             int                 `json:"workers" example:"12"`
-	BuildingState       BuildingState       `json:"building_state" example:"PRODUCING"`
-	NextLevelAttributes NextLevelAttributes `json:"next_level"`
+	BuildingId                string                    `json:"building_id,omitempty" example:"WMP101"`
+	Level                     int                       `json:"level" example:"3"`
+	Workers                   int                       `json:"workers" example:"12"`
+	BuildingState             BuildingState             `json:"building_state"`
+	NextLevelMiningAttributes NextLevelMiningAttributes `json:"next_level_attributes"`
+	NextLevelRequirements     NextLevelRequirements     `json:"next_level_requirements"`
 }
 
-type BuildingState struct {
-	State            string        `json:"state" example:"PRODUCING"`
-	MinutesRemaining int           `json:"minutes_remaining_per_worker" example:"1440"`
-	CancelReturns    CancelReturns `json:"cancel_returns"`
-}
-
-type CancelReturns struct {
-	WaterReturned    int `json:"water_returned" example:"5"`
-	GrapheneReturned int `json:"graphene_returned" example:"101"`
-	ShelioReturned   int `json:"shelio_returned" example:"0"`
-}
-
-type NextLevelAttributes struct {
-	GrapheneRequired           int `json:"graphene_required" example:"101"`
-	WaterRequired              int `json:"water_required" example:"5"`
-	ShelioRequired             int `json:"shelio_required" example:"0"`
-	MinutesRequiredPerWorker   int `json:"minutes_required_per_worker" example:"1440"`
+type NextLevelMiningAttributes struct {
 	CurrentMiningRatePerWorker int `json:"current_mining_rate_per_worker" example:"1"`
 	NextMiningRatePerWorker    int `json:"next_mining_rate_per_worker" example:"1"`
 	MaxMiningRatePerWorker     int `json:"max_mining_rate_per_worker" example:"12"`
@@ -67,34 +52,14 @@ func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string,
 	miningConstants constants.MiningConstants, miningPlantConstants constants.BuildingConstants) {
 
 	m.BuildingId = planetUser.Mines[mineId].MiningPlantId
-	m.BuildingLevel = planetUser.Buildings[m.BuildingId].BuildingLevel
+	m.Level = planetUser.Buildings[m.BuildingId].BuildingLevel
 	m.Workers = planetUser.Buildings[m.BuildingId].Workers
 	m.BuildingState.Init(planetUser.Buildings[m.BuildingId], miningPlantConstants)
-	m.NextLevelAttributes.Init(m.BuildingLevel, miningConstants, miningPlantConstants)
+	m.NextLevelMiningAttributes.Init(m.Level, miningConstants)
+	m.NextLevelRequirements.Init(m.Level, miningPlantConstants)
 }
 
-func (b *BuildingState) Init(buildingUser models.BuildingUser, miningPlantConstants constants.BuildingConstants) {
-	if buildingUser.BuildingMinutesPerWorker > 0 {
-		b.State = constants.UpgradingState
-	} else {
-		b.State = constants.WorkingState
-	}
-	b.MinutesRemaining = buildingUser.BuildingMinutesPerWorker
-	b.CancelReturns.Init(buildingUser.BuildingMinutesPerWorker, buildingUser.BuildingLevel, miningPlantConstants)
-}
-
-func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, miningPlantConstants constants.BuildingConstants) {
-	nextLevelString := strconv.Itoa(buildingLevel + 1)
-	ratio := buildingMinutesPerWorker / miningPlantConstants.Levels[nextLevelString].MinutesRequired
-
-	c.WaterReturned = miningPlantConstants.Levels[nextLevelString].WaterRequired * ratio
-	c.GrapheneReturned = miningPlantConstants.Levels[nextLevelString].GrapheneRequired * ratio
-	c.ShelioReturned = miningPlantConstants.Levels[nextLevelString].ShelioRequired * ratio
-}
-
-func (n *NextLevelAttributes) Init(currentLevel int,
-	miningConstants constants.MiningConstants, miningPlantConstants constants.BuildingConstants) {
-
+func (n *NextLevelMiningAttributes) Init(currentLevel int, miningConstants constants.MiningConstants) {
 	currentLevelString := strconv.Itoa(currentLevel)
 	maxLevelString := strconv.Itoa(miningConstants.MaxLevel)
 	n.CurrentWorkersMaxLimit = miningConstants.Levels[currentLevelString].WorkersMaxLimit
@@ -105,9 +70,5 @@ func (n *NextLevelAttributes) Init(currentLevel int,
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		n.NextWorkersMaxLimit = miningConstants.Levels[nextLevelString].WorkersMaxLimit
 		n.NextMiningRatePerWorker = miningConstants.Levels[nextLevelString].MiningRatePerWorker
-		n.GrapheneRequired = miningPlantConstants.Levels[nextLevelString].GrapheneRequired
-		n.WaterRequired = miningPlantConstants.Levels[nextLevelString].WaterRequired
-		n.ShelioRequired = miningPlantConstants.Levels[nextLevelString].ShelioRequired
-		n.MinutesRequiredPerWorker = miningPlantConstants.Levels[nextLevelString].MinutesRequired
 	}
 }

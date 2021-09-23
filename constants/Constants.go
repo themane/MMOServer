@@ -1,6 +1,7 @@
 package constants
 
 import (
+	"errors"
 	"github.com/themane/MMOServer/constants"
 	"strings"
 )
@@ -81,12 +82,15 @@ type BuildingLevelConstant struct {
 	MinutesRequired  int `json:"minutes_required"`
 }
 
-func GetBuildingType(buildingId string) string {
+func GetBuildingType(buildingId string) (string, error) {
 	if strings.HasPrefix(buildingId, "WMP") {
-		return constants.WaterMiningPlant
+		return constants.WaterMiningPlant, nil
 	}
 	if strings.HasPrefix(buildingId, "GMP") {
-		return constants.GrapheneMiningPlant
+		return constants.GrapheneMiningPlant, nil
 	}
-	return ""
+	if strings.HasPrefix(buildingId, "SHLD") {
+		return constants.Shield, nil
+	}
+	return "", errors.New("error. invalid building id" + buildingId)
 }

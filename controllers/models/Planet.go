@@ -22,6 +22,7 @@ type OccupiedPlanet struct {
 	Resources    Resources             `json:"resources"`
 	Population   Population            `json:"population"`
 	Mines        []Mine                `json:"mines"`
+	Shields      []Shield              `json:"shields"`
 	Home         bool                  `json:"home" example:"true"`
 }
 
