@@ -22,6 +22,7 @@ type PlanetUser struct {
 	Shelio              int                           `json:"shelio" bson:"shelio"`
 	Population          Population                    `json:"population" bson:"population"`
 	Mines               map[string]MineUser           `json:"mines" bson:"mines"`
+	Ships               map[string]Ship               `json:"ships" bson:"ships"`
 	Defences            map[string]Defence            `json:"defences" bson:"defences"`
 	DefenceShipCarriers map[string]DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
 	Buildings           map[string]Building           `json:"buildings" bson:"buildings"`
@@ -52,27 +53,17 @@ type Building struct {
 }
 
 type Ship struct {
-	ReqSoldiers    int `json:"req_soldiers" bson:"req_soldiers"`
-	HitPoints      int `json:"hit_points" bson:"hit_points"`
-	Attack         int `json:"attack" bson:"attack"`
-	Armor          int `json:"armor" bson:"armor"`
-	CarryResources int `json:"carry_resources" bson:"carry_resources"`
-	CarrySoldiers  int `json:"carry_soldiers" bson:"carry_soldiers"`
-	Range          int `json:"range" bson:"range"`
+	Level    int `json:"level" bson:"level"`
+	Quantity int `json:"quantity" bson:"quantity"`
 }
 
 type Defence struct {
-	ReqSoldiers    int            `json:"req_soldiers" bson:"req_soldiers"`
-	HitPoints      int            `json:"hit_points" bson:"hit_points"`
-	Attack         int            `json:"attack" bson:"attack"`
-	Range          int            `json:"range" bson:"range"`
-	Target         int            `json:"target" bson:"target"`
+	Level          int            `json:"level" bson:"level"`
 	GuardingShield map[string]int `json:"guarding_shield" bson:"guarding_shield"`
 }
 
 type DefenceShipCarrier struct {
-	ReqSoldiers    int            `json:"req_soldiers" bson:"req_soldiers"`
-	HitPoints      int            `json:"hit_points" bson:"hit_points"`
+	Level          int            `json:"level" bson:"level"`
 	HostingShips   map[string]int `json:"hosting_ships" bson:"hosting_ships"`
 	GuardingShield string         `json:"guarding_shield" bson:"guarding_shield"`
 }

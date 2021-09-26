@@ -1,0 +1,290 @@
+{
+  "ANUJ": {
+    "type": "RESOURCE CARRIER",
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 5,
+        "hit_points": 10,
+        "resource_capacity": 20,
+        "speed": 600
+      },
+      "2": {
+        "req_soldiers": 5,
+        "hit_points": 10,
+        "resource_capacity": 40,
+        "speed": 600
+      },
+      "3": {
+        "req_soldiers": 5,
+        "hit_points": 14,
+        "resource_capacity": 80,
+        "speed": 600
+      },
+      "4": {
+        "req_soldiers": 5,
+        "hit_points": 20,
+        "resource_capacity": 160,
+        "speed": 600
+      },
+      "5": {
+        "req_soldiers": 5,
+        "hit_points": 20,
+        "resource_capacity": 350,
+        "speed": 600
+      }
+    }
+  },
+  "AGRAJA": {
+    "type": "RESOURCE CARRIER",
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 15,
+        "hit_points": 30,
+        "resource_capacity": 20,
+        "speed": 720
+      },
+      "2": {
+        "req_soldiers": 15,
+        "hit_points": 30,
+        "resource_capacity": 50,
+        "speed": 720
+      },
+      "3": {
+        "req_soldiers": 15,
+        "hit_points": 50,
+        "resource_capacity": 100,
+        "speed": 720
+      },
+      "4": {
+        "req_soldiers": 15,
+        "hit_points": 70,
+        "resource_capacity": 150,
+        "speed": 720
+      },
+      "5": {
+        "req_soldiers": 25,
+        "hit_points": 200,
+        "resource_capacity": 300,
+        "speed": 720
+      }
+    }
+  },
+  "YATA": {
+    "type": "AIRCRAFT CARRIER",
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 50,
+        "hit_points": 20,
+        "resource_capacity": 20,
+        "speed": 1200
+      },
+      "2": {
+        "req_soldiers": 50,
+        "hit_points": 20,
+        "resource_capacity": 50,
+        "speed": 1200
+      },
+      "3": {
+        "req_soldiers": 50,
+        "hit_points": 20,
+        "resource_capacity": 100,
+        "speed": 1200
+      },
+      "4": {
+        "req_soldiers": 100,
+        "hit_points": 20,
+        "resource_capacity": 150,
+        "speed": 1200
+      },
+      "5": {
+        "req_soldiers": 100,
+        "hit_points": 30,
+        "resource_capacity": 300,
+        "speed": 1200
+      }
+    }
+  },
+  "YAVASA": {
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 6,
+        "hit_points": 8,
+        "min_attack": 1,
+        "max_attack": 1,
+        "range": 2,
+        "speed": 620
+      },
+      "2": {
+        "req_soldiers": 6,
+        "hit_points": 10,
+        "min_attack": 2,
+        "max_attack": 2,
+        "range": 2,
+        "speed": 620
+      },
+      "3": {
+        "req_soldiers": 6,
+        "hit_points": 14,
+        "min_attack": 4,
+        "max_attack": 4,
+        "range": 2,
+        "speed": 620
+      },
+      "4": {
+        "req_soldiers": 6,
+        "hit_points": 22,
+        "min_attack": 5,
+        "max_attack": 5,
+        "range": 2,
+        "speed": 620
+      },
+      "5": {
+        "req_soldiers": 8,
+        "hit_points": 35,
+        "min_attack": 10,
+        "max_attack": 10,
+        "range": 2,
+        "speed": 620
+      }
+    }
+  },
+  "WAHED": {
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 19,
+        "hit_points": 20,
+        "min_attack": 2,
+        "max_attack": 2,
+        "range": 2,
+        "speed": 620
+      },
+      "2": {
+        "req_soldiers": 19,
+        "hit_points": 25,
+        "min_attack": 4,
+        "max_attack": 5,
+        "range": 2,
+        "speed": 620
+      },
+      "3": {
+        "req_soldiers": 19,
+        "hit_points": 35,
+        "min_attack": 8,
+        "max_attack": 11,
+        "range": 2,
+        "speed": 620
+      },
+      "4": {
+        "req_soldiers": 19,
+        "hit_points": 55,
+        "min_attack": 10,
+        "max_attack": 14,
+        "range": 2,
+        "speed": 620
+      },
+      "5": {
+        "req_soldiers": 19,
+        "hit_points": 87,
+        "min_attack": 20,
+        "max_attack": 25,
+        "range": 2,
+        "speed": 620
+      }
+    }
+  },
+  "DHANUR": {
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 12,
+        "hit_points": 8,
+        "min_attack": 5,
+        "max_attack": 5,
+        "range": 2,
+        "speed": 620
+      },
+      "2": {
+        "req_soldiers": 12,
+        "hit_points": 10,
+        "min_attack": 9,
+        "max_attack": 10,
+        "range": 2,
+        "speed": 620
+      },
+      "3": {
+        "req_soldiers": 12,
+        "hit_points": 14,
+        "min_attack": 18,
+        "max_attack": 18,
+        "range": 2,
+        "speed": 620
+      },
+      "4": {
+        "req_soldiers": 15,
+        "hit_points": 22,
+        "min_attack": 25,
+        "max_attack": 27,
+        "range": 2,
+        "speed": 620
+      },
+      "5": {
+        "req_soldiers": 18,
+        "hit_points": 35,
+        "min_attack": 41,
+        "max_attack": 41,
+        "range": 2,
+        "speed": 620
+      }
+    }
+  },
+  "BHEEM": {
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 6,
+        "hit_points": 30,
+        "min_attack": 1,
+        "max_attack": 1,
+        "range": 2,
+        "speed": 620
+      },
+      "2": {
+        "req_soldiers": 6,
+        "hit_points": 40,
+        "min_attack": 2,
+        "max_attack": 2,
+        "range": 2,
+        "speed": 620
+      },
+      "3": {
+        "req_soldiers": 6,
+        "hit_points": 56,
+        "min_attack": 3,
+        "max_attack": 3,
+        "range": 2,
+        "speed": 620
+      },
+      "4": {
+        "req_soldiers": 6,
+        "hit_points": 89,
+        "min_attack": 4,
+        "max_attack": 4,
+        "range": 2,
+        "speed": 620
+      },
+      "5": {
+        "req_soldiers": 8,
+        "hit_points": 140,
+        "min_attack": 6,
+        "max_attack": 8,
+        "range": 2,
+        "speed": 620
+      }
+    }
+  }
+}
