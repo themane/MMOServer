@@ -65,6 +65,7 @@ type DefenceConstants struct {
 type DefenceLevelConstant struct {
 	RequiredSoldiers int `json:"required_soldiers"`
 	HitPoints        int `json:"hit_points"`
+	Armor            int `json:"armor"`
 	MinAttack        int `json:"min_attack"`
 	MaxAttack        int `json:"max_attack"`
 	Range            int `json:"range"`
