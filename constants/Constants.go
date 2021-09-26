@@ -63,10 +63,30 @@ type DefenceConstants struct {
 }
 
 type DefenceLevelConstant struct {
-	HitPoints        int `json:"hit_points" bson:"hit_points"`
-	Attack           int `json:"attack" bson:"attack"`
-	Range            int `json:"range" bson:"range"`
-	SingleHitTargets int `json:"single_hit_targets" bson:"single_hit_targets"`
+	RequiredSoldiers int `json:"required_soldiers"`
+	HitPoints        int `json:"hit_points"`
+	MinAttack        int `json:"min_attack"`
+	MaxAttack        int `json:"max_attack"`
+	Range            int `json:"range"`
+	SingleHitTargets int `json:"single_hit_targets"`
+}
+
+type ShipConstants struct {
+	MaxLevel int                          `json:"max_level"`
+	Type     string                       `json:"type"`
+	Levels   map[string]ShipLevelConstant `json:"levels"`
+}
+
+type ShipLevelConstant struct {
+	RequiredSoldiers int `json:"required_soldiers"`
+	HitPoints        int `json:"hit_points"`
+	Armor            int `json:"armor"`
+	ResourceCapacity int `json:"resource_capacity"`
+	WorkerCapacity   int `json:"worker_capacity"`
+	MinAttack        int `json:"min_attack"`
+	MaxAttack        int `json:"max_attack"`
+	Range            int `json:"range"`
+	Speed            int `json:"speed"`
 }
 
 type BuildingConstants struct {
