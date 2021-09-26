@@ -51,7 +51,18 @@ type Building struct {
 	BuildingMinutesPerWorker int `json:"building_minutes_per_worker" bson:"building_minutes_per_worker"`
 }
 
+type Ship struct {
+	ReqSoldiers    int `json:"req_soldiers" bson:"req_soldiers"`
+	HitPoints      int `json:"hit_points" bson:"hit_points"`
+	Attack         int `json:"attack" bson:"attack"`
+	Armor          int `json:"armor" bson:"armor"`
+	CarryResources int `json:"carry_resources" bson:"carry_resources"`
+	CarrySoldiers  int `json:"carry_soldiers" bson:"carry_soldiers"`
+	Range          int `json:"range" bson:"range"`
+}
+
 type Defence struct {
+	ReqSoldiers    int            `json:"req_soldiers" bson:"req_soldiers"`
 	HitPoints      int            `json:"hit_points" bson:"hit_points"`
 	Attack         int            `json:"attack" bson:"attack"`
 	Range          int            `json:"range" bson:"range"`
@@ -60,6 +71,7 @@ type Defence struct {
 }
 
 type DefenceShipCarrier struct {
+	ReqSoldiers    int            `json:"req_soldiers" bson:"req_soldiers"`
 	HitPoints      int            `json:"hit_points" bson:"hit_points"`
 	HostingShips   map[string]int `json:"hosting_ships" bson:"hosting_ships"`
 	GuardingShield string         `json:"guarding_shield" bson:"guarding_shield"`
