@@ -36,6 +36,7 @@ const (
 	WaterMiningPlant    = "WATER_MINING_PLANT"
 	GrapheneMiningPlant = "GRAPHENE_MINING_PLANT"
 	Shield              = "SHIELD"
+	Vikram              = "VIKRAM"
 )
 
 type ExperienceConstants struct {
@@ -111,6 +112,9 @@ func GetBuildingType(buildingId string) (string, error) {
 	}
 	if strings.HasPrefix(buildingId, "SHLD") {
 		return Shield, nil
+	}
+	if strings.HasPrefix(buildingId, "DSC") {
+		return Vikram, nil
 	}
 	return "", errors.New("error. invalid building id" + buildingId)
 }
