@@ -59,6 +59,7 @@ type Ship struct {
 
 type Defence struct {
 	Level          int            `json:"level" bson:"level"`
+	Quantity       int            `json:"quantity" bson:"quantity"`
 	GuardingShield map[string]int `json:"guarding_shield" bson:"guarding_shield"`
 }
 

@@ -168,5 +168,70 @@
         "single_hit_targets": 2
       }
     }
+  },
+  "VIKRAM": {
+    "max_level": 10,
+    "levels": {
+      "1": {
+        "req_soldiers": 50,
+        "req_workers": 10,
+        "hit_points": 200,
+        "armor": 5
+      },
+      "2": {
+        "req_soldiers": 50,
+        "req_workers": 10,
+        "hit_points": 300,
+        "armor": 5
+      },
+      "3": {
+        "req_soldiers": 50,
+        "req_workers": 10,
+        "hit_points": 450,
+        "armor": 5
+      },
+      "4": {
+        "req_soldiers": 50,
+        "req_workers": 10,
+        "hit_points": 675,
+        "armor": 5
+      },
+      "5": {
+        "req_soldiers": 70,
+        "req_workers": 15,
+        "hit_points": 1000,
+        "armor": 5
+      },
+      "6": {
+        "req_soldiers": 70,
+        "req_workers": 15,
+        "hit_points": 1500,
+        "armor": 5
+      },
+      "7": {
+        "req_soldiers": 70,
+        "req_workers": 15,
+        "hit_points": 2250,
+        "armor": 5
+      },
+      "8": {
+        "req_soldiers": 70,
+        "req_workers": 15,
+        "hit_points": 3375,
+        "armor": 5
+      },
+      "9": {
+        "req_soldiers": 100,
+        "req_workers": 25,
+        "hit_points": 5000,
+        "armor": 5
+      },
+      "10": {
+        "req_soldiers": 100,
+        "req_workers": 25,
+        "hit_points": 10000,
+        "armor": 5
+      }
+    }
   }
 }
