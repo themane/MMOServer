@@ -18,6 +18,7 @@ type LoginService struct {
 	waterConstants          constants.MiningConstants
 	grapheneConstants       constants.MiningConstants
 	defenceConstants        map[string]constants.DefenceConstants
+	shipConstants           map[string]constants.ShipConstants
 }
 
 func NewLoginService(
@@ -28,7 +29,7 @@ func NewLoginService(
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
-
+	shipConstants map[string]constants.ShipConstants,
 ) *LoginService {
 	return &LoginService{
 		userRepository:          userRepository,
@@ -40,6 +41,7 @@ func NewLoginService(
 		waterConstants:          mineConstants[constants.Water],
 		grapheneConstants:       mineConstants[constants.Graphene],
 		defenceConstants:        defenceConstants,
+		shipConstants:           shipConstants,
 	}
 }
 
@@ -79,7 +81,7 @@ func (l *LoginService) home(allOccupiedPlanetIds map[string]repoModels.PlanetUse
 			planetData.Init(planetUni, planetUser,
 				l.buildingConstants,
 				l.waterConstants, l.grapheneConstants,
-				l.defenceConstants,
+				l.defenceConstants, l.shipConstants,
 			)
 			homeSector.OccupiedPlanets = append(homeSector.OccupiedPlanets, planetData)
 			continue

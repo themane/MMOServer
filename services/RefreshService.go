@@ -94,7 +94,7 @@ func (r *QuickRefreshService) RefreshShields(username string, inputPlanetId stri
 	}
 	for planetId, planetUser := range userData.OccupiedPlanets {
 		if planetId == inputPlanetId {
-			return models.InitAllShields(planetUser, r.defenceConstants[constants.Shield], r.buildingConstants[constants.Shield]), nil
+			return models.InitAllShields(planetUser, r.defenceConstants, r.buildingConstants[constants.Shield]), nil
 		}
 	}
 	return nil, nil
