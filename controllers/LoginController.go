@@ -23,10 +23,11 @@ func NewLoginController(userRepository models.UserRepository,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
+	shipConstants map[string]constants.ShipConstants,
 ) *LoginController {
 	return &LoginController{
 		loginService: services.NewLoginService(userRepository, clanRepository, universeRepository,
-			experienceConstants, buildingConstants, mineConstants, defenceConstants),
+			experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, buildingConstants, mineConstants, defenceConstants),
 	}
 }

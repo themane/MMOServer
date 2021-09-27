@@ -72,6 +72,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	experienceConstants := constants.GetExperienceConstants()
 	mineConstants := constants.GetMiningConstants()
 	defenceConstants := constants.GetDefenceConstants()
+	shipConstants := constants.GetShipConstants()
 
 	var userRepository models.UserRepository
 	var clanRepository models.ClanRepository
@@ -79,7 +80,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	userRepository = mongoRepository.NewUserRepository(mongoURL, mongoDB)
 	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB)
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB)
-	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants)
+	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants)
 	buildingController := controllers.NewBuildingController(userRepository, buildingConstants)
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems)
 	log.Println("Initialized all handlers")
