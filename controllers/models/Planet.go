@@ -4,16 +4,71 @@ import (
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
+	"strings"
 )
 
 type UnoccupiedPlanet struct {
-	PlanetConfig string                `json:"planet_config" example:"Planet2.json"`
-	Position     models.PlanetPosition `json:"position"`
+	Position     models.PlanetPosition     `json:"position"`
+	PlanetConfig string                    `json:"planet_config" example:"Planet2.json"`
+	Distance     int                       `json:"distance" example:"14"`
+	Shields      []UnoccupiedPlanetShield  `json:"shields"`
+	Water        int                       `json:"water" example:"150"`
+	Graphene     int                       `json:"graphene" example:"140"`
+	Defences     []UnoccupiedPlanetDefence `json:"defences"`
+	Occupied     string                    `json:"occupied" example:"devashish"`
+	Invulnerable bool                      `json:"invulnerable" example:"true"`
 }
 
-func (u *UnoccupiedPlanet) Init(planet repoModels.PlanetUni) {
-	u.Position = planet.Position.Clone()
-	u.PlanetConfig = planet.PlanetConfig
+type UnoccupiedPlanetShield struct {
+	Id   string `json:"_id" example:"SHLD101"`
+	Type string `json:"type" example:"INVULNERABLE"`
+}
+
+type UnoccupiedPlanetDefence struct {
+	Type     string `json:"type" example:"BOMBER"`
+	Level    int    `json:"level" example:"1"`
+	Quantity int    `json:"quantity" example:"5"`
+}
+
+func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser) {
+	u.Position = planetUni.Position.Clone()
+	u.PlanetConfig = planetUni.PlanetConfig
+	u.Distance = planetUni.Distance
+	u.Occupied = planetUni.Occupied
+	u.Invulnerable = false
+	shieldIds := constants.GetShieldIds()
+	if planetUni.Occupied == "PRIMITIVE" || planetUni.Occupied == "" {
+		for _, shieldId := range shieldIds {
+			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Unavailable})
+		}
+	} else if planetUni.BasePlanet == true {
+		for _, shieldId := range shieldIds {
+			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Invulnerable})
+		}
+		u.Invulnerable = true
+	} else if strings.HasPrefix(planetUni.Occupied, "BOT") {
+		for _, shieldId := range shieldIds {
+			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Broken})
+		}
+		u.Water = planetUser.Water.Amount
+		u.Graphene = planetUser.Graphene.Amount
+		for defenceType, defence := range planetUser.Defences {
+			u.Defences = append(u.Defences, UnoccupiedPlanetDefence{defenceType, defence.Level, defence.Quantity})
+		}
+	} else {
+		for _, shieldId := range shieldIds {
+			if planetUser.Buildings[shieldId].BuildingLevel > 0 {
+				u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Active})
+			} else {
+				u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Disabled})
+			}
+		}
+		u.Water = planetUser.Water.Amount
+		u.Graphene = planetUser.Graphene.Amount
+		for defenceType, defence := range planetUser.Defences {
+			u.Defences = append(u.Defences, UnoccupiedPlanetDefence{defenceType, 0, defence.Quantity})
+		}
+	}
 }
 
 type OccupiedPlanet struct {
@@ -27,6 +82,7 @@ type OccupiedPlanet struct {
 	IdleDefenceShipCarriers []DefenceShipCarrier  `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
 	AvailableShips          []Ship                `json:"available_ships" bson:"available_ships"`
 	Home                    bool                  `json:"home" example:"true"`
+	Distance                int                   `json:"distance" example:"14"`
 }
 
 func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser,
