@@ -46,7 +46,7 @@ func InitAllShields(planetUser models.PlanetUser,
 	defenceConstants map[string]constants.DefenceConstants, shieldBuildingConstants constants.BuildingConstants) []Shield {
 
 	var shields []Shield
-	shieldIds := []string{"SHLD01", "SHLD02", "SHLD03"}
+	shieldIds := constants.GetShieldIds()
 	for _, shieldId := range shieldIds {
 		s := Shield{}
 		s.Id = shieldId

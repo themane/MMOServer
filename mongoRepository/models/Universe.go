@@ -7,10 +7,12 @@ import (
 type PlanetUni struct {
 	Id           string                `json:"_id" bson:"_id"`
 	Position     models.PlanetPosition `json:"position" bson:"position"`
+	Distance     int                   `json:"distance" bson:"distance"`
 	Mines        map[string]MineUni    `json:"mines" bson:"mines"`
 	PlanetConfig string                `json:"planet_config" bson:"planet_config"`
 	Occupied     string                `json:"occupied" bson:"occupied"`
-	Distance     int                   `json:"distance" bson:"distance"`
+	Workers      int                   `json:"workers" bson:"workers"`
+	BasePlanet   bool                  `json:"base_planet" bson:"base_planet"`
 }
 
 type MineUni struct {
