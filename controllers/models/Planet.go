@@ -30,11 +30,11 @@ type UnoccupiedPlanetDefence struct {
 	Quantity int    `json:"quantity" example:"5"`
 }
 
-func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser) {
+func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser, occupiedUser string) {
 	u.Position = planetUni.Position.Clone()
 	u.PlanetConfig = planetUni.PlanetConfig
 	u.Distance = planetUni.Distance
-	u.Occupied = planetUni.Occupied
+	u.Occupied = occupiedUser
 	u.Invulnerable = false
 	shieldIds := constants.GetShieldIds()
 	if planetUni.Occupied == "PRIMITIVE" || planetUni.Occupied == "" {

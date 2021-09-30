@@ -89,9 +89,10 @@ func (l *LoginService) home(allOccupiedPlanetIds map[string]repoModels.PlanetUse
 		planetData := controllerModels.UnoccupiedPlanet{}
 		userData, err := l.userRepository.FindById(planetUni.Occupied)
 		if err != nil {
-			planetData.Init(planetUni, repoModels.PlanetUser{})
+			planetData.Init(planetUni, repoModels.PlanetUser{}, "")
+		} else {
+			planetData.Init(planetUni, userData.OccupiedPlanets[planetId], userData.Profile.Username)
 		}
-		planetData.Init(planetUni, userData.OccupiedPlanets[planetId])
 		homeSector.UnoccupiedPlanets = append(homeSector.UnoccupiedPlanets, planetData)
 	}
 	return homeSector
