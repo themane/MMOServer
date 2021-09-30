@@ -7,6 +7,7 @@ import (
 
 //  Shield Types
 const (
+	TotalShields int    = 3
 	Invulnerable string = "INVULNERABLE"
 	Active       string = "Active"
 	Broken       string = "BROKEN"
