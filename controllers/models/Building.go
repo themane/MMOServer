@@ -36,12 +36,14 @@ func (b *BuildingState) Init(building models.Building, buildingConstants constan
 }
 
 func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, buildingConstants constants.BuildingConstants) {
-	nextLevelString := strconv.Itoa(buildingLevel + 1)
-	ratio := buildingMinutesPerWorker / buildingConstants.Levels[nextLevelString].MinutesRequired
+	if buildingLevel < buildingConstants.MaxLevel {
+		nextLevelString := strconv.Itoa(buildingLevel + 1)
+		ratio := buildingMinutesPerWorker / buildingConstants.Levels[nextLevelString].MinutesRequired
 
-	c.WaterReturned = buildingConstants.Levels[nextLevelString].WaterRequired * ratio
-	c.GrapheneReturned = buildingConstants.Levels[nextLevelString].GrapheneRequired * ratio
-	c.ShelioReturned = buildingConstants.Levels[nextLevelString].ShelioRequired * ratio
+		c.WaterReturned = buildingConstants.Levels[nextLevelString].WaterRequired * ratio
+		c.GrapheneReturned = buildingConstants.Levels[nextLevelString].GrapheneRequired * ratio
+		c.ShelioReturned = buildingConstants.Levels[nextLevelString].ShelioRequired * ratio
+	}
 }
 
 func (n *NextLevelRequirements) Init(currentLevel int, buildingConstants constants.BuildingConstants) {

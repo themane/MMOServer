@@ -5,6 +5,20 @@ import (
 	"strings"
 )
 
+//  Shield Types
+const (
+	Invulnerable string = "INVULNERABLE"
+	Active       string = "Active"
+	Broken       string = "BROKEN"
+	Disabled     string = "Disabled"
+)
+
+//  Planet Types
+const (
+	Primitive string = "PRIMITIVE"
+	Resource  string = "RESOURCE"
+)
+
 // Resources
 const (
 	Water    string = "WATER"
@@ -27,16 +41,16 @@ const (
 
 //  Building States
 const (
-	WorkingState   = "WORKING"
-	UpgradingState = "UPGRADING"
+	WorkingState   string = "WORKING"
+	UpgradingState string = "UPGRADING"
 )
 
 //  Building Types
 const (
-	WaterMiningPlant    = "WATER_MINING_PLANT"
-	GrapheneMiningPlant = "GRAPHENE_MINING_PLANT"
-	Shield              = "SHIELD"
-	Vikram              = "VIKRAM"
+	WaterMiningPlant    string = "WATER_MINING_PLANT"
+	GrapheneMiningPlant string = "GRAPHENE_MINING_PLANT"
+	Shield              string = "SHIELD"
+	Vikram              string = "VIKRAM"
 )
 
 type ExperienceConstants struct {
