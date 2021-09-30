@@ -11,6 +11,7 @@ const (
 	Active       string = "Active"
 	Broken       string = "BROKEN"
 	Disabled     string = "Disabled"
+	Unavailable  string = "UNAVAILABLE"
 )
 
 //  Planet Types
