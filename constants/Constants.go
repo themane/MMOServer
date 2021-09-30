@@ -7,7 +7,6 @@ import (
 
 //  Shield Types
 const (
-	TotalShields int    = 3
 	Invulnerable string = "INVULNERABLE"
 	Active       string = "Active"
 	Broken       string = "BROKEN"
@@ -132,4 +131,8 @@ func GetBuildingType(buildingId string) (string, error) {
 		return Vikram, nil
 	}
 	return "", errors.New("error. invalid building id" + buildingId)
+}
+
+func GetShieldIds() []string {
+	return []string{"SHLD01", "SHLD02", "SHLD03"}
 }
