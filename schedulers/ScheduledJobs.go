@@ -37,4 +37,6 @@ func (j *ScheduledJobManager) SchedulePlanetUpdates() {
 	if err1 != nil {
 		log.Print(err1)
 	}
+
+	s.StartAsync()
 }
