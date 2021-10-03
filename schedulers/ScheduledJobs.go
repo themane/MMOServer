@@ -33,7 +33,7 @@ func (j *ScheduledJobManager) SchedulePlanetUpdates() {
 	if err != nil {
 		log.Print(err)
 	}
-	_, err1 := s.Every(1).Minutes().Do(j.scheduledMining)
+	_, err1 := s.Every(1).Minute().Do(j.scheduledMining)
 	if err1 != nil {
 		log.Print(err1)
 	}
