@@ -80,7 +80,8 @@ type OccupiedPlanet struct {
 	Shields                 []Shield              `json:"shields"`
 	IdleDefences            []Defence             `json:"idle_defences" bson:"idle_defences"`
 	IdleDefenceShipCarriers []DefenceShipCarrier  `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
-	AvailableShips          []Ship                `json:"available_ships" bson:"available_ships"`
+	AvailableAttackShips    []Ship                `json:"available_attack_ships" bson:"available_attack_ships"`
+	Scouts                  []Ship                `json:"scouts" bson:"scouts"`
 	Home                    bool                  `json:"home" example:"true"`
 	Distance                int                   `json:"distance" example:"14"`
 }
@@ -116,7 +117,12 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		}
 		s := Ship{}
 		s.Init(shipName, availableShips, shipUser, shipConstants[shipName])
-		o.AvailableShips = append(o.AvailableShips, s)
+		if s.Type == constants.Scout {
+			o.Scouts = append(o.Scouts, s)
+		} else {
+			o.AvailableAttackShips = append(o.AvailableAttackShips, s)
+		}
+
 	}
 	o.Home = planetUser.Home
 }
