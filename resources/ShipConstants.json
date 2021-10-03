@@ -1,4 +1,76 @@
 {
+  "GRAPHENE SCOUT": {
+    "type": "SCOUT",
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 1,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 60
+      },
+      "2": {
+        "req_soldiers": 1,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 60
+      },
+      "3": {
+        "req_soldiers": 1,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 55
+      },
+      "4": {
+        "req_soldiers": 2,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 55
+      },
+      "5": {
+        "req_soldiers": 2,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 50
+      }
+    }
+  },
+  "SILICONE SCOUT": {
+    "type": "SCOUT",
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "req_soldiers": 1,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 55
+      },
+      "2": {
+        "req_soldiers": 1,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 55
+      },
+      "3": {
+        "req_soldiers": 1,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 55
+      },
+      "4": {
+        "req_soldiers": 2,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 50
+      },
+      "5": {
+        "req_soldiers": 2,
+        "hit_points": 1,
+        "armor": 0,
+        "speed": 50
+      }
+    }
+  },
   "ANUJ": {
     "type": "RESOURCE CARRIER",
     "max_level": 5,

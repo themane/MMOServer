@@ -54,6 +54,14 @@ const (
 	Vikram              string = "VIKRAM"
 )
 
+//  Ship Types
+const (
+	Scout           string = "SCOUT"
+	ResourceCarrier string = "RESOURCE CARRIER"
+	AircraftCarrier string = "AIRCRAFT CARRIER"
+	Attacker        string = "ATTACKER"
+)
+
 type ExperienceConstants struct {
 	MaxLevel            int                                `json:"max_level"`
 	ExperiencesRequired map[string]ExperienceLevelConstant `json:"experiences_required"`
