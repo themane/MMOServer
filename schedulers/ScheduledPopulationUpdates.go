@@ -1,6 +1,7 @@
 package schedulers
 
 import (
+	"github.com/themane/MMOServer/constants"
 	"log"
 )
 
@@ -9,15 +10,18 @@ func (j *ScheduledJobManager) scheduledPopulationIncrease() {
 	for system := 0; system < j.maxSystem; system++ {
 		occupiedPlanets, err := j.universeRepository.GetAllOccupiedPlanets(system)
 		if err != nil {
-			log.Print(err)
+			log.Print("Error in getting all occupied planets", err)
 			return
 		}
 		userIdplanetsMap := map[string][]string{}
 		for planetId, occupiedPlanet := range occupiedPlanets {
-			if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
-				userIdplanetsMap[occupiedPlanet.Occupied] = []string{}
+			planetType := constants.GetPlanetType(occupiedPlanet)
+			if planetType == constants.User {
+				if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
+					userIdplanetsMap[occupiedPlanet.Occupied] = []string{}
+				}
+				userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], planetId)
 			}
-			userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], planetId)
 		}
 		for userId, planets := range userIdplanetsMap {
 			planetIdGenerationRateMap := j.getPopulationGenerationRate(userId, planets)

@@ -4,7 +4,6 @@ import (
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
-	"strings"
 )
 
 type UnoccupiedPlanet struct {
@@ -37,16 +36,17 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 	u.Occupied = occupiedUser
 	u.Invulnerable = false
 	shieldIds := constants.GetShieldIds()
-	if planetUni.Occupied == "PRIMITIVE" || planetUni.Occupied == "" {
+	planetType := constants.GetPlanetType(planetUni)
+	if planetType == constants.Primitive || planetType == constants.Resource {
 		for _, shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Unavailable})
 		}
-	} else if planetUni.BasePlanet == true {
+	} else if planetType == constants.Base {
 		for _, shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Invulnerable})
 		}
 		u.Invulnerable = true
-	} else if strings.HasPrefix(planetUni.Occupied, "BOT") {
+	} else if planetType == constants.Bot {
 		for _, shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Broken})
 		}
