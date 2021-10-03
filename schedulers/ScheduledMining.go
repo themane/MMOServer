@@ -17,10 +17,13 @@ func (j *ScheduledJobManager) scheduledMining() {
 		}
 		userIdplanetsMap := map[string][]models.PlanetUni{}
 		for _, occupiedPlanet := range occupiedPlanets {
-			if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
-				userIdplanetsMap[occupiedPlanet.Occupied] = []models.PlanetUni{}
+			planetType := constants.GetPlanetType(occupiedPlanet)
+			if planetType == constants.User {
+				if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
+					userIdplanetsMap[occupiedPlanet.Occupied] = []models.PlanetUni{}
+				}
+				userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], occupiedPlanet)
 			}
-			userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], occupiedPlanet)
 		}
 		for userId, planets := range userIdplanetsMap {
 			planetIdWaterMiningRateMap, planetIdGrapheneMiningRateMap := j.getMiningRate(userId, planets)
