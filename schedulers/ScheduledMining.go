@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func (j *ScheduledJobManager) ScheduledMining() {
+func (j *ScheduledJobManager) scheduledMining() {
 	log.Println("Scheduled run of mining")
 	for system := 0; system < j.maxSystem; system++ {
 		occupiedPlanets, err := j.universeRepository.GetAllOccupiedPlanets(system)
