@@ -5,6 +5,7 @@ import (
 )
 
 func (j *ScheduledJobManager) scheduledPopulationIncrease() {
+	log.Println("Scheduled run of increasing population")
 	for system := 0; system < j.maxSystem; system++ {
 		occupiedPlanets, err := j.universeRepository.GetAllOccupiedPlanets(system)
 		if err != nil {
