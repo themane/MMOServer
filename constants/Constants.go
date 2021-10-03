@@ -2,6 +2,7 @@ package constants
 
 import (
 	"errors"
+	"github.com/themane/MMOServer/mongoRepository/models"
 	"strings"
 )
 
@@ -18,6 +19,9 @@ const (
 const (
 	Primitive string = "PRIMITIVE"
 	Resource  string = "RESOURCE"
+	Bot       string = "BOT"
+	User      string = "USER"
+	Base      string = "BASE"
 )
 
 // Resources
@@ -144,4 +148,20 @@ func GetBuildingType(buildingId string) (string, error) {
 
 func GetShieldIds() []string {
 	return []string{"SHLD01", "SHLD02", "SHLD03"}
+}
+
+func GetPlanetType(planetUni models.PlanetUni) string {
+	if planetUni.Occupied == "" {
+		return Resource
+	}
+	if planetUni.Occupied == Primitive {
+		return Primitive
+	}
+	if strings.HasPrefix(planetUni.Occupied, Bot) {
+		return Bot
+	}
+	if planetUni.BasePlanet {
+		return Base
+	}
+	return User
 }
