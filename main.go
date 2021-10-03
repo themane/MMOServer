@@ -1,9 +1,9 @@
 package main
 
 import (
+	secretManager "cloud.google.com/go/secretmanager/apiv1"
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/go-co-op/gocron"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/themane/MMOServer/constants"
@@ -11,14 +11,11 @@ import (
 	"github.com/themane/MMOServer/mongoRepository"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/schedulers"
+	secretManagerPb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 	"log"
 	"os"
 	"strconv"
 	"sync"
-	"time"
-
-	secretManager "cloud.google.com/go/secretmanager/apiv1"
-	secretManagerPb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 
 	_ "github.com/themane/MMOServer/docs"
 )
@@ -50,6 +47,7 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	loginController, buildingController, scheduledJobManager := getHandlers()
+	scheduledJobManager.SchedulePlanetUpdates()
 
 	r.GET("/ping", controllers.Ping)
 	r.POST("/login", loginController.Login)
@@ -63,7 +61,6 @@ func main() {
 		log.Println("Error in starting server")
 		return
 	}
-	schedulePlanetUpdates(scheduledJobManager)
 }
 
 func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
@@ -87,21 +84,6 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems)
 	log.Println("Initialized all handlers")
 	return loginController, buildingController, scheduledJobManager
-}
-
-func schedulePlanetUpdates(j schedulers.ScheduledJobManager) {
-	s := gocron.NewScheduler(time.UTC)
-	_, err := s.Every(1).Hour().Do(j.ScheduledPopulationIncrease)
-	if err != nil {
-		log.Print(err)
-	}
-	_, err1 := s.Every(1).Minutes().Do(j.ScheduledMining)
-	if err1 != nil {
-		log.Print(err1)
-	}
-
-	//s.StartAsync()
-	s.StartBlocking()
 }
 
 func initialize() {

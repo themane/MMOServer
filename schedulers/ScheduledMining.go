@@ -17,6 +17,9 @@ func (j *ScheduledJobManager) scheduledMining() {
 		}
 		var userIdplanetsMap map[string][]models.PlanetUni
 		for _, occupiedPlanet := range occupiedPlanets {
+			if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
+				userIdplanetsMap[occupiedPlanet.Occupied] = []models.PlanetUni{}
+			}
 			userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], occupiedPlanet)
 		}
 		for userId, planets := range userIdplanetsMap {

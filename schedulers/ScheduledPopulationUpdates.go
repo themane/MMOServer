@@ -14,6 +14,9 @@ func (j *ScheduledJobManager) scheduledPopulationIncrease() {
 		}
 		var userIdplanetsMap map[string][]string
 		for planetId, occupiedPlanet := range occupiedPlanets {
+			if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
+				userIdplanetsMap[occupiedPlanet.Occupied] = []string{}
+			}
 			userIdplanetsMap[occupiedPlanet.Occupied] = append(userIdplanetsMap[occupiedPlanet.Occupied], planetId)
 		}
 		for userId, planets := range userIdplanetsMap {
