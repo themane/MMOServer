@@ -15,7 +15,7 @@ func (j *ScheduledJobManager) scheduledMining() {
 			log.Print(err)
 			return
 		}
-		var userIdplanetsMap map[string][]models.PlanetUni
+		userIdplanetsMap := map[string][]models.PlanetUni{}
 		for _, occupiedPlanet := range occupiedPlanets {
 			if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
 				userIdplanetsMap[occupiedPlanet.Occupied] = []models.PlanetUni{}
@@ -44,8 +44,8 @@ func (j *ScheduledJobManager) getMiningRate(userId string, occupiedPlanets []mod
 		log.Print(err)
 		return nil, nil
 	}
-	var planetIdWaterMiningRateMap map[string]map[string]int
-	var planetIdGrapheneMiningRateMap map[string]map[string]int
+	planetIdWaterMiningRateMap := map[string]map[string]int{}
+	planetIdGrapheneMiningRateMap := map[string]map[string]int{}
 	for _, planetUni := range occupiedPlanets {
 		planetUser := userData.OccupiedPlanets[planetUni.Id]
 		for _, mineUni := range planetUni.Mines {
@@ -56,11 +56,17 @@ func (j *ScheduledJobManager) getMiningRate(userId string, occupiedPlanets []mod
 			if mineUni.Type == constants.Water {
 				miningRatePerWorker = j.waterConstants.Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
 				miningRate := j.getTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
+				if planetIdWaterMiningRateMap[planetUni.Id] == nil {
+					planetIdWaterMiningRateMap[planetUni.Id] = map[string]int{}
+				}
 				planetIdWaterMiningRateMap[planetUni.Id][mineUni.Id] = miningRate
 			}
 			if mineUni.Type == constants.Graphene {
 				miningRatePerWorker = j.grapheneConstants.Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
 				miningRate := j.getTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
+				if planetIdGrapheneMiningRateMap[planetUni.Id] == nil {
+					planetIdGrapheneMiningRateMap[planetUni.Id] = map[string]int{}
+				}
 				planetIdGrapheneMiningRateMap[planetUni.Id][mineUni.Id] = miningRate
 			}
 		}

@@ -12,7 +12,7 @@ func (j *ScheduledJobManager) scheduledPopulationIncrease() {
 			log.Print(err)
 			return
 		}
-		var userIdplanetsMap map[string][]string
+		userIdplanetsMap := map[string][]string{}
 		for planetId, occupiedPlanet := range occupiedPlanets {
 			if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
 				userIdplanetsMap[occupiedPlanet.Occupied] = []string{}
@@ -36,7 +36,7 @@ func (j *ScheduledJobManager) getPopulationGenerationRate(userId string, occupie
 		log.Print(err)
 		return nil
 	}
-	var planetIdGenerationRateMap map[string]int
+	planetIdGenerationRateMap := map[string]int{}
 	for _, planetId := range occupiedPlanets {
 		generationRate := userData.OccupiedPlanets[planetId].Population.GenerationRate
 		planetIdGenerationRateMap[planetId] = generationRate
