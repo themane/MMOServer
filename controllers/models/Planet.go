@@ -83,6 +83,7 @@ type OccupiedPlanet struct {
 	AvailableAttackShips    []Ship                `json:"available_attack_ships" bson:"available_attack_ships"`
 	Scouts                  []Ship                `json:"scouts" bson:"scouts"`
 	Home                    bool                  `json:"home" example:"true"`
+	Base                    bool                  `json:"base" example:"true"`
 	Distance                int                   `json:"distance" example:"14"`
 }
 
@@ -93,6 +94,10 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 
 	o.PlanetConfig = planetUni.PlanetConfig
 	o.Position = planetUni.Position.Clone()
+	if planetUser.Base {
+		o.Base = true
+		return
+	}
 	o.Resources.Init(planetUser)
 	o.Population.Init(planetUser)
 	for mineId := range planetUser.Mines {
