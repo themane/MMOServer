@@ -29,11 +29,11 @@ func NewScheduledJobManager(userRepository models.UserRepository, universeReposi
 
 func (j *ScheduledJobManager) SchedulePlanetUpdates() {
 	s := gocron.NewScheduler(time.UTC)
-	_, err := s.Every(1).Hour().Do(j.scheduledPopulationIncrease)
+	_, err := s.Every(10).Hour().Do(j.scheduledPopulationIncrease)
 	if err != nil {
 		log.Print(err)
 	}
-	_, err1 := s.Every(1).Minute().Do(j.scheduledMining)
+	_, err1 := s.Every(10).Minute().Do(j.scheduledMining)
 	if err1 != nil {
 		log.Print(err1)
 	}
