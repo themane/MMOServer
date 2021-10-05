@@ -46,7 +46,7 @@ func main() {
 	url := ginSwagger.URL(baseURL + "/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	loginController, buildingController, scheduledJobManager := getHandlers()
+	loginController, buildingController, attackController, scheduledJobManager := getHandlers()
 	scheduledJobManager.SchedulePlanetUpdates()
 
 	r.GET("/ping", controllers.Ping)
@@ -56,6 +56,8 @@ func main() {
 	r.POST("/refresh/mine", loginController.RefreshMine)
 	r.POST("/refresh/shields", loginController.RefreshShields)
 	r.POST("/upgrade/building", buildingController.UpgradeBuilding)
+	r.POST("/spy", attackController.Spy)
+	r.POST("/attack", attackController.Attack)
 	err := r.Run()
 	if err != nil {
 		log.Println("Error in starting server")
@@ -63,7 +65,7 @@ func main() {
 	}
 }
 
-func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *schedulers.ScheduledJobManager) {
+func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.AttackController, *schedulers.ScheduledJobManager) {
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
 
@@ -80,10 +82,11 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB)
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants)
+	attackController := controllers.NewAttackController(userRepository, clanRepository, universeRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants)
 	buildingController := controllers.NewBuildingController(userRepository, buildingConstants)
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems)
 	log.Println("Initialized all handlers")
-	return loginController, buildingController, scheduledJobManager
+	return loginController, buildingController, attackController, scheduledJobManager
 }
 
 func initialize() {
