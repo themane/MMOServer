@@ -50,6 +50,9 @@ func (a *AttackController) Spy(c *gin.Context) {
 	}
 	log.Printf("Launching spy mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
+	randomSleepTime := rand.Intn(1) + 1
+	time.Sleep(time.Second * time.Duration(randomSleepTime))
+
 	randomMinutes := rand.Intn(5) + 5
 	attackTime := time.Now().Add(time.Minute * time.Duration(randomMinutes))
 	returnTime := time.Now().Add(time.Minute * time.Duration(randomMinutes) * 2)
@@ -79,6 +82,9 @@ func (a *AttackController) Attack(c *gin.Context) {
 		return
 	}
 	log.Printf("Launching attack mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
+
+	randomSleepTime := rand.Intn(2) + 1
+	time.Sleep(time.Second * time.Duration(randomSleepTime))
 
 	randomMinutes := rand.Intn(100) + 13
 	attackTime := time.Now().Add(time.Minute * time.Duration(randomMinutes))
