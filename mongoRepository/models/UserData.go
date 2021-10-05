@@ -27,6 +27,7 @@ type PlanetUser struct {
 	DefenceShipCarriers map[string]DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
 	Buildings           map[string]Building           `json:"buildings" bson:"buildings"`
 	Home                bool                          `json:"home" bson:"home"`
+	Base                bool                          `json:"base" bson:"base"`
 }
 
 type Resource struct {
