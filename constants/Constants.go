@@ -68,8 +68,8 @@ const (
 
 //  Ship Types
 const (
-	SystemDistanceBlocks int = 150
-	SectorDistanceBlocks int = 20
+	SystemDistanceBlocks float64 = 150
+	SectorDistanceBlocks float64 = 20
 )
 
 type ExperienceConstants struct {
