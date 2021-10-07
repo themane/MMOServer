@@ -30,6 +30,14 @@ type PlanetUser struct {
 	Base                bool                          `json:"base" bson:"base"`
 }
 
+func (p *PlanetUser) GetAvailableShip(shipName string) int {
+	var defenceShipCarrierDeployed int
+	for _, defenceShipCarrier := range p.DefenceShipCarriers {
+		defenceShipCarrierDeployed += defenceShipCarrier.HostingShips[shipName]
+	}
+	return p.Ships[shipName].Quantity - defenceShipCarrierDeployed
+}
+
 type Resource struct {
 	Amount   int `json:"amount" bson:"amount"`
 	Reserved int `json:"reserved" bson:"reserved"`
