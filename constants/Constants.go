@@ -72,10 +72,14 @@ const (
 	SectorDistanceBlocks float64 = 20
 )
 
-//  Mission Types
+//  Mission Constants
 const (
-	AttackMission string = "ATTACK"
-	SpyMission    string = "SPY"
+	AttackMission   string = "ATTACK"
+	SpyMission      string = "SPY"
+	DepartureState  string = "DEPARTURE"
+	InProgressState string = "IN_PROGRESS"
+	ReturningState  string = "RETURNING"
+	CompletedState  string = "COMPLETED"
 )
 
 type ExperienceConstants struct {
