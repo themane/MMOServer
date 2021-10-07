@@ -30,9 +30,11 @@ type SpyMission struct {
 type SpyResult struct {
 }
 
-type AttackRepository interface {
+type MissionRepository interface {
 	FindAttackMissionsFromPlanetId(id string) ([]AttackMission, error)
 	FindSpyMissionsFromPlanetId(id string) ([]SpyMission, error)
+	FindAttackMissionsToPlanetId(id string) ([]AttackMission, error)
+	FindSpyMissionsToPlanetId(id string) ([]SpyMission, error)
 
 	AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation) error
 	AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int) error

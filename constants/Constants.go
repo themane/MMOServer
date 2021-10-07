@@ -72,6 +72,12 @@ const (
 	SectorDistanceBlocks float64 = 20
 )
 
+//  Mission Types
+const (
+	AttackMission string = "ATTACK"
+	SpyMission    string = "SPY"
+)
+
 type ExperienceConstants struct {
 	MaxLevel            int                                `json:"max_level"`
 	ExperiencesRequired map[string]ExperienceLevelConstant `json:"experiences_required"`
