@@ -43,8 +43,10 @@ type MissionRepository interface {
 	FindAttackMissionsToPlanetId(id string) ([]AttackMission, error)
 	FindSpyMissionsToPlanetId(id string) ([]SpyMission, error)
 
-	AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation, launchTime primitive.Timestamp, missionTime primitive.Timestamp, returnTime primitive.Timestamp) error
-	AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int, launchTime primitive.Timestamp, missionTime primitive.Timestamp, returnTime primitive.Timestamp) error
+	AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation,
+		launchTime primitive.Timestamp, missionTime primitive.Timestamp, returnTime primitive.Timestamp) (*AttackMission, error)
+	AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int, launchTime primitive.Timestamp,
+		missionTime primitive.Timestamp, returnTime primitive.Timestamp) (*SpyMission, error)
 
 	UpdateAttackResult(id string, result AttackResult) error
 	UpdateSpyResult(id string, result SpyResult) error

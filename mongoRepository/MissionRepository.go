@@ -97,12 +97,12 @@ func (c *MissionRepositoryImpl) FindSpyMissionsToPlanetId(toPlanetId string) ([]
 
 func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation,
 	launchTime primitive.Timestamp, missionTime primitive.Timestamp, returnTime primitive.Timestamp,
-) error {
+) (*repoModels.AttackMission, error) {
 
 	id, err := uuid.NewRandom()
 	if err != nil {
 		log.Println("error in persisting attack mission: ", err)
-		return errors.New("error in persisting attack mission")
+		return nil, errors.New("error in persisting attack mission")
 	}
 	attackMission := repoModels.AttackMission{
 		Id:           id.String(),
@@ -120,18 +120,18 @@ func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId
 	_, err = c.getCollection(client).InsertOne(ctx, attackMission)
 	if err != nil {
 		log.Println("error in persisting attack mission: ", err)
-		return errors.New("error in persisting attack mission")
+		return nil, errors.New("error in persisting attack mission")
 	}
-	return nil
+	return &attackMission, nil
 }
 func (c *MissionRepositoryImpl) AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int,
 	launchTime primitive.Timestamp, missionTime primitive.Timestamp, returnTime primitive.Timestamp,
-) error {
+) (*repoModels.SpyMission, error) {
 
 	id, err := uuid.NewRandom()
 	if err != nil {
 		log.Println("error in persisting spy mission: ", err)
-		return errors.New("error in persisting spy mission")
+		return nil, errors.New("error in persisting spy mission")
 	}
 	spyMission := repoModels.SpyMission{
 		Id:           id.String(),
@@ -149,9 +149,9 @@ func (c *MissionRepositoryImpl) AddSpyMission(fromPlanetId string, toPlanetId st
 	_, err = c.getCollection(client).InsertOne(ctx, spyMission)
 	if err != nil {
 		log.Println("error in persisting spy mission: ", err)
-		return errors.New("error in persisting spy mission")
+		return nil, errors.New("error in persisting spy mission")
 	}
-	return nil
+	return &spyMission, nil
 }
 
 func (c *MissionRepositoryImpl) UpdateAttackResult(id string, result repoModels.AttackResult) error {
