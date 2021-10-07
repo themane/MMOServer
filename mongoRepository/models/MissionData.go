@@ -41,5 +41,5 @@ type MissionRepository interface {
 
 	UpdateAttackResult(id string, result AttackResult) error
 	UpdateSpyResult(id string, result SpyResult) error
-	UpdateMissionState(id string, status string) error
+	UpdateMissionState(id string, state string) error
 }
