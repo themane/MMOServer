@@ -150,6 +150,14 @@ func GetShieldIds() []string {
 	return []string{"SHLD01", "SHLD02", "SHLD03"}
 }
 
+func GetAttackPointIds() []string {
+	return []string{"point1", "point2", "point3", "point4", "point5", "point6"}
+}
+
+func GetAttackLineIds() []string {
+	return []string{"line1", "line2", "line3", "line4"}
+}
+
 func GetPlanetType(planetUni models.PlanetUni) string {
 	if planetUni.Occupied == "" {
 		return Resource
