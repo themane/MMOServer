@@ -17,8 +17,8 @@ type MissionRepositoryImpl struct {
 	mongoDB  string
 }
 
-func NewMissionRepository(mongoURL string, mongoDB string) *ClanRepositoryImpl {
-	return &ClanRepositoryImpl{
+func NewMissionRepository(mongoURL string, mongoDB string) *MissionRepositoryImpl {
+	return &MissionRepositoryImpl{
 		mongoURL: mongoURL,
 		mongoDB:  mongoDB,
 	}
