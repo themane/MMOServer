@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
+	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"math"
 	"reflect"
@@ -14,17 +15,20 @@ import (
 type AttackService struct {
 	userRepository     repoModels.UserRepository
 	universeRepository repoModels.UniverseRepository
+	missionRepository  repoModels.MissionRepository
 	shipConstants      map[string]constants.ShipConstants
 }
 
 func NewAttackService(
 	userRepository repoModels.UserRepository,
 	universeRepository repoModels.UniverseRepository,
+	missionRepository repoModels.MissionRepository,
 	shipConstants map[string]constants.ShipConstants,
 ) *AttackService {
 	return &AttackService{
 		userRepository:     userRepository,
 		universeRepository: universeRepository,
+		missionRepository:  missionRepository,
 		shipConstants:      shipConstants,
 	}
 }
@@ -127,7 +131,7 @@ func distance(fromPlanet repoModels.PlanetUni, toPlanet repoModels.PlanetUni) fl
 	return math.Abs(float64(fromPlanet.Distance - toPlanet.Distance))
 }
 
-func validateAttackLineIds(formationMap map[string][]controllerModels.Formation, attackPointId string) error {
+func validateAttackLineIds(formationMap map[string][]models.Formation, attackPointId string) error {
 	var lineIds []string
 	for key := range formationMap {
 		lineIds = append(lineIds, key)

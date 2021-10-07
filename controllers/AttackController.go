@@ -17,10 +17,11 @@ type AttackController struct {
 
 func NewAttackController(userRepository models.UserRepository,
 	universeRepository models.UniverseRepository,
+	missionRepository repoModels.MissionRepository,
 	shipConstants map[string]constants.ShipConstants,
 ) *AttackController {
 	return &AttackController{
-		attackService: services.NewAttackService(userRepository, universeRepository, shipConstants),
+		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, shipConstants),
 	}
 }
 
