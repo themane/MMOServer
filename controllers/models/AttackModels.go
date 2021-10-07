@@ -20,6 +20,6 @@ type AttackRequest struct {
 }
 
 type Formation struct {
-	Name     string `json:"name" example:"ANUJ"`
+	ShipName string `json:"ship_name" example:"ANUJ"`
 	Quantity int    `json:"quantity" example:"15"`
 }

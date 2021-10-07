@@ -112,11 +112,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.IdleDefences = InitAllIdleDefences(planetUser.Defences, defenceConstants)
 	o.IdleDefenceShipCarriers = InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
 	for shipName, shipUser := range planetUser.Ships {
-		deployedShips := 0
-		for _, vikram := range planetUser.DefenceShipCarriers {
-			deployedShips += vikram.HostingShips[shipName]
-		}
-		availableShips := shipUser.Quantity - deployedShips
+		availableShips := planetUser.GetAvailableShip(shipName)
 		if availableShips <= 0 {
 			continue
 		}
