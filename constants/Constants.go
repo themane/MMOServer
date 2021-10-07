@@ -66,6 +66,12 @@ const (
 	Attacker        string = "ATTACKER"
 )
 
+//  Ship Types
+const (
+	SystemDistanceBlocks int = 150
+	SectorDistanceBlocks int = 20
+)
+
 type ExperienceConstants struct {
 	MaxLevel            int                                `json:"max_level"`
 	ExperiencesRequired map[string]ExperienceLevelConstant `json:"experiences_required"`
