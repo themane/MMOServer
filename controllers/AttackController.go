@@ -6,25 +6,22 @@ import (
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/mongoRepository/models"
+	"github.com/themane/MMOServer/services"
 	"io/ioutil"
 	"log"
-	"math/rand"
-	"time"
 )
 
 type AttackController struct {
+	attackService *services.AttackService
 }
 
 func NewAttackController(userRepository models.UserRepository,
-	clanRepository models.ClanRepository,
 	universeRepository models.UniverseRepository,
-	experienceConstants map[string]constants.ExperienceConstants,
-	buildingConstants map[string]constants.BuildingConstants,
-	mineConstants map[string]constants.MiningConstants,
-	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
 ) *AttackController {
-	return &AttackController{}
+	return &AttackController{
+		attackService: services.NewAttackService(userRepository, universeRepository, shipConstants),
+	}
 }
 
 // Spy godoc
@@ -50,13 +47,11 @@ func (a *AttackController) Spy(c *gin.Context) {
 	}
 	log.Printf("Launching spy mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
-	randomSleepTime := rand.Intn(1) + 1
-	time.Sleep(time.Second * time.Duration(randomSleepTime))
-
-	randomMinutes := rand.Intn(5) + 5
-	attackTime := time.Now().Add(time.Minute * time.Duration(randomMinutes))
-	returnTime := time.Now().Add(time.Minute * time.Duration(randomMinutes) * 2)
-	response := controllerModels.AttackResponse{AttackTime: attackTime.String(), ReturnTime: returnTime.String()}
+	response, err := a.attackService.Spy(request)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
 	c.JSON(200, response)
 }
 
@@ -83,12 +78,10 @@ func (a *AttackController) Attack(c *gin.Context) {
 	}
 	log.Printf("Launching attack mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
-	randomSleepTime := rand.Intn(2) + 1
-	time.Sleep(time.Second * time.Duration(randomSleepTime))
-
-	randomMinutes := rand.Intn(100) + 13
-	attackTime := time.Now().Add(time.Minute * time.Duration(randomMinutes))
-	returnTime := time.Now().Add(time.Minute * time.Duration(randomMinutes) * 2)
-	response := controllerModels.AttackResponse{AttackTime: attackTime.String(), ReturnTime: returnTime.String()}
+	response, err := a.attackService.Attack(request)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
 	c.JSON(200, response)
 }
