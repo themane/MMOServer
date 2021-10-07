@@ -6,6 +6,7 @@ import (
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/mongoRepository/models"
+	"github.com/themane/MMOServer/schedulers"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
 	"log"
@@ -18,10 +19,11 @@ type AttackController struct {
 func NewAttackController(userRepository models.UserRepository,
 	universeRepository models.UniverseRepository,
 	missionRepository models.MissionRepository,
+	scheduledMissionManager schedulers.ScheduledMissionManager,
 	shipConstants map[string]constants.ShipConstants,
 ) *AttackController {
 	return &AttackController{
-		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, shipConstants),
+		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, scheduledMissionManager, shipConstants),
 	}
 }
 

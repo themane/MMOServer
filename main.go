@@ -65,7 +65,7 @@ func main() {
 	}
 }
 
-func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.AttackController, *schedulers.ScheduledJobManager) {
+func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.AttackController, *schedulers.ScheduledJobManager, *schedulers.ScheduledMissionManager) {
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
 
@@ -79,16 +79,18 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	var clanRepository models.ClanRepository
 	var universeRepository models.UniverseRepository
 	var missionRepository models.MissionRepository
+	scheduledMissionManager := schedulers.NewScheduledMissionManager(userRepository, universeRepository)
 	userRepository = mongoRepository.NewUserRepository(mongoURL, mongoDB)
 	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB)
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants)
-	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, shipConstants)
+	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, scheduledMissionManager, shipConstants)
 	buildingController := controllers.NewBuildingController(userRepository, buildingConstants)
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems)
+
 	log.Println("Initialized all handlers")
-	return loginController, buildingController, attackController, scheduledJobManager
+	return loginController, buildingController, attackController, scheduledJobManager, scheduledMissionManager
 }
 
 func initialize() {

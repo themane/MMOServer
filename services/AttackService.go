@@ -6,6 +6,7 @@ import (
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
+	"github.com/themane/MMOServer/schedulers"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"math"
 	"reflect"
@@ -14,23 +15,26 @@ import (
 )
 
 type AttackService struct {
-	userRepository     repoModels.UserRepository
-	universeRepository repoModels.UniverseRepository
-	missionRepository  repoModels.MissionRepository
-	shipConstants      map[string]constants.ShipConstants
+	userRepository          repoModels.UserRepository
+	universeRepository      repoModels.UniverseRepository
+	missionRepository       repoModels.MissionRepository
+	scheduledMissionManager schedulers.ScheduledMissionManager
+	shipConstants           map[string]constants.ShipConstants
 }
 
 func NewAttackService(
 	userRepository repoModels.UserRepository,
 	universeRepository repoModels.UniverseRepository,
 	missionRepository repoModels.MissionRepository,
+	scheduledMissionManager schedulers.ScheduledMissionManager,
 	shipConstants map[string]constants.ShipConstants,
 ) *AttackService {
 	return &AttackService{
-		userRepository:     userRepository,
-		universeRepository: universeRepository,
-		missionRepository:  missionRepository,
-		shipConstants:      shipConstants,
+		userRepository:          userRepository,
+		universeRepository:      universeRepository,
+		missionRepository:       missionRepository,
+		scheduledMissionManager: scheduledMissionManager,
+		shipConstants:           shipConstants,
 	}
 }
 
@@ -69,12 +73,14 @@ func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controller
 		missionTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
 		returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
 
-		err := a.missionRepository.AddSpyMission(spyRequest.FromPlanetId, spyRequest.ToPlanetId, scoutMap,
+		spyMission, err := a.missionRepository.AddSpyMission(spyRequest.FromPlanetId, spyRequest.ToPlanetId, scoutMap,
 			primitive.Timestamp{T: uint32(time.Now().Unix())}, primitive.Timestamp{T: uint32(missionTime.Unix())}, primitive.Timestamp{T: uint32(returnTime.Unix())},
 		)
 		if err != nil {
 			return nil, err
 		}
+		a.scheduledMissionManager.ScheduleSpyMission(*spyMission, missionTime, returnTime)
+
 		response := controllerModels.AttackResponse{AttackTime: missionTime.String(), ReturnTime: returnTime.String()}
 		return &response, nil
 	}
@@ -124,12 +130,14 @@ func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) (*c
 		missionTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
 		returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
 
-		err := a.missionRepository.AddAttackMission(attackRequest.FromPlanetId, attackRequest.ToPlanetId, attackRequest.Formation,
+		attackMission, err := a.missionRepository.AddAttackMission(attackRequest.FromPlanetId, attackRequest.ToPlanetId, attackRequest.Formation,
 			primitive.Timestamp{T: uint32(time.Now().Unix())}, primitive.Timestamp{T: uint32(missionTime.Unix())}, primitive.Timestamp{T: uint32(returnTime.Unix())},
 		)
 		if err != nil {
 			return nil, err
 		}
+		a.scheduledMissionManager.ScheduleAttackMission(*attackMission, missionTime, returnTime)
+
 		response := controllerModels.AttackResponse{AttackTime: missionTime.String(), ReturnTime: returnTime.String()}
 		return &response, nil
 	}
