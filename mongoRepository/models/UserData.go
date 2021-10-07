@@ -38,6 +38,18 @@ func (p *PlanetUser) GetAvailableShip(shipName string) int {
 	return p.Ships[shipName].Quantity - defenceShipCarrierDeployed
 }
 
+func (p *PlanetUser) GetAvailableShips() map[string]int {
+	response := map[string]int{}
+	for shipName, ship := range p.Ships {
+		var defenceShipCarrierDeployed int
+		for _, defenceShipCarrier := range p.DefenceShipCarriers {
+			defenceShipCarrierDeployed += defenceShipCarrier.HostingShips[shipName]
+		}
+		response[shipName] = ship.Quantity - defenceShipCarrierDeployed
+	}
+	return response
+}
+
 type Resource struct {
 	Amount   int `json:"amount" bson:"amount"`
 	Reserved int `json:"reserved" bson:"reserved"`
