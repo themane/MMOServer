@@ -65,7 +65,7 @@ func main() {
 	}
 }
 
-func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.AttackController, *schedulers.ScheduledJobManager, *schedulers.ScheduledMissionManager) {
+func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.AttackController, *schedulers.ScheduledJobManager) {
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
 
@@ -85,12 +85,12 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants)
-	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, scheduledMissionManager, shipConstants)
+	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, shipConstants)
 	buildingController := controllers.NewBuildingController(userRepository, buildingConstants)
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems)
 
 	log.Println("Initialized all handlers")
-	return loginController, buildingController, attackController, scheduledJobManager, scheduledMissionManager
+	return loginController, buildingController, attackController, scheduledJobManager
 }
 
 func initialize() {
