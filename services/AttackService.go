@@ -6,6 +6,7 @@ import (
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"math"
 	"reflect"
 	"strconv"
@@ -49,6 +50,7 @@ func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controller
 	}
 	if planetUser, ok := userData.OccupiedPlanets[spyRequest.FromPlanetId]; ok {
 		availableShips := planetUser.GetAvailableShips()
+		scoutMap := map[string]int{}
 		for _, formation := range spyRequest.Scouts {
 			if availableShips[formation.ShipName] < formation.Quantity {
 				return nil, errors.New("error! found insufficient ships for attack formation")
@@ -59,13 +61,21 @@ func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controller
 			if squadSpeed < float64(speed) {
 				squadSpeed = float64(speed)
 			}
+			scoutMap[formation.ShipName] = formation.Quantity
 		}
 
 		blocks := distance(*fromPlanetUni, *toPlanetUni)
 		totalSecondsRequired := blocks * squadSpeed
-		attackTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
+		missionTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
 		returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
-		response := controllerModels.AttackResponse{AttackTime: attackTime.String(), ReturnTime: returnTime.String()}
+
+		err := a.missionRepository.AddSpyMission(spyRequest.FromPlanetId, spyRequest.ToPlanetId, scoutMap,
+			primitive.Timestamp{T: uint32(time.Now().Unix())}, primitive.Timestamp{T: uint32(missionTime.Unix())}, primitive.Timestamp{T: uint32(returnTime.Unix())},
+		)
+		if err != nil {
+			return nil, err
+		}
+		response := controllerModels.AttackResponse{AttackTime: missionTime.String(), ReturnTime: returnTime.String()}
 		return &response, nil
 	}
 	return nil, errors.New("error occurred in retrieving planet data")
@@ -109,12 +119,18 @@ func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) (*c
 				}
 			}
 		}
-
 		blocks := distance(*fromPlanetUni, *toPlanetUni)
 		totalSecondsRequired := blocks * squadSpeed
-		attackTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
+		missionTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
 		returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
-		response := controllerModels.AttackResponse{AttackTime: attackTime.String(), ReturnTime: returnTime.String()}
+
+		err := a.missionRepository.AddAttackMission(attackRequest.FromPlanetId, attackRequest.ToPlanetId, attackRequest.Formation,
+			primitive.Timestamp{T: uint32(time.Now().Unix())}, primitive.Timestamp{T: uint32(missionTime.Unix())}, primitive.Timestamp{T: uint32(returnTime.Unix())},
+		)
+		if err != nil {
+			return nil, err
+		}
+		response := controllerModels.AttackResponse{AttackTime: missionTime.String(), ReturnTime: returnTime.String()}
 		return &response, nil
 	}
 	return nil, errors.New("error occurred in retrieving planet data")

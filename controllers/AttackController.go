@@ -17,7 +17,7 @@ type AttackController struct {
 
 func NewAttackController(userRepository models.UserRepository,
 	universeRepository models.UniverseRepository,
-	missionRepository repoModels.MissionRepository,
+	missionRepository models.MissionRepository,
 	shipConstants map[string]constants.ShipConstants,
 ) *AttackController {
 	return &AttackController{
