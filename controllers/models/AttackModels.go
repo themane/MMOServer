@@ -1,6 +1,6 @@
 package models
 
-import "github.com/themane/MMOServer/controllers/models"
+import "github.com/themane/MMOServer/models"
 
 type AttackResponse struct {
 	AttackTime string `json:"attack_time"`
