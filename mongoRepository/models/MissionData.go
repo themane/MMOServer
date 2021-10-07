@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/themane/MMOServer/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AttackMission struct {
@@ -10,6 +11,8 @@ type AttackMission struct {
 	ToPlanetId   string                                   `json:"to_planet_id" bson:"to_planet_id"`
 	Formation    map[string]map[string][]models.Formation `json:"formation"`
 	Result       AttackResult                             `json:"result" bson:"result"`
+	MissionTime  primitive.Timestamp                      `json:"mission_time" bson:"mission_time"`
+	ReturnTime   primitive.Timestamp                      `json:"return_time" bson:"return_time"`
 	State        string                                   `json:"state" bson:"state"`
 	MissionType  string                                   `json:"mission_type" bson:"mission_type"`
 }
@@ -36,8 +39,8 @@ type MissionRepository interface {
 	FindAttackMissionsToPlanetId(id string) ([]AttackMission, error)
 	FindSpyMissionsToPlanetId(id string) ([]SpyMission, error)
 
-	AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation) error
-	AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int) error
+	AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation, missionTime primitive.Timestamp, returnTime primitive.Timestamp) error
+	AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int, missionTime primitive.Timestamp, returnTime primitive.Timestamp) error
 
 	UpdateAttackResult(id string, result AttackResult) error
 	UpdateSpyResult(id string, result SpyResult) error

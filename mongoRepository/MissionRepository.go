@@ -8,6 +8,7 @@ import (
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 )
@@ -94,7 +95,10 @@ func (c *MissionRepositoryImpl) FindSpyMissionsToPlanetId(toPlanetId string) ([]
 	return result, nil
 }
 
-func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation) error {
+func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation,
+	missionTime primitive.Timestamp, returnTime primitive.Timestamp,
+) error {
+
 	id, err := uuid.NewRandom()
 	if err != nil {
 		log.Println("error in persisting attack mission: ", err)
@@ -105,6 +109,8 @@ func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId
 		FromPlanetId: fromPlanetId,
 		ToPlanetId:   toPlanetId,
 		Formation:    formation,
+		MissionTime:  missionTime,
+		ReturnTime:   returnTime,
 		State:        constants.DepartureState,
 		MissionType:  constants.AttackMission,
 	}
@@ -117,7 +123,10 @@ func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId
 	}
 	return nil
 }
-func (c *MissionRepositoryImpl) AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int) error {
+func (c *MissionRepositoryImpl) AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int,
+	missionTime primitive.Timestamp, returnTime primitive.Timestamp,
+) error {
+
 	id, err := uuid.NewRandom()
 	if err != nil {
 		log.Println("error in persisting spy mission: ", err)
@@ -128,6 +137,8 @@ func (c *MissionRepositoryImpl) AddSpyMission(fromPlanetId string, toPlanetId st
 		FromPlanetId: fromPlanetId,
 		ToPlanetId:   toPlanetId,
 		Scouts:       scouts,
+		MissionTime:  missionTime,
+		ReturnTime:   returnTime,
 		State:        constants.DepartureState,
 		MissionType:  constants.SpyMission,
 	}
