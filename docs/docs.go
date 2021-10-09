@@ -31,6 +31,59 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/attack": {
+            "post": {
+                "description": "Endpoint to launch attack mission on other planet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attack"
+                ],
+                "summary": "Attack API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "attacker username",
+                        "name": "attacker",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "spy launch planet identifier",
+                        "name": "from_planet_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "spy destination planet identifier",
+                        "name": "to_planet_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "object",
+                        "description": "attack ships details",
+                        "name": "formation",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MissionResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Login verification and first load of complete user data",
@@ -86,46 +139,7 @@ var doc = `{
                 }
             }
         },
-        "/refresh/population": {
-            "post": {
-                "description": "Refresh endpoint to quickly refresh population data with the latest values",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "data retrieval"
-                ],
-                "summary": "Refresh population API",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user identifier",
-                        "name": "username",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "planet identifier",
-                        "name": "planet_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Population"
-                        }
-                    }
-                }
-            }
-        },
-        "/refresh/resources": {
+        "/refresh/mines": {
             "post": {
                 "description": "Refresh endpoint to quickly refresh mine data with the latest values",
                 "consumes": [
@@ -165,7 +179,180 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
+                            "$ref": "#/definitions/models.Mine"
+                        }
+                    }
+                }
+            }
+        },
+        "/refresh/population": {
+            "post": {
+                "description": "Refresh endpoint to quickly refresh population data with the latest values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data retrieval"
+                ],
+                "summary": "Refresh population API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user identifier",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "planet identifier",
+                        "name": "planet_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github.com_themane_MMOServer_mongoRepository_models.Population"
+                        }
+                    }
+                }
+            }
+        },
+        "/refresh/resources": {
+            "post": {
+                "description": "Refresh endpoint to quickly refresh resources data with the latest values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data retrieval"
+                ],
+                "summary": "Refresh resources API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user identifier",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "planet identifier",
+                        "name": "planet_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
                             "$ref": "#/definitions/models.Resources"
+                        }
+                    }
+                }
+            }
+        },
+        "/refresh/shields": {
+            "post": {
+                "description": "Refresh endpoint to quickly refresh shields data with the latest values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data retrieval"
+                ],
+                "summary": "Refresh shields API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user identifier",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "planet identifier",
+                        "name": "planet_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Shield"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/spy": {
+            "post": {
+                "description": "Endpoint to launch spy mission with available scout ships",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attack"
+                ],
+                "summary": "Spy API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "attacker username",
+                        "name": "attacker",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "spy launch planet identifier",
+                        "name": "from_planet_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "spy destination planet identifier",
+                        "name": "to_planet_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "object",
+                        "description": "scout ship details",
+                        "name": "scouts",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MissionResponse"
                         }
                     }
                 }
@@ -182,6 +369,79 @@ var doc = `{
                 }
             }
         },
+        "github.com_themane_MMOServer_controllers_models.Population": {
+            "type": "object",
+            "properties": {
+                "generation_rate": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "soldiers": {
+                    "$ref": "#/definitions/models.EmployedPopulation"
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 45
+                },
+                "unemployed": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "workers": {
+                    "$ref": "#/definitions/models.EmployedPopulation"
+                }
+            }
+        },
+        "github.com_themane_MMOServer_mongoRepository_models.Population": {
+            "type": "object",
+            "properties": {
+                "generation_rate": {
+                    "type": "integer"
+                },
+                "soldiers": {
+                    "$ref": "#/definitions/models.EmployedPopulation"
+                },
+                "unemployed": {
+                    "type": "integer"
+                },
+                "workers": {
+                    "$ref": "#/definitions/models.EmployedPopulation"
+                }
+            }
+        },
+        "models.BuildingState": {
+            "type": "object",
+            "properties": {
+                "cancel_returns": {
+                    "$ref": "#/definitions/models.CancelReturns"
+                },
+                "minutes_remaining_per_worker": {
+                    "type": "integer",
+                    "example": 1440
+                },
+                "state": {
+                    "type": "string",
+                    "example": "WORKING"
+                }
+            }
+        },
+        "models.CancelReturns": {
+            "type": "object",
+            "properties": {
+                "graphene_returned": {
+                    "type": "integer",
+                    "example": 101
+                },
+                "shelio_returned": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "water_returned": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
         "models.Clan": {
             "type": "object",
             "properties": {
@@ -192,6 +452,74 @@ var doc = `{
                 "role": {
                     "type": "string",
                     "example": "MEMBER"
+                }
+            }
+        },
+        "models.Defence": {
+            "type": "object",
+            "properties": {
+                "armor": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "hit_points": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "level": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "max_attack": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "min_attack": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "range": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "single_hit_targets": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "type": {
+                    "type": "string",
+                    "example": "BOMBER"
+                }
+            }
+        },
+        "models.DefenceShipCarrier": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "example": "DSC001"
+                },
+                "armor": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "deployed_ships": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Ship"
+                    }
+                },
+                "hit_points": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "level": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -273,12 +601,18 @@ var doc = `{
                     "type": "string",
                     "example": "WMP101"
                 },
-                "building_level": {
+                "building_state": {
+                    "$ref": "#/definitions/models.BuildingState"
+                },
+                "level": {
                     "type": "integer",
                     "example": 3
                 },
-                "next_level": {
-                    "$ref": "#/definitions/models.NextLevelAttributes"
+                "next_level_attributes": {
+                    "$ref": "#/definitions/models.NextLevelMiningAttributes"
+                },
+                "next_level_requirements": {
+                    "$ref": "#/definitions/models.NextLevelRequirements"
                 },
                 "workers": {
                     "type": "integer",
@@ -286,7 +620,18 @@ var doc = `{
                 }
             }
         },
-        "models.NextLevelAttributes": {
+        "models.MissionResponse": {
+            "type": "object",
+            "properties": {
+                "mission_time": {
+                    "type": "string"
+                },
+                "return_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.NextLevelMiningAttributes": {
             "type": "object",
             "properties": {
                 "current_mining_rate_per_worker": {
@@ -296,10 +641,6 @@ var doc = `{
                 "current_workers_max_limit": {
                     "type": "integer",
                     "example": 40
-                },
-                "graphene_required": {
-                    "type": "integer",
-                    "example": 101
                 },
                 "max_mining_rate_per_worker": {
                     "type": "integer",
@@ -316,6 +657,19 @@ var doc = `{
                 "next_workers_max_limit": {
                     "type": "integer",
                     "example": 65
+                }
+            }
+        },
+        "models.NextLevelRequirements": {
+            "type": "object",
+            "properties": {
+                "graphene_required": {
+                    "type": "integer",
+                    "example": 101
+                },
+                "minutes_required_per_worker": {
+                    "type": "integer",
+                    "example": 1440
                 },
                 "shelio_required": {
                     "type": "integer",
@@ -327,12 +681,55 @@ var doc = `{
                 }
             }
         },
+        "models.NextLevelShieldAttributes": {
+            "type": "object",
+            "properties": {
+                "current_hit_points": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "max_hit_points": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "next_hit_points": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "models.OccupiedPlanet": {
             "type": "object",
             "properties": {
+                "available_attack_ships": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Ship"
+                    }
+                },
+                "base": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "defence_ship_carriers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DefenceShipCarrier"
+                    }
+                },
+                "distance": {
+                    "type": "integer",
+                    "example": 14
+                },
                 "home": {
                     "type": "boolean",
                     "example": true
+                },
+                "idle_defences": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Defence"
+                    }
                 },
                 "mines": {
                     "type": "array",
@@ -345,13 +742,25 @@ var doc = `{
                     "example": "Planet2.json"
                 },
                 "population": {
-                    "$ref": "#/definitions/models.Population"
+                    "$ref": "#/definitions/github.com_themane_MMOServer_controllers_models.Population"
                 },
                 "position": {
                     "$ref": "#/definitions/models.PlanetPosition"
                 },
                 "resources": {
                     "$ref": "#/definitions/models.Resources"
+                },
+                "scouts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Ship"
+                    }
+                },
+                "shields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Shield"
+                    }
                 }
             }
         },
@@ -373,29 +782,6 @@ var doc = `{
                 "system": {
                     "type": "integer",
                     "example": 23
-                }
-            }
-        },
-        "models.Population": {
-            "type": "object",
-            "properties": {
-                "generation_rate": {
-                    "type": "integer",
-                    "example": 3
-                },
-                "soldiers": {
-                    "$ref": "#/definitions/models.EmployedPopulation"
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 45
-                },
-                "unemployed": {
-                    "type": "integer",
-                    "example": 3
-                },
-                "workers": {
-                    "$ref": "#/definitions/models.EmployedPopulation"
                 }
             }
         },
@@ -483,6 +869,91 @@ var doc = `{
                 }
             }
         },
+        "models.Shield": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "example": "SHLD101"
+                },
+                "building_state": {
+                    "$ref": "#/definitions/models.BuildingState"
+                },
+                "deployed_defences": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Defence"
+                    }
+                },
+                "level": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "next_level_attributes": {
+                    "$ref": "#/definitions/models.NextLevelShieldAttributes"
+                },
+                "next_level_requirements": {
+                    "$ref": "#/definitions/models.NextLevelRequirements"
+                },
+                "workers": {
+                    "type": "integer",
+                    "example": 12
+                }
+            }
+        },
+        "models.Ship": {
+            "type": "object",
+            "properties": {
+                "armor": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "hit_points": {
+                    "type": "integer",
+                    "example": 40
+                },
+                "level": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "max_attack": {
+                    "type": "integer",
+                    "example": 7
+                },
+                "min_attack": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "name": {
+                    "type": "string",
+                    "example": "ANUJ"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 15
+                },
+                "range": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "resource_capacity": {
+                    "type": "integer",
+                    "example": 40
+                },
+                "speed": {
+                    "type": "integer",
+                    "example": 600
+                },
+                "type": {
+                    "type": "string",
+                    "example": "ATTACKER"
+                },
+                "worker_capacity": {
+                    "type": "integer",
+                    "example": 20
+                }
+            }
+        },
         "models.StaticPlanetData": {
             "type": "object",
             "properties": {
@@ -502,12 +973,74 @@ var doc = `{
         "models.UnoccupiedPlanet": {
             "type": "object",
             "properties": {
+                "defences": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UnoccupiedPlanetDefence"
+                    }
+                },
+                "distance": {
+                    "type": "integer",
+                    "example": 14
+                },
+                "graphene": {
+                    "type": "integer",
+                    "example": 140
+                },
+                "invulnerable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "occupied": {
+                    "type": "string",
+                    "example": "devashish"
+                },
                 "planet_config": {
                     "type": "string",
                     "example": "Planet2.json"
                 },
                 "position": {
                     "$ref": "#/definitions/models.PlanetPosition"
+                },
+                "shields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UnoccupiedPlanetShield"
+                    }
+                },
+                "water": {
+                    "type": "integer",
+                    "example": 150
+                }
+            }
+        },
+        "models.UnoccupiedPlanetDefence": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "type": {
+                    "type": "string",
+                    "example": "BOMBER"
+                }
+            }
+        },
+        "models.UnoccupiedPlanetShield": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "example": "SHLD101"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "INVULNERABLE"
                 }
             }
         }

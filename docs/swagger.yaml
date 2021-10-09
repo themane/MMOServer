@@ -5,6 +5,56 @@ definitions:
         example: pong
         type: string
     type: object
+  github.com_themane_MMOServer_controllers_models.Population:
+    properties:
+      generation_rate:
+        example: 3
+        type: integer
+      soldiers:
+        $ref: '#/definitions/models.EmployedPopulation'
+      total:
+        example: 45
+        type: integer
+      unemployed:
+        example: 3
+        type: integer
+      workers:
+        $ref: '#/definitions/models.EmployedPopulation'
+    type: object
+  github.com_themane_MMOServer_mongoRepository_models.Population:
+    properties:
+      generation_rate:
+        type: integer
+      soldiers:
+        $ref: '#/definitions/models.EmployedPopulation'
+      unemployed:
+        type: integer
+      workers:
+        $ref: '#/definitions/models.EmployedPopulation'
+    type: object
+  models.BuildingState:
+    properties:
+      cancel_returns:
+        $ref: '#/definitions/models.CancelReturns'
+      minutes_remaining_per_worker:
+        example: 1440
+        type: integer
+      state:
+        example: WORKING
+        type: string
+    type: object
+  models.CancelReturns:
+    properties:
+      graphene_returned:
+        example: 101
+        type: integer
+      shelio_returned:
+        example: 0
+        type: integer
+      water_returned:
+        example: 5
+        type: integer
+    type: object
   models.Clan:
     properties:
       name:
@@ -13,6 +63,55 @@ definitions:
       role:
         example: MEMBER
         type: string
+    type: object
+  models.Defence:
+    properties:
+      armor:
+        example: 2
+        type: integer
+      hit_points:
+        example: 400
+        type: integer
+      level:
+        example: 1
+        type: integer
+      max_attack:
+        example: 12
+        type: integer
+      min_attack:
+        example: 10
+        type: integer
+      quantity:
+        example: 5
+        type: integer
+      range:
+        example: 2
+        type: integer
+      single_hit_targets:
+        example: 1
+        type: integer
+      type:
+        example: BOMBER
+        type: string
+    type: object
+  models.DefenceShipCarrier:
+    properties:
+      _id:
+        example: DSC001
+        type: string
+      armor:
+        example: 5
+        type: integer
+      deployed_ships:
+        items:
+          $ref: '#/definitions/models.Ship'
+        type: array
+      hit_points:
+        example: 400
+        type: integer
+      level:
+        example: 1
+        type: integer
     type: object
   models.EmployedPopulation:
     properties:
@@ -68,25 +167,33 @@ definitions:
       building_id:
         example: WMP101
         type: string
-      building_level:
+      building_state:
+        $ref: '#/definitions/models.BuildingState'
+      level:
         example: 3
         type: integer
-      next_level:
-        $ref: '#/definitions/models.NextLevelAttributes'
+      next_level_attributes:
+        $ref: '#/definitions/models.NextLevelMiningAttributes'
+      next_level_requirements:
+        $ref: '#/definitions/models.NextLevelRequirements'
       workers:
         example: 12
         type: integer
     type: object
-  models.NextLevelAttributes:
+  models.MissionResponse:
+    properties:
+      mission_time:
+        type: string
+      return_time:
+        type: string
+    type: object
+  models.NextLevelMiningAttributes:
     properties:
       current_mining_rate_per_worker:
         example: 1
         type: integer
       current_workers_max_limit:
         example: 40
-        type: integer
-      graphene_required:
-        example: 101
         type: integer
       max_mining_rate_per_worker:
         example: 12
@@ -100,6 +207,15 @@ definitions:
       next_workers_max_limit:
         example: 65
         type: integer
+    type: object
+  models.NextLevelRequirements:
+    properties:
+      graphene_required:
+        example: 101
+        type: integer
+      minutes_required_per_worker:
+        example: 1440
+        type: integer
       shelio_required:
         example: 0
         type: integer
@@ -107,11 +223,41 @@ definitions:
         example: 5
         type: integer
     type: object
+  models.NextLevelShieldAttributes:
+    properties:
+      current_hit_points:
+        example: 1
+        type: integer
+      max_hit_points:
+        example: 12
+        type: integer
+      next_hit_points:
+        example: 1
+        type: integer
+    type: object
   models.OccupiedPlanet:
     properties:
+      available_attack_ships:
+        items:
+          $ref: '#/definitions/models.Ship'
+        type: array
+      base:
+        example: true
+        type: boolean
+      defence_ship_carriers:
+        items:
+          $ref: '#/definitions/models.DefenceShipCarrier'
+        type: array
+      distance:
+        example: 14
+        type: integer
       home:
         example: true
         type: boolean
+      idle_defences:
+        items:
+          $ref: '#/definitions/models.Defence'
+        type: array
       mines:
         items:
           $ref: '#/definitions/models.Mine'
@@ -120,11 +266,19 @@ definitions:
         example: Planet2.json
         type: string
       population:
-        $ref: '#/definitions/models.Population'
+        $ref: '#/definitions/github.com_themane_MMOServer_controllers_models.Population'
       position:
         $ref: '#/definitions/models.PlanetPosition'
       resources:
         $ref: '#/definitions/models.Resources'
+      scouts:
+        items:
+          $ref: '#/definitions/models.Ship'
+        type: array
+      shields:
+        items:
+          $ref: '#/definitions/models.Shield'
+        type: array
     type: object
   models.PlanetPosition:
     properties:
@@ -140,22 +294,6 @@ definitions:
       system:
         example: 23
         type: integer
-    type: object
-  models.Population:
-    properties:
-      generation_rate:
-        example: 3
-        type: integer
-      soldiers:
-        $ref: '#/definitions/models.EmployedPopulation'
-      total:
-        example: 45
-        type: integer
-      unemployed:
-        example: 3
-        type: integer
-      workers:
-        $ref: '#/definitions/models.EmployedPopulation'
     type: object
   models.Profile:
     properties:
@@ -214,6 +352,67 @@ definitions:
         example: 23
         type: integer
     type: object
+  models.Shield:
+    properties:
+      _id:
+        example: SHLD101
+        type: string
+      building_state:
+        $ref: '#/definitions/models.BuildingState'
+      deployed_defences:
+        items:
+          $ref: '#/definitions/models.Defence'
+        type: array
+      level:
+        example: 3
+        type: integer
+      next_level_attributes:
+        $ref: '#/definitions/models.NextLevelShieldAttributes'
+      next_level_requirements:
+        $ref: '#/definitions/models.NextLevelRequirements'
+      workers:
+        example: 12
+        type: integer
+    type: object
+  models.Ship:
+    properties:
+      armor:
+        example: 2
+        type: integer
+      hit_points:
+        example: 40
+        type: integer
+      level:
+        example: 2
+        type: integer
+      max_attack:
+        example: 7
+        type: integer
+      min_attack:
+        example: 5
+        type: integer
+      name:
+        example: ANUJ
+        type: string
+      quantity:
+        example: 15
+        type: integer
+      range:
+        example: 2
+        type: integer
+      resource_capacity:
+        example: 40
+        type: integer
+      speed:
+        example: 600
+        type: integer
+      type:
+        example: ATTACKER
+        type: string
+      worker_capacity:
+        example: 20
+        type: integer
+    type: object
   models.StaticPlanetData:
     properties:
       planet_config:
@@ -227,11 +426,55 @@ definitions:
     type: object
   models.UnoccupiedPlanet:
     properties:
+      defences:
+        items:
+          $ref: '#/definitions/models.UnoccupiedPlanetDefence'
+        type: array
+      distance:
+        example: 14
+        type: integer
+      graphene:
+        example: 140
+        type: integer
+      invulnerable:
+        example: true
+        type: boolean
+      occupied:
+        example: devashish
+        type: string
       planet_config:
         example: Planet2.json
         type: string
       position:
         $ref: '#/definitions/models.PlanetPosition'
+      shields:
+        items:
+          $ref: '#/definitions/models.UnoccupiedPlanetShield'
+        type: array
+      water:
+        example: 150
+        type: integer
+    type: object
+  models.UnoccupiedPlanetDefence:
+    properties:
+      level:
+        example: 1
+        type: integer
+      quantity:
+        example: 5
+        type: integer
+      type:
+        example: BOMBER
+        type: string
+    type: object
+  models.UnoccupiedPlanetShield:
+    properties:
+      _id:
+        example: SHLD101
+        type: string
+      type:
+        example: INVULNERABLE
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -246,6 +489,42 @@ info:
   title: MMO Game Server
   version: 1.0.0
 paths:
+  /attack:
+    post:
+      consumes:
+      - application/json
+      description: Endpoint to launch attack mission on other planet
+      parameters:
+      - description: attacker username
+        in: query
+        name: attacker
+        required: true
+        type: string
+      - description: spy launch planet identifier
+        in: query
+        name: from_planet_id
+        required: true
+        type: string
+      - description: spy destination planet identifier
+        in: query
+        name: to_planet_id
+        required: true
+        type: string
+      - description: attack ships details
+        in: query
+        name: formation
+        required: true
+        type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MissionResponse'
+      summary: Attack API
+      tags:
+      - Attack
   /login:
     post:
       consumes:
@@ -282,34 +561,7 @@ paths:
       summary: Pings the server
       tags:
       - root
-  /refresh/population:
-    post:
-      consumes:
-      - application/json
-      description: Refresh endpoint to quickly refresh population data with the latest
-        values
-      parameters:
-      - description: user identifier
-        in: query
-        name: username
-        required: true
-        type: string
-      - description: planet identifier
-        in: query
-        name: planet_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Population'
-      summary: Refresh population API
-      tags:
-      - data retrieval
-  /refresh/resources:
+  /refresh/mines:
     post:
       consumes:
       - application/json
@@ -336,10 +588,129 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Resources'
+            $ref: '#/definitions/models.Mine'
       summary: Refresh mine API
       tags:
       - data retrieval
+  /refresh/population:
+    post:
+      consumes:
+      - application/json
+      description: Refresh endpoint to quickly refresh population data with the latest
+        values
+      parameters:
+      - description: user identifier
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: planet identifier
+        in: query
+        name: planet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github.com_themane_MMOServer_mongoRepository_models.Population'
+      summary: Refresh population API
+      tags:
+      - data retrieval
+  /refresh/resources:
+    post:
+      consumes:
+      - application/json
+      description: Refresh endpoint to quickly refresh resources data with the latest
+        values
+      parameters:
+      - description: user identifier
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: planet identifier
+        in: query
+        name: planet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Resources'
+      summary: Refresh resources API
+      tags:
+      - data retrieval
+  /refresh/shields:
+    post:
+      consumes:
+      - application/json
+      description: Refresh endpoint to quickly refresh shields data with the latest
+        values
+      parameters:
+      - description: user identifier
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: planet identifier
+        in: query
+        name: planet_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Shield'
+            type: array
+      summary: Refresh shields API
+      tags:
+      - data retrieval
+  /spy:
+    post:
+      consumes:
+      - application/json
+      description: Endpoint to launch spy mission with available scout ships
+      parameters:
+      - description: attacker username
+        in: query
+        name: attacker
+        required: true
+        type: string
+      - description: spy launch planet identifier
+        in: query
+        name: from_planet_id
+        required: true
+        type: string
+      - description: spy destination planet identifier
+        in: query
+        name: to_planet_id
+        required: true
+        type: string
+      - description: scout ship details
+        in: query
+        name: scouts
+        required: true
+        type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MissionResponse'
+      summary: Spy API
+      tags:
+      - Attack
 schemes:
 - https
 swagger: "2.0"

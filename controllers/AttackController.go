@@ -36,8 +36,8 @@ func NewAttackController(userRepository models.UserRepository,
 // @Param attacker query string true "attacker username"
 // @Param from_planet_id query string true "spy launch planet identifier"
 // @Param to_planet_id query string true "spy destination planet identifier"
-// @Param scouts query []Formation true "scout ship details"
-// @Success 200 {object} models.AttackResponse
+// @Param scouts query object true "scout ship details"
+// @Success 200 {object} controllerModels.MissionResponse
 // @Router /spy [post]
 func (a *AttackController) Spy(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
@@ -52,7 +52,7 @@ func (a *AttackController) Spy(c *gin.Context) {
 
 	response, err := a.attackService.Spy(request)
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(500, err.Error())
 		return
 	}
 	c.JSON(200, response)
@@ -67,8 +67,8 @@ func (a *AttackController) Spy(c *gin.Context) {
 // @Param attacker query string true "attacker username"
 // @Param from_planet_id query string true "spy launch planet identifier"
 // @Param to_planet_id query string true "spy destination planet identifier"
-// @Param formation query map[string]map[string][]Formation true "attack ships details"
-// @Success 200 {object} models.AttackResponse
+// @Param formation query object true "attack ships details"
+// @Success 200 {object} controllerModels.MissionResponse
 // @Router /attack [post]
 func (a *AttackController) Attack(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
@@ -83,7 +83,7 @@ func (a *AttackController) Attack(c *gin.Context) {
 
 	response, err := a.attackService.Attack(request)
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(500, err.Error())
 		return
 	}
 	c.JSON(200, response)

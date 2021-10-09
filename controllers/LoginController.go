@@ -55,7 +55,7 @@ func (l *LoginController) Login(c *gin.Context) {
 	response, err := l.loginService.Login(request.Username)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, "Internal Server Error")
+		c.JSON(500, err.Error())
 		return
 	}
 	if response == nil {
@@ -90,7 +90,7 @@ func (l *LoginController) RefreshPopulation(c *gin.Context) {
 	response, err := l.refreshService.RefreshPopulation(request.Username, request.PlanetId)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, "Internal Server Error")
+		c.JSON(500, err.Error())
 		return
 	}
 	if response == nil {
@@ -125,7 +125,7 @@ func (l *LoginController) RefreshResources(c *gin.Context) {
 	response, err := l.refreshService.RefreshResources(request.Username, request.PlanetId)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, "Internal Server Error")
+		c.JSON(500, err.Error())
 		return
 	}
 	if response == nil {
@@ -161,7 +161,7 @@ func (l *LoginController) RefreshMine(c *gin.Context) {
 	response, err := l.refreshService.RefreshMine(request.Username, request.PlanetId, request.MineId)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, "Internal Server Error")
+		c.JSON(500, err.Error())
 		return
 	}
 	if response == nil {
@@ -196,7 +196,7 @@ func (l *LoginController) RefreshShields(c *gin.Context) {
 	response, err := l.refreshService.RefreshShields(request.Username, request.PlanetId)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, "Internal Server Error")
+		c.JSON(500, err.Error())
 		return
 	}
 	if response == nil {
