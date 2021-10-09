@@ -2,9 +2,9 @@ package models
 
 import "github.com/themane/MMOServer/models"
 
-type AttackResponse struct {
-	AttackTime string `json:"attack_time"`
-	ReturnTime string `json:"return_time"`
+type MissionResponse struct {
+	MissionTime string `json:"mission_time"`
+	ReturnTime  string `json:"return_time"`
 }
 
 type SpyRequest struct {

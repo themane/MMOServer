@@ -38,7 +38,7 @@ func NewAttackService(
 	}
 }
 
-func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controllerModels.AttackResponse, error) {
+func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controllerModels.MissionResponse, error) {
 	var squadSpeed float64
 	userData, err := a.userRepository.FindByUsername(spyRequest.Attacker)
 	if err != nil {
@@ -81,13 +81,13 @@ func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controller
 		}
 		a.scheduledMissionManager.ScheduleSpyMission(*spyMission, missionTime, returnTime)
 
-		response := controllerModels.AttackResponse{AttackTime: missionTime.String(), ReturnTime: returnTime.String()}
+		response := controllerModels.MissionResponse{MissionTime: missionTime.String(), ReturnTime: returnTime.String()}
 		return &response, nil
 	}
 	return nil, errors.New("error occurred in retrieving planet data")
 }
 
-func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) (*controllerModels.AttackResponse, error) {
+func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) (*controllerModels.MissionResponse, error) {
 	var squadSpeed float64
 	userData, err := a.userRepository.FindByUsername(attackRequest.Attacker)
 	if err != nil {
@@ -138,7 +138,7 @@ func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) (*c
 		}
 		a.scheduledMissionManager.ScheduleAttackMission(*attackMission, missionTime, returnTime)
 
-		response := controllerModels.AttackResponse{AttackTime: missionTime.String(), ReturnTime: returnTime.String()}
+		response := controllerModels.MissionResponse{MissionTime: missionTime.String(), ReturnTime: returnTime.String()}
 		return &response, nil
 	}
 	return nil, errors.New("error occurred in retrieving planet data")
