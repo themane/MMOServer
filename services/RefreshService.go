@@ -5,7 +5,6 @@ import (
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/controllers/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
-	"log"
 )
 
 type QuickRefreshService struct {
@@ -16,6 +15,7 @@ type QuickRefreshService struct {
 	waterConstants     constants.MiningConstants
 	grapheneConstants  constants.MiningConstants
 	defenceConstants   map[string]constants.DefenceConstants
+	logger             *constants.LoggingUtils
 }
 
 func NewQuickRefreshService(
@@ -25,6 +25,7 @@ func NewQuickRefreshService(
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
+	logLevel string,
 ) *QuickRefreshService {
 	return &QuickRefreshService{
 		userRepository:     userRepository,
@@ -34,6 +35,7 @@ func NewQuickRefreshService(
 		waterConstants:     mineConstants[constants.Water],
 		grapheneConstants:  mineConstants[constants.Graphene],
 		defenceConstants:   defenceConstants,
+		logger:             constants.NewLoggingUtils("REFRESH_SERVICE", logLevel),
 	}
 }
 
@@ -114,12 +116,12 @@ func (r *QuickRefreshService) RefreshMissions(username string, inputPlanetId str
 		if planetId == inputPlanetId {
 			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetId)
 			if err != nil {
-				log.Println("error in retrieving attack missions for: "+planetId, err)
+				r.logger.Error("error in retrieving attack missions for: "+planetId, err)
 				return nil, errors.New("error in retrieving attack missions")
 			}
 			spyMissions, err := r.missionRepository.FindSpyMissionsFromPlanetId(planetId)
 			if err != nil {
-				log.Println("error in retrieving spy missions for: "+planetId, err)
+				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
 				return nil, errors.New("error in retrieving spy missions")
 			}
 			activeMissions := map[string][]models.ActiveMission{}

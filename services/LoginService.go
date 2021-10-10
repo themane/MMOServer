@@ -6,7 +6,6 @@ import (
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
-	"log"
 )
 
 type LoginService struct {
@@ -21,6 +20,7 @@ type LoginService struct {
 	grapheneConstants       constants.MiningConstants
 	defenceConstants        map[string]constants.DefenceConstants
 	shipConstants           map[string]constants.ShipConstants
+	logger                  *constants.LoggingUtils
 }
 
 func NewLoginService(
@@ -33,6 +33,7 @@ func NewLoginService(
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	logLevel string,
 ) *LoginService {
 	return &LoginService{
 		userRepository:          userRepository,
@@ -46,6 +47,7 @@ func NewLoginService(
 		grapheneConstants:       mineConstants[constants.Graphene],
 		defenceConstants:        defenceConstants,
 		shipConstants:           shipConstants,
+		logger:                  constants.NewLoggingUtils("LOGIN_SERVICE", logLevel),
 	}
 }
 
@@ -88,12 +90,12 @@ func (l *LoginService) home(allOccupiedPlanetIds map[string]repoModels.PlanetUse
 			planetData := controllerModels.OccupiedPlanet{}
 			attackMissions, err := l.missionRepository.FindAttackMissionsFromPlanetId(planetId)
 			if err != nil {
-				log.Println("error in retrieving attack missions for: "+planetId, err)
+				l.logger.Error("error in retrieving attack missions for: "+planetId, err)
 				return nil, errors.New("error in retrieving attack missions for: " + planetId)
 			}
 			spyMissions, err := l.missionRepository.FindSpyMissionsFromPlanetId(planetId)
 			if err != nil {
-				log.Println("error in retrieving spy missions for: "+planetId, err)
+				l.logger.Error("error in retrieving spy missions for: "+planetId, err)
 				return nil, errors.New("error in retrieving spy missions for: " + planetId)
 			}
 			planetData.Init(planetUni, planetUser,

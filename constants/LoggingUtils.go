@@ -26,6 +26,10 @@ func (l *LoggingUtils) Info(message string) {
 	log.Println(l.loggerName + messageSeparator + message)
 }
 
+func (l *LoggingUtils) Printf(format string, v ...interface{}) {
+	log.Println(l.loggerName+messageSeparator+format, v)
+}
+
 func (l *LoggingUtils) WarnInfo(message string) {
 	if l.level == Warn {
 		log.Println(l.loggerName + messageSeparator + message)

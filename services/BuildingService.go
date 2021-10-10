@@ -10,15 +10,18 @@ import (
 type BuildingService struct {
 	userRepository    repoModels.UserRepository
 	buildingConstants map[string]constants.BuildingConstants
+	logger            *constants.LoggingUtils
 }
 
 func NewBuildingService(
 	userRepository repoModels.UserRepository,
 	buildingConstants map[string]constants.BuildingConstants,
+	logLevel string,
 ) *BuildingService {
 	return &BuildingService{
 		userRepository:    userRepository,
 		buildingConstants: buildingConstants,
+		logger:            constants.NewLoggingUtils("BUILDING_SERVICE", logLevel),
 	}
 }
 

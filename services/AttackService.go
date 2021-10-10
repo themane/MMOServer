@@ -20,6 +20,7 @@ type AttackService struct {
 	missionRepository       repoModels.MissionRepository
 	scheduledMissionManager schedulers.ScheduledMissionManager
 	shipConstants           map[string]constants.ShipConstants
+	logger                  *constants.LoggingUtils
 }
 
 func NewAttackService(
@@ -28,6 +29,7 @@ func NewAttackService(
 	missionRepository repoModels.MissionRepository,
 	scheduledMissionManager schedulers.ScheduledMissionManager,
 	shipConstants map[string]constants.ShipConstants,
+	logLevel string,
 ) *AttackService {
 	return &AttackService{
 		userRepository:          userRepository,
@@ -35,6 +37,7 @@ func NewAttackService(
 		missionRepository:       missionRepository,
 		scheduledMissionManager: scheduledMissionManager,
 		shipConstants:           shipConstants,
+		logger:                  constants.NewLoggingUtils("ATTACK_SERVICE", logLevel),
 	}
 }
 
