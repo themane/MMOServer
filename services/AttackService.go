@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"math"
 	"reflect"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -163,6 +164,7 @@ func validateAttackLineIds(formationMap map[string][]models.Formation, attackPoi
 	for key := range formationMap {
 		lineIds = append(lineIds, key)
 	}
+	sort.Strings(lineIds)
 	validAttackLineIds := constants.GetAttackLineIds()
 	if !reflect.DeepEqual(lineIds, validAttackLineIds) {
 		return errors.New("line ids not valid for point id: " + attackPointId)
