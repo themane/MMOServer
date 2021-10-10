@@ -45,7 +45,7 @@ func (c *MissionRepositoryImpl) FindAttackMissionsFromPlanetId(fromPlanetId stri
 		log.Println(logPrefix+"error in retrieving attack missions from DB, fromPlanetId: "+fromPlanetId, err)
 		return nil, err
 	}
-	err = cursor.All(ctx, result)
+	err = cursor.All(ctx, &result)
 	if err != nil {
 		log.Println(logPrefix+"error in retrieving attack missions from DB, fromPlanetId: "+fromPlanetId, err)
 		return nil, err
@@ -62,7 +62,7 @@ func (c *MissionRepositoryImpl) FindSpyMissionsFromPlanetId(fromPlanetId string)
 		log.Println(logPrefix+"error in retrieving spy missions from DB, fromPlanetId: "+fromPlanetId, err)
 		return nil, err
 	}
-	err = cursor.All(ctx, result)
+	err = cursor.All(ctx, &result)
 	if err != nil {
 		log.Println(logPrefix+"error in retrieving spy missions from DB, fromPlanetId: "+fromPlanetId, err)
 		return nil, err
@@ -80,7 +80,7 @@ func (c *MissionRepositoryImpl) FindAttackMissionsToPlanetId(toPlanetId string) 
 		log.Println(logPrefix+"error in retrieving attack missions from DB, toPlanetId: "+toPlanetId, err)
 		return nil, err
 	}
-	err = cursor.All(ctx, result)
+	err = cursor.All(ctx, &result)
 	if err != nil {
 		log.Println(logPrefix+"error in retrieving attack missions from DB, toPlanetId: "+toPlanetId, err)
 		return nil, err
@@ -97,7 +97,7 @@ func (c *MissionRepositoryImpl) FindSpyMissionsToPlanetId(toPlanetId string) ([]
 		log.Println(logPrefix+"error in retrieving spy missions from DB, toPlanetId: "+toPlanetId, err)
 		return nil, err
 	}
-	err = cursor.All(ctx, result)
+	err = cursor.All(ctx, &result)
 	if err != nil {
 		log.Println(logPrefix+"error in retrieving spy missions from DB, toPlanetId: "+toPlanetId, err)
 		return nil, err
