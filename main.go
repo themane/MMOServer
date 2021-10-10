@@ -55,6 +55,7 @@ func main() {
 	r.POST("/refresh/resources", loginController.RefreshResources)
 	r.POST("/refresh/mine", loginController.RefreshMine)
 	r.POST("/refresh/shields", loginController.RefreshShields)
+	r.POST("/refresh/missions", loginController.RefreshMissions)
 	r.POST("/upgrade/building", buildingController.UpgradeBuilding)
 	r.POST("/spy", attackController.Spy)
 	r.POST("/attack", attackController.Attack)
