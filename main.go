@@ -25,6 +25,7 @@ var baseURL string
 var mongoDB string
 var maxSystems int
 var secretName string
+var logLevel string
 
 // @title MMO Game Server
 // @version 1.0.0
@@ -80,15 +81,15 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	var clanRepository models.ClanRepository
 	var universeRepository models.UniverseRepository
 	var missionRepository models.MissionRepository
-	scheduledMissionManager := schedulers.NewScheduledMissionManager(userRepository, universeRepository)
-	userRepository = mongoRepository.NewUserRepository(mongoURL, mongoDB)
-	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB)
-	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB)
-	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB)
-	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants)
-	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, shipConstants)
-	buildingController := controllers.NewBuildingController(userRepository, buildingConstants)
-	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems)
+	scheduledMissionManager := schedulers.NewScheduledMissionManager(userRepository, universeRepository, logLevel)
+	userRepository = mongoRepository.NewUserRepository(mongoURL, mongoDB, logLevel)
+	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB, logLevel)
+	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB, logLevel)
+	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
+	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
+	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, shipConstants, logLevel)
+	buildingController := controllers.NewBuildingController(userRepository, buildingConstants, logLevel)
+	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems, logLevel)
 
 	log.Println("Initialized all handlers")
 	return loginController, buildingController, attackController, scheduledJobManager
@@ -114,6 +115,11 @@ func initialize() {
 	maxSystems, err = strconv.Atoi(maxSystemsString)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	logLevel = os.Getenv("LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = constants.Info
 	}
 }
 
