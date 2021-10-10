@@ -74,7 +74,7 @@ func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controller
 		returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
 
 		spyMission, err := a.missionRepository.AddSpyMission(spyRequest.FromPlanetId, spyRequest.ToPlanetId, scoutMap,
-			primitive.Timestamp{T: uint32(time.Now().Unix())}, primitive.Timestamp{T: uint32(missionTime.Unix())}, primitive.Timestamp{T: uint32(returnTime.Unix())},
+			primitive.NewDateTimeFromTime(time.Now()), primitive.NewDateTimeFromTime(missionTime), primitive.NewDateTimeFromTime(returnTime),
 		)
 		if err != nil {
 			return nil, err
@@ -131,7 +131,7 @@ func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) (*c
 		returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
 
 		attackMission, err := a.missionRepository.AddAttackMission(attackRequest.FromPlanetId, attackRequest.ToPlanetId, attackRequest.Formation,
-			primitive.Timestamp{T: uint32(time.Now().Unix())}, primitive.Timestamp{T: uint32(missionTime.Unix())}, primitive.Timestamp{T: uint32(returnTime.Unix())},
+			primitive.NewDateTimeFromTime(time.Now()), primitive.NewDateTimeFromTime(missionTime), primitive.NewDateTimeFromTime(returnTime),
 		)
 		if err != nil {
 			return nil, err

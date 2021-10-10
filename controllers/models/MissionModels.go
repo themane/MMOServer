@@ -40,9 +40,9 @@ func (a *ActiveMission) InitAttackMission(missionData repoModels.AttackMission) 
 	a.Id = missionData.Id
 	a.ToPlanetId = missionData.ToPlanetId
 	a.Formation = missionData.Formation
-	a.LaunchTime = missionData.LaunchTime
-	a.MissionTime = missionData.MissionTime
-	a.ReturnTime = missionData.ReturnTime
+	a.LaunchTime = missionData.LaunchTime.Time()
+	a.MissionTime = missionData.MissionTime.Time()
+	a.ReturnTime = missionData.ReturnTime.Time()
 	a.MissionType = missionData.MissionType
 }
 
@@ -50,8 +50,8 @@ func (a *ActiveMission) InitSpyMission(missionData repoModels.SpyMission) {
 	a.Id = missionData.Id
 	a.ToPlanetId = missionData.ToPlanetId
 	a.Scouts = missionData.Scouts
-	a.LaunchTime = missionData.LaunchTime
-	a.MissionTime = missionData.MissionTime
-	a.ReturnTime = missionData.ReturnTime
+	a.LaunchTime = missionData.LaunchTime.Time()
+	a.MissionTime = missionData.MissionTime.Time()
+	a.ReturnTime = missionData.ReturnTime.Time()
 	a.MissionType = missionData.MissionType
 }
