@@ -9,11 +9,11 @@ import (
 	"github.com/themane/MMOServer/schedulers"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
-	"log"
 )
 
 type AttackController struct {
 	attackService *services.AttackService
+	logger        *constants.LoggingUtils
 }
 
 func NewAttackController(userRepository models.UserRepository,
@@ -21,9 +21,11 @@ func NewAttackController(userRepository models.UserRepository,
 	missionRepository models.MissionRepository,
 	scheduledMissionManager schedulers.ScheduledMissionManager,
 	shipConstants map[string]constants.ShipConstants,
+	logLevel string,
 ) *AttackController {
 	return &AttackController{
-		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, scheduledMissionManager, shipConstants),
+		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, scheduledMissionManager, shipConstants, logLevel),
+		logger:        constants.NewLoggingUtils("ATTACK_CONTROLLER", logLevel),
 	}
 }
 
@@ -44,11 +46,11 @@ func (a *AttackController) Spy(c *gin.Context) {
 	var request controllerModels.SpyRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		a.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Launching spy mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
+	a.logger.Printf("Launching spy mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
 	response, err := a.attackService.Spy(request)
 	if err != nil {
@@ -75,11 +77,11 @@ func (a *AttackController) Attack(c *gin.Context) {
 	var request controllerModels.AttackRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		a.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Launching attack mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
+	a.logger.Printf("Launching attack mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
 	response, err := a.attackService.Attack(request)
 	if err != nil {

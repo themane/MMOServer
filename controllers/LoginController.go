@@ -8,12 +8,12 @@ import (
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
-	"log"
 )
 
 type LoginController struct {
 	loginService   *services.LoginService
 	refreshService *services.QuickRefreshService
+	logger         *constants.LoggingUtils
 }
 
 func NewLoginController(userRepository models.UserRepository,
@@ -25,12 +25,14 @@ func NewLoginController(userRepository models.UserRepository,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	logLevel string,
 ) *LoginController {
 	return &LoginController{
 		loginService: services.NewLoginService(userRepository, clanRepository, universeRepository, missionRepository,
-			experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants),
+			experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			buildingConstants, mineConstants, defenceConstants),
+			buildingConstants, mineConstants, defenceConstants, logLevel),
+		logger: constants.NewLoggingUtils("LOGIN_CONTROLLER", logLevel),
 	}
 }
 
@@ -48,21 +50,21 @@ func (l *LoginController) Login(c *gin.Context) {
 	var request controllerModels.LoginRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		l.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Logged in user: %s", request.Username)
+	l.logger.Printf("Logged in user: %s", request.Username)
 
 	response, err := l.loginService.Login(request.Username)
 	if err != nil {
-		log.Print(err)
-		c.JSON(500, err.Error())
+		l.logger.Error("error in getting user data", err)
+		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
 		msg := "User data not found"
-		log.Print(msg)
+		l.logger.Info(msg)
 		c.JSON(204, msg)
 	}
 	c.JSON(200, response)
@@ -83,21 +85,21 @@ func (l *LoginController) RefreshPopulation(c *gin.Context) {
 	var request controllerModels.RefreshRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		l.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Refreshing population data for: %s", request.Username)
+	l.logger.Printf("Refreshing population data for: %s", request.Username)
 
 	response, err := l.refreshService.RefreshPopulation(request.Username, request.PlanetId)
 	if err != nil {
-		log.Print(err)
-		c.JSON(500, err.Error())
+		l.logger.Error("error in getting user data", err)
+		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
 		msg := "User data not found"
-		log.Print(msg)
+		l.logger.Info(msg)
 		c.JSON(204, msg)
 	}
 	c.JSON(200, response)
@@ -118,21 +120,21 @@ func (l *LoginController) RefreshResources(c *gin.Context) {
 	var request controllerModels.RefreshRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		l.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Refreshing resources data for: %s", request.Username)
+	l.logger.Printf("Refreshing resources data for: %s", request.Username)
 
 	response, err := l.refreshService.RefreshResources(request.Username, request.PlanetId)
 	if err != nil {
-		log.Print(err)
-		c.JSON(500, err.Error())
+		l.logger.Error("error in getting user data", err)
+		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
 		msg := "User data not found"
-		log.Print(msg)
+		l.logger.Info(msg)
 		c.JSON(204, msg)
 	}
 	c.JSON(200, response)
@@ -154,21 +156,21 @@ func (l *LoginController) RefreshMine(c *gin.Context) {
 	var request controllerModels.RefreshMineRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		l.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Refreshing mines data for: %s", request.Username)
+	l.logger.Printf("Refreshing mines data for: %s", request.Username)
 
 	response, err := l.refreshService.RefreshMine(request.Username, request.PlanetId, request.MineId)
 	if err != nil {
-		log.Print(err)
-		c.JSON(500, err.Error())
+		l.logger.Error("error in getting user data", err)
+		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
 		msg := "User data not found"
-		log.Print(msg)
+		l.logger.Info(msg)
 		c.JSON(204, msg)
 	}
 	c.JSON(200, response)
@@ -189,21 +191,21 @@ func (l *LoginController) RefreshShields(c *gin.Context) {
 	var request controllerModels.RefreshRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		l.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Refreshing shields data for: %s", request.Username)
+	l.logger.Printf("Refreshing shields data for: %s", request.Username)
 
 	response, err := l.refreshService.RefreshShields(request.Username, request.PlanetId)
 	if err != nil {
-		log.Print(err)
-		c.JSON(500, err.Error())
+		l.logger.Error("error in getting user data", err)
+		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
 		msg := "User data not found"
-		log.Print(msg)
+		l.logger.Info(msg)
 		c.JSON(204, msg)
 	}
 	c.JSON(200, response)
@@ -224,21 +226,21 @@ func (l *LoginController) RefreshMissions(c *gin.Context) {
 	var request controllerModels.RefreshRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		l.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Refreshing missions data for: %s", request.Username)
+	l.logger.Printf("Refreshing missions data for: %s", request.Username)
 
 	response, err := l.refreshService.RefreshMissions(request.Username, request.PlanetId)
 	if err != nil {
-		log.Print(err)
-		c.JSON(500, err.Error())
+		l.logger.Error("error in getting user data", err)
+		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
 		msg := "User data not found"
-		log.Print(msg)
+		l.logger.Info(msg)
 		c.JSON(204, msg)
 	}
 	c.JSON(200, response)

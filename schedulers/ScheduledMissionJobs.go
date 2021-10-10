@@ -3,8 +3,8 @@ package schedulers
 import (
 	"context"
 	"github.com/procyon-projects/chrono"
+	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/mongoRepository/models"
-	"log"
 	"time"
 )
 
@@ -13,15 +13,18 @@ type ScheduledMissionManager struct {
 	universeRepository models.UniverseRepository
 	taskScheduler      chrono.TaskScheduler
 	scheduledTasks     map[string]chrono.ScheduledTask
+	logger             *constants.LoggingUtils
 }
 
 func NewScheduledMissionManager(userRepository models.UserRepository, universeRepository models.UniverseRepository,
+	logLevel string,
 ) *ScheduledMissionManager {
 	return &ScheduledMissionManager{
 		userRepository:     userRepository,
 		universeRepository: universeRepository,
 		taskScheduler:      chrono.NewDefaultTaskScheduler(),
 		scheduledTasks:     map[string]chrono.ScheduledTask{},
+		logger:             constants.NewLoggingUtils("SCHEDULER_MISSION_JOBS", logLevel),
 	}
 }
 
@@ -34,7 +37,7 @@ func (m *ScheduledMissionManager) ScheduleAttackMission(attackMission models.Att
 			missionTime.Hour(), missionTime.Minute(), missionTime.Second()))
 	m.scheduledTasks[attackMission.Id] = scheduledTask
 	if err != nil {
-		log.Println("Error in scheduling mission")
+		m.logger.Error("error in scheduled task for attack mission", err)
 	}
 }
 
@@ -47,14 +50,14 @@ func (m *ScheduledMissionManager) ScheduleSpyMission(spyMission models.SpyMissio
 			missionTime.Hour(), missionTime.Minute(), missionTime.Second()))
 	m.scheduledTasks[spyMission.Id] = scheduledTask
 	if err != nil {
-		log.Println("Error in scheduling mission")
+		m.logger.Error("error in scheduled task for spy mission", err)
 	}
 }
 
 func (m *ScheduledMissionManager) attack(attackMission models.AttackMission) {
-	log.Println("Attacking: ", attackMission)
+	m.logger.Println("Attacking", attackMission)
 }
 
 func (m *ScheduledMissionManager) spy(spyMission models.SpyMission) {
-	log.Println("Spying: ", spyMission)
+	m.logger.Println("Spying", spyMission)
 }

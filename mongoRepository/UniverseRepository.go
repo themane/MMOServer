@@ -3,22 +3,24 @@ package mongoRepository
 import (
 	"context"
 	"errors"
+	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 )
 
 type UniverseRepositoryImpl struct {
 	mongoURL string
 	mongoDB  string
+	logger   *constants.LoggingUtils
 }
 
-func NewUniverseRepository(mongoURL string, mongoDB string) *UniverseRepositoryImpl {
+func NewUniverseRepository(mongoURL string, mongoDB string, logLevel string) *UniverseRepositoryImpl {
 	return &UniverseRepositoryImpl{
 		mongoURL: mongoURL,
 		mongoDB:  mongoDB,
+		logger:   constants.NewLoggingUtils("UNIVERSE_REPOSITORY", logLevel),
 	}
 }
 
@@ -38,7 +40,7 @@ func (u *UniverseRepositoryImpl) FindById(id string) (*repoModels.PlanetUni, err
 	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
 	if err != nil {
-		log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
+		u.logger.Error("Error in decoding planet data received from Mongo", err)
 		return nil, err
 	}
 	return &result, nil
@@ -56,7 +58,7 @@ func (u *UniverseRepositoryImpl) FindByPosition(system int, sector int, planet i
 	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
 	if err != nil {
-		log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
+		u.logger.Error("Error in decoding planet data received from Mongo", err)
 		return nil, err
 	}
 	return &result, nil
@@ -78,7 +80,7 @@ func (u *UniverseRepositoryImpl) GetSector(system int, sector int) (map[string]r
 		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
-			log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
+			u.logger.Error("Error in decoding planet data received from Mongo", err)
 			return nil, err
 		}
 		result[planet.Position.PlanetId()] = planet
@@ -102,7 +104,7 @@ func (u *UniverseRepositoryImpl) GetAllOccupiedPlanets(system int) (map[string]r
 		var planet repoModels.PlanetUni
 		err := cursor.Decode(&planet)
 		if err != nil {
-			log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
+			u.logger.Error("Error in decoding planet data received from Mongo", err)
 			return nil, err
 		}
 		result[planet.Position.PlanetId()] = planet
@@ -129,7 +131,7 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoMod
 		planet := repoModels.PlanetUni{}
 		err := cursor.Decode(&planet)
 		if err != nil {
-			log.Printf("Error in decoding planet data received from Mongo: %#v\n", err)
+			u.logger.Error("Error in decoding planet data received from Mongo", err)
 			return nil, err
 		}
 		return &planet, nil
@@ -147,6 +149,6 @@ func (u *UniverseRepositoryImpl) MarkOccupied(system int, sector int, planet int
 	}
 	update := bson.M{"occupied": userId}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Marked planet: %s as occupied\n", models.PlanetId(system, sector, planet))
+	u.logger.Printf("Marked planet: %s as occupied\n", models.PlanetId(system, sector, planet))
 	return nil
 }

@@ -2,22 +2,24 @@ package mongoRepository
 
 import (
 	"context"
+	"github.com/themane/MMOServer/constants"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 	"math"
 )
 
 type UserRepositoryImpl struct {
 	mongoURL string
 	mongoDB  string
+	logger   *constants.LoggingUtils
 }
 
-func NewUserRepository(mongoURL string, mongoDB string) *UserRepositoryImpl {
+func NewUserRepository(mongoURL string, mongoDB string, logLevel string) *UserRepositoryImpl {
 	return &UserRepositoryImpl{
 		mongoURL: mongoURL,
 		mongoDB:  mongoDB,
+		logger:   constants.NewLoggingUtils("USER_REPOSITORY", logLevel),
 	}
 }
 func (u *UserRepositoryImpl) getMongoClient() (*mongo.Client, context.Context) {
@@ -36,7 +38,7 @@ func (u *UserRepositoryImpl) FindById(id string) (*repoModels.UserData, error) {
 	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
 	if err != nil {
-		log.Printf("Error in decoding user data received from Mongo: %#v\n", err)
+		u.logger.Error("Error in decoding user data received from Mongo", err)
 		return nil, err
 	}
 	return &result, nil
@@ -50,7 +52,7 @@ func (u *UserRepositoryImpl) FindByUsername(username string) (*repoModels.UserDa
 	singleResult := u.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
 	if err != nil {
-		log.Printf("Error in decoding user data received from Mongo: %#v\n", err)
+		u.logger.Error("Error in decoding user data received from Mongo", err)
 		return nil, err
 	}
 	return &result, nil
@@ -62,7 +64,7 @@ func (u *UserRepositoryImpl) AddExperience(id string, experience int) error {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{"profile.experience": experience}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Added experience id: %s, experience: %d\n", id, experience)
+	u.logger.Printf("Added experience id: %s, experience: %d\n", id, experience)
 	return nil
 }
 
@@ -72,7 +74,7 @@ func (u *UserRepositoryImpl) UpdateClanId(id string, clanId string) error {
 	filter := bson.M{"_id": id}
 	update := bson.M{"profile.clan_id": clanId}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Updated id: %s, clanId: %s\n", id, clanId)
+	u.logger.Printf("Updated id: %s, clanId: %s\n", id, clanId)
 	return nil
 }
 
@@ -94,7 +96,7 @@ func (u *UserRepositoryImpl) UpgradeBuildingLevel(id string, planetId string, bu
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Upgraded id: %s, planetId: %s, buildingId: %s\n", id, planetId, buildingId)
+	u.logger.Printf("Upgraded id: %s, planetId: %s, buildingId: %s\n", id, planetId, buildingId)
 	return nil
 }
 
@@ -108,7 +110,7 @@ func (u *UserRepositoryImpl) AddResources(id string, planetId string, water int,
 		"occupied_planets." + planetId + ".shelio":          shelio,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Added id: %s, planetId: %s, water: %d, graphene: %d, shelio: %d\n", id, planetId, water, graphene, shelio)
+	u.logger.Printf("Added id: %s, planetId: %s, water: %d, graphene: %d, shelio: %d\n", id, planetId, water, graphene, shelio)
 	return nil
 }
 
@@ -122,7 +124,7 @@ func (u *UserRepositoryImpl) UpdateMineResources(id string, planetId string, min
 		"occupied_planets." + planetId + ".mines." + mineId + "mined": math.Max(float64(water), float64(graphene)),
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Updated mine resources id: %s, planetId: %s, water: %d, graphene: %d, mineId: %s\n",
+	u.logger.Printf("Updated mine resources id: %s, planetId: %s, water: %d, graphene: %d, mineId: %s\n",
 		id, planetId, water, graphene, mineId)
 	return nil
 }
@@ -135,7 +137,7 @@ func (u *UserRepositoryImpl) UpdateWorkers(id string, planetId string, buildingI
 		"occupied_planets." + planetId + ".buildings." + buildingId + "workers": workers,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Updated workers id: %s, planetId: %s, buildingId: %s, workers: %d\n", id, planetId, buildingId, workers)
+	u.logger.Printf("Updated workers id: %s, planetId: %s, buildingId: %s, workers: %d\n", id, planetId, buildingId, workers)
 	return nil
 }
 
@@ -147,7 +149,7 @@ func (u *UserRepositoryImpl) AddPopulation(id string, planetId string, populatio
 		"occupied_planets." + planetId + ".population.unemployed": population,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Added population id: %s, planetId: %s, population: %d\n", id, planetId, population)
+	u.logger.Printf("Added population id: %s, planetId: %s, population: %d\n", id, planetId, population)
 	return nil
 }
 
@@ -160,7 +162,7 @@ func (u *UserRepositoryImpl) RecruitWorkers(id string, planetId string, workers 
 		"occupied_planets." + planetId + ".population.workers.idle": workers,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Assigned workers id: %s, planetId: %s, workers: %d\n", id, planetId, workers)
+	u.logger.Printf("Assigned workers id: %s, planetId: %s, workers: %d\n", id, planetId, workers)
 	return nil
 }
 
@@ -173,7 +175,7 @@ func (u *UserRepositoryImpl) RecruitSoldiers(id string, planetId string, soldier
 		"occupied_planets." + planetId + ".population.soldiers.idle": soldiers,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	log.Printf("Assigned soldiers id: %s, planetId: %s, soldiers: %d\n", id, planetId, soldiers)
+	u.logger.Printf("Assigned soldiers id: %s, planetId: %s, soldiers: %d\n", id, planetId, soldiers)
 	return nil
 }
 

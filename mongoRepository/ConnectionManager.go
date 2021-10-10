@@ -2,7 +2,6 @@ package mongoRepository
 
 import (
 	"context"
-	"fmt"
 	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -44,5 +43,5 @@ func disconnect(client *mongo.Client, ctx context.Context) {
 		log.Print(err)
 		return
 	}
-	fmt.Println("Connection to MongoDB closed.")
+	log.Println("Connection to MongoDB closed.")
 }

@@ -2,21 +2,23 @@ package mongoRepository
 
 import (
 	"context"
+	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 )
 
 type ClanRepositoryImpl struct {
 	mongoURL string
 	mongoDB  string
+	logger   *constants.LoggingUtils
 }
 
-func NewClanRepository(mongoURL string, mongoDB string) *ClanRepositoryImpl {
+func NewClanRepository(mongoURL string, mongoDB string, logLevel string) *ClanRepositoryImpl {
 	return &ClanRepositoryImpl{
 		mongoURL: mongoURL,
 		mongoDB:  mongoDB,
+		logger:   constants.NewLoggingUtils("CLAN_REPOSITORY", logLevel),
 	}
 }
 
@@ -36,7 +38,7 @@ func (c *ClanRepositoryImpl) FindById(id string) (*models.ClanData, error) {
 	singleResult := c.getCollection(client).FindOne(ctx, filter)
 	err := singleResult.Decode(&result)
 	if err != nil {
-		log.Printf("Error in decoding clan data received from Mongo: %#v\n", err)
+		c.logger.Error("error in decoding retrieved clan data", err)
 		return nil, err
 	}
 	return &result, nil

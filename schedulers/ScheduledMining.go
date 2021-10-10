@@ -3,16 +3,15 @@ package schedulers
 import (
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/mongoRepository/models"
-	"log"
 	"strconv"
 )
 
 func (j *ScheduledJobManager) scheduledMining() {
-	log.Println("Scheduled run of mining")
+	j.logger.Info("Scheduled run of mining")
 	for system := 0; system < j.maxSystem; system++ {
 		occupiedPlanets, err := j.universeRepository.GetAllOccupiedPlanets(system)
 		if err != nil {
-			log.Print(err)
+			j.logger.Error("error in retrieving all occupied planets for system: "+string(system), err)
 			return
 		}
 		userIdplanetsMap := map[string][]models.PlanetUni{}
@@ -29,12 +28,12 @@ func (j *ScheduledJobManager) scheduledMining() {
 			planetIdWaterMiningRateMap, planetIdGrapheneMiningRateMap := j.getMiningRate(userId, planets)
 			err := j.userRepository.ScheduledWaterIncrease(userId, planetIdWaterMiningRateMap)
 			if err != nil {
-				log.Print(err)
+				j.logger.Error("error in water increase update for user: "+userId, err)
 				return
 			}
 			err = j.userRepository.ScheduledGrapheneIncrease(userId, planetIdGrapheneMiningRateMap)
 			if err != nil {
-				log.Print(err)
+				j.logger.Error("error in graphene increase update for user: "+userId, err)
 				return
 			}
 		}
@@ -44,7 +43,7 @@ func (j *ScheduledJobManager) scheduledMining() {
 func (j *ScheduledJobManager) getMiningRate(userId string, occupiedPlanets []models.PlanetUni) (map[string]map[string]int, map[string]map[string]int) {
 	userData, err := j.userRepository.FindById(userId)
 	if err != nil {
-		log.Print(err)
+		j.logger.Error("error in retrieving user data for: "+userId, err)
 		return nil, nil
 	}
 	planetIdWaterMiningRateMap := map[string]map[string]int{}

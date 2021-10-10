@@ -8,19 +8,21 @@ import (
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
-	"log"
 )
 
 type BuildingController struct {
 	buildingService *services.BuildingService
+	logger          *constants.LoggingUtils
 }
 
 func NewBuildingController(
 	userRepository repoModels.UserRepository,
 	buildingConstants map[string]constants.BuildingConstants,
+	logLevel string,
 ) *BuildingController {
 	return &BuildingController{
-		buildingService: services.NewBuildingService(userRepository, buildingConstants),
+		buildingService: services.NewBuildingService(userRepository, buildingConstants, logLevel),
+		logger:          constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
 	}
 }
 
@@ -40,11 +42,11 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 	var request controllerModels.UpgradeBuildingRequest
 	err := json.Unmarshal(body, &request)
 	if err != nil {
-		log.Print(err)
+		b.logger.Error("request not parseable", err)
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Upgrading: %s, %s, %s", request.Username, request.PlanetId, request.BuildingId)
+	b.logger.Printf("Upgrading: %s, %s, %s", request.Username, request.PlanetId, request.BuildingId)
 
 	err = b.buildingService.UpgradeBuilding(request.Username, request.PlanetId, request.BuildingId)
 	if err != nil {
