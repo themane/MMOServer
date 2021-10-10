@@ -110,7 +110,7 @@ func (r *QuickRefreshService) RefreshMissions(username string, inputPlanetId str
 	if errUser != nil {
 		return nil, errUser
 	}
-	for planetId, _ := range userData.OccupiedPlanets {
+	for planetId := range userData.OccupiedPlanets {
 		if planetId == inputPlanetId {
 			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetId)
 			if err != nil {

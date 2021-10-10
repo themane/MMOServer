@@ -19,6 +19,7 @@ type LoginController struct {
 func NewLoginController(userRepository models.UserRepository,
 	clanRepository models.ClanRepository,
 	universeRepository models.UniverseRepository,
+	missionRepository models.MissionRepository,
 	experienceConstants map[string]constants.ExperienceConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
@@ -26,9 +27,10 @@ func NewLoginController(userRepository models.UserRepository,
 	shipConstants map[string]constants.ShipConstants,
 ) *LoginController {
 	return &LoginController{
-		loginService: services.NewLoginService(userRepository, clanRepository, universeRepository,
+		loginService: services.NewLoginService(userRepository, clanRepository, universeRepository, missionRepository,
 			experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants),
-		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, buildingConstants, mineConstants, defenceConstants),
+		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
+			buildingConstants, mineConstants, defenceConstants),
 	}
 }
 
@@ -156,7 +158,7 @@ func (l *LoginController) RefreshMine(c *gin.Context) {
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Refreshing resources data for: %s", request.Username)
+	log.Printf("Refreshing mines data for: %s", request.Username)
 
 	response, err := l.refreshService.RefreshMine(request.Username, request.PlanetId, request.MineId)
 	if err != nil {
@@ -191,9 +193,44 @@ func (l *LoginController) RefreshShields(c *gin.Context) {
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	log.Printf("Refreshing resources data for: %s", request.Username)
+	log.Printf("Refreshing shields data for: %s", request.Username)
 
 	response, err := l.refreshService.RefreshShields(request.Username, request.PlanetId)
+	if err != nil {
+		log.Print(err)
+		c.JSON(500, err.Error())
+		return
+	}
+	if response == nil {
+		msg := "User data not found"
+		log.Print(msg)
+		c.JSON(204, msg)
+	}
+	c.JSON(200, response)
+}
+
+// RefreshMissions godoc
+// @Summary Refresh missions API
+// @Description Refresh endpoint to quickly refresh missions data with the latest values
+// @Tags data retrieval
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Success 200 {object} map[string][]models.ActiveMission
+// @Router /refresh/shields [post]
+func (l *LoginController) RefreshMissions(c *gin.Context) {
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	var request controllerModels.RefreshRequest
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, "Request not parseable")
+		return
+	}
+	log.Printf("Refreshing missions data for: %s", request.Username)
+
+	response, err := l.refreshService.RefreshMissions(request.Username, request.PlanetId)
 	if err != nil {
 		log.Print(err)
 		c.JSON(500, err.Error())
