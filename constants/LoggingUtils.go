@@ -27,7 +27,11 @@ func (l *LoggingUtils) Info(message string) {
 }
 
 func (l *LoggingUtils) Printf(format string, v ...interface{}) {
-	log.Println(l.loggerName+messageSeparator+format, v)
+	log.Printf(l.loggerName+messageSeparator+format, v)
+}
+
+func (l *LoggingUtils) Println(v ...interface{}) {
+	log.Println(l.loggerName+messageSeparator, v)
 }
 
 func (l *LoggingUtils) WarnInfo(message string) {
