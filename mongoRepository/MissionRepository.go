@@ -106,7 +106,7 @@ func (c *MissionRepositoryImpl) FindSpyMissionsToPlanetId(toPlanetId string) ([]
 }
 
 func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation,
-	launchTime primitive.Timestamp, missionTime primitive.Timestamp, returnTime primitive.Timestamp,
+	launchTime primitive.DateTime, missionTime primitive.DateTime, returnTime primitive.DateTime,
 ) (*repoModels.AttackMission, error) {
 
 	id, err := uuid.NewRandom()
@@ -135,7 +135,7 @@ func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId
 	return &attackMission, nil
 }
 func (c *MissionRepositoryImpl) AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int,
-	launchTime primitive.Timestamp, missionTime primitive.Timestamp, returnTime primitive.Timestamp,
+	launchTime primitive.DateTime, missionTime primitive.DateTime, returnTime primitive.DateTime,
 ) (*repoModels.SpyMission, error) {
 
 	id, err := uuid.NewRandom()

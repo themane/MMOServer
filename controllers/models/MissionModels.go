@@ -3,7 +3,7 @@ package models
 import (
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type MissionResponse struct {
@@ -30,9 +30,9 @@ type ActiveMission struct {
 	ToPlanetId  string                                   `json:"to_planet_id"`
 	Formation   map[string]map[string][]models.Formation `json:"formation"`
 	Scouts      map[string]int                           `json:"scouts"`
-	LaunchTime  primitive.Timestamp                      `json:"launch_time" bson:"launch_time"`
-	MissionTime primitive.Timestamp                      `json:"mission_time" bson:"mission_time"`
-	ReturnTime  primitive.Timestamp                      `json:"return_time" bson:"return_time"`
+	LaunchTime  time.Time                                `json:"launch_time" bson:"launch_time"`
+	MissionTime time.Time                                `json:"mission_time" bson:"mission_time"`
+	ReturnTime  time.Time                                `json:"return_time" bson:"return_time"`
 	MissionType string                                   `json:"mission_type" bson:"mission_type"`
 }
 
