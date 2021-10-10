@@ -85,9 +85,12 @@ type OccupiedPlanet struct {
 	Home                    bool                  `json:"home" example:"true"`
 	Base                    bool                  `json:"base" example:"true"`
 	Distance                int                   `json:"distance" example:"14"`
+	AttackMissions          []ActiveMission       `json:"attack_missions"`
+	SpyMissions             []ActiveMission       `json:"spy_missions"`
 }
 
 func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser,
+	attackMissions []repoModels.AttackMission, spyMissions []repoModels.SpyMission,
 	buildingConstants map[string]constants.BuildingConstants,
 	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants) {
@@ -126,4 +129,15 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 
 	}
 	o.Home = planetUser.Home
+
+	for _, attackMission := range attackMissions {
+		activeMission := ActiveMission{}
+		activeMission.InitAttackMission(attackMission)
+		o.AttackMissions = append(o.AttackMissions, activeMission)
+	}
+	for _, spyMission := range spyMissions {
+		activeMission := ActiveMission{}
+		activeMission.InitSpyMission(spyMission)
+		o.SpyMissions = append(o.SpyMissions, activeMission)
+	}
 }
