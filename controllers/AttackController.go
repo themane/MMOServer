@@ -54,7 +54,8 @@ func (a *AttackController) Spy(c *gin.Context) {
 
 	response, err := a.attackService.Spy(request)
 	if err != nil {
-		c.JSON(500, err.Error())
+		a.logger.Error("error in launching spy mission", err)
+		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
 	c.JSON(200, response)
@@ -85,7 +86,8 @@ func (a *AttackController) Attack(c *gin.Context) {
 
 	response, err := a.attackService.Attack(request)
 	if err != nil {
-		c.JSON(500, err.Error())
+		a.logger.Error("error in launching attack mission", err)
+		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
 	c.JSON(200, response)
