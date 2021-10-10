@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	SEPARATOR = " - "
-	WARN      = "WARN"
-	INFO      = "INFO"
+	messageSeparator = " - "
+	Warn             = "WARN"
+	Info             = "INFO"
 )
 
 type LoggingUtils struct {
@@ -23,21 +23,21 @@ func NewLoggingUtils(loggerName string, level string) *LoggingUtils {
 }
 
 func (l *LoggingUtils) info(message string) {
-	log.Println(l.loggerName + SEPARATOR + message)
+	log.Println(l.loggerName + messageSeparator + message)
 }
 
 func (l *LoggingUtils) warnInfo(message string) {
-	if l.level == WARN {
-		log.Println(l.loggerName + SEPARATOR + message)
+	if l.level == Warn {
+		log.Println(l.loggerName + messageSeparator + message)
 	}
 }
 
 func (l *LoggingUtils) error(message string, err error) {
-	log.Println(l.loggerName+SEPARATOR+message, err)
+	log.Println(l.loggerName+messageSeparator+message, err)
 }
 
 func (l *LoggingUtils) warn(message string, err error) {
-	if l.level == WARN {
-		log.Println(l.loggerName+SEPARATOR+message, err)
+	if l.level == Warn {
+		log.Println(l.loggerName+messageSeparator+message, err)
 	}
 }
