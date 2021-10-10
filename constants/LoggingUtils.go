@@ -22,21 +22,21 @@ func NewLoggingUtils(loggerName string, level string) *LoggingUtils {
 	}
 }
 
-func (l *LoggingUtils) info(message string) {
+func (l *LoggingUtils) Info(message string) {
 	log.Println(l.loggerName + messageSeparator + message)
 }
 
-func (l *LoggingUtils) warnInfo(message string) {
+func (l *LoggingUtils) WarnInfo(message string) {
 	if l.level == Warn {
 		log.Println(l.loggerName + messageSeparator + message)
 	}
 }
 
-func (l *LoggingUtils) error(message string, err error) {
+func (l *LoggingUtils) Error(message string, err error) {
 	log.Println(l.loggerName+messageSeparator+message, err)
 }
 
-func (l *LoggingUtils) warn(message string, err error) {
+func (l *LoggingUtils) Warn(message string, err error) {
 	if l.level == Warn {
 		log.Println(l.loggerName+messageSeparator+message, err)
 	}
