@@ -52,14 +52,15 @@ func main() {
 
 	r.GET("/ping", controllers.Ping)
 	r.POST("/login", loginController.Login)
-	r.POST("/refresh/population", loginController.RefreshPopulation)
-	r.POST("/refresh/resources", loginController.RefreshResources)
-	r.POST("/refresh/mine", loginController.RefreshMine)
-	r.POST("/refresh/shields", loginController.RefreshShields)
-	r.POST("/refresh/missions", loginController.RefreshMissions)
+
+	r.GET("/refresh/planet", loginController.RefreshPlanet)
+	r.GET("/refresh/population", loginController.RefreshPopulation)
+	r.GET("/refresh/resources", loginController.RefreshResources)
+
 	r.POST("/upgrade/building", buildingController.UpgradeBuilding)
 	r.POST("/spy", attackController.Spy)
 	r.POST("/attack", attackController.Attack)
+
 	err := r.Run()
 	if err != nil {
 		log.Println("Error in starting server")
@@ -87,7 +88,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB, logLevel)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
-	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, shipConstants, logLevel)
+	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
 	buildingController := controllers.NewBuildingController(userRepository, buildingConstants, logLevel)
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems, logLevel)
 
