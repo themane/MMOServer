@@ -12,20 +12,27 @@ import (
 )
 
 type AttackController struct {
-	attackService *services.AttackService
-	logger        *constants.LoggingUtils
+	attackService  *services.AttackService
+	refreshService *services.QuickRefreshService
+	logger         *constants.LoggingUtils
 }
 
 func NewAttackController(userRepository models.UserRepository,
 	universeRepository models.UniverseRepository,
 	missionRepository models.MissionRepository,
 	scheduledMissionManager schedulers.ScheduledMissionManager,
+	buildingConstants map[string]constants.BuildingConstants,
+	mineConstants map[string]constants.MiningConstants,
+	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
 	logLevel string,
 ) *AttackController {
 	return &AttackController{
-		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, scheduledMissionManager, shipConstants, logLevel),
-		logger:        constants.NewLoggingUtils("ATTACK_CONTROLLER", logLevel),
+		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, scheduledMissionManager,
+			shipConstants, logLevel),
+		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
+			buildingConstants, mineConstants, defenceConstants, logLevel),
+		logger: constants.NewLoggingUtils("ATTACK_CONTROLLER", logLevel),
 	}
 }
 
@@ -52,9 +59,15 @@ func (a *AttackController) Spy(c *gin.Context) {
 	}
 	a.logger.Printf("Launching spy mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
-	response, err := a.attackService.Spy(request)
+	err = a.attackService.Spy(request)
 	if err != nil {
 		a.logger.Error("error in launching spy mission", err)
+		c.JSON(500, "internal server error. contact administrators for more info")
+		return
+	}
+	response, err := a.refreshService.RefreshSpyMissions(request.Attacker, request.FromPlanetId)
+	if err != nil {
+		a.logger.Error("error in refreshing spy mission", err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
@@ -84,9 +97,15 @@ func (a *AttackController) Attack(c *gin.Context) {
 	}
 	a.logger.Printf("Launching attack mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
-	response, err := a.attackService.Attack(request)
+	err = a.attackService.Attack(request)
 	if err != nil {
 		a.logger.Error("error in launching attack mission", err)
+		c.JSON(500, "internal server error. contact administrators for more info")
+		return
+	}
+	response, err := a.refreshService.RefreshAttackMissions(request.Attacker, request.FromPlanetId)
+	if err != nil {
+		a.logger.Error("error in refreshing spy mission", err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
