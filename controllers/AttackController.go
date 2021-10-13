@@ -31,7 +31,7 @@ func NewAttackController(userRepository models.UserRepository,
 		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, scheduledMissionManager,
 			shipConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			buildingConstants, mineConstants, defenceConstants, logLevel),
+			buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		logger: constants.NewLoggingUtils("ATTACK_CONTROLLER", logLevel),
 	}
 }
@@ -65,9 +65,9 @@ func (a *AttackController) Spy(c *gin.Context) {
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
-	response, err := a.refreshService.RefreshSpyMissions(request.Attacker, request.FromPlanetId)
+	response, err := a.refreshService.RefreshPlanet(request.Attacker, request.FromPlanetId)
 	if err != nil {
-		a.logger.Error("error in refreshing spy mission", err)
+		a.logger.Error("error in gathering planet data for: "+request.FromPlanetId, err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
@@ -103,9 +103,9 @@ func (a *AttackController) Attack(c *gin.Context) {
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
-	response, err := a.refreshService.RefreshAttackMissions(request.Attacker, request.FromPlanetId)
+	response, err := a.refreshService.RefreshPlanet(request.Attacker, request.FromPlanetId)
 	if err != nil {
-		a.logger.Error("error in refreshing spy mission", err)
+		a.logger.Error("error in gathering planet data for: "+request.FromPlanetId, err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
