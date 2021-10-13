@@ -31,7 +31,7 @@ func NewLoginController(userRepository models.UserRepository,
 		loginService: services.NewLoginService(userRepository, clanRepository, universeRepository, missionRepository,
 			experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			buildingConstants, mineConstants, defenceConstants, logLevel),
+			buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		logger: constants.NewLoggingUtils("LOGIN_CONTROLLER", logLevel),
 	}
 }
@@ -70,6 +70,34 @@ func (l *LoginController) Login(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// RefreshPlanet godoc
+// @Summary Refresh planet API
+// @Description Refresh endpoint to quickly refresh complete planet data with the latest values
+// @Tags data retrieval
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Success 200 {object} models.OccupiedPlanet
+// @Router /refresh/planet [get]
+func (l *LoginController) RefreshPlanet(c *gin.Context) {
+	values := c.Request.URL.Query()
+	username := values["username"][0]
+	planetId := values["planet_id"][1]
+	l.logger.Printf("Refreshing planet data for: %s", username)
+	response, err := l.refreshService.RefreshPlanet(username, planetId)
+	if err != nil {
+		l.logger.Error("error in gathering planet data for: "+planetId, err)
+		c.JSON(500, "internal server error. contact administrators for more info")
+		return
+	}
+	if response == nil {
+		l.logger.Printf("data not found for user: %s, planet_id: %s", username, planetId)
+		c.JSON(204, "data not found")
+	}
+	c.JSON(200, response)
+}
+
 // RefreshPopulation godoc
 // @Summary Refresh population API
 // @Description Refresh endpoint to quickly refresh population data with the latest values
@@ -79,28 +107,22 @@ func (l *LoginController) Login(c *gin.Context) {
 // @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Success 200 {object} models.Population
-// @Router /refresh/population [post]
+// @Router /refresh/population [get]
 func (l *LoginController) RefreshPopulation(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request controllerModels.RefreshRequest
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		l.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
-		return
-	}
-	l.logger.Printf("Refreshing population data for: %s", request.Username)
+	values := c.Request.URL.Query()
+	username := values["username"][0]
+	planetId := values["planet_id"][1]
+	l.logger.Printf("Refreshing population data for: %s", username)
 
-	response, err := l.refreshService.RefreshPopulation(request.Username, request.PlanetId)
+	response, err := l.refreshService.RefreshPopulation(username, planetId)
 	if err != nil {
-		l.logger.Error("error in getting user data", err)
+		l.logger.Error("error in gathering population data for: "+planetId, err)
 		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
-		msg := "User data not found"
-		l.logger.Info(msg)
-		c.JSON(204, msg)
+		l.logger.Printf("population data not found for user: %s, planet_id: %s", username, planetId)
+		c.JSON(204, "data not found")
 	}
 	c.JSON(200, response)
 }
@@ -114,134 +136,22 @@ func (l *LoginController) RefreshPopulation(c *gin.Context) {
 // @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Success 200 {object} models.Resources
-// @Router /refresh/resources [post]
+// @Router /refresh/resources [get]
 func (l *LoginController) RefreshResources(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request controllerModels.RefreshRequest
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		l.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
-		return
-	}
-	l.logger.Printf("Refreshing resources data for: %s", request.Username)
+	values := c.Request.URL.Query()
+	username := values["username"][0]
+	planetId := values["planet_id"][1]
+	l.logger.Printf("Refreshing resources data for: %s", username)
 
-	response, err := l.refreshService.RefreshResources(request.Username, request.PlanetId)
+	response, err := l.refreshService.RefreshResources(username, planetId)
 	if err != nil {
-		l.logger.Error("error in getting user data", err)
+		l.logger.Error("error in getting resources data for: "+planetId, err)
 		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
-		msg := "User data not found"
-		l.logger.Info(msg)
-		c.JSON(204, msg)
-	}
-	c.JSON(200, response)
-}
-
-// RefreshMine godoc
-// @Summary Refresh mine API
-// @Description Refresh endpoint to quickly refresh mine data with the latest values
-// @Tags data retrieval
-// @Accept json
-// @Produce json
-// @Param username query string true "user identifier"
-// @Param planet_id query string true "planet identifier"
-// @Param mine_id query string true "mine identifier"
-// @Success 200 {object} models.Mine
-// @Router /refresh/mines [post]
-func (l *LoginController) RefreshMine(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request controllerModels.RefreshMineRequest
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		l.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
-		return
-	}
-	l.logger.Printf("Refreshing mines data for: %s", request.Username)
-
-	response, err := l.refreshService.RefreshMine(request.Username, request.PlanetId, request.MineId)
-	if err != nil {
-		l.logger.Error("error in getting user data", err)
-		c.JSON(500, "error in getting user data. contact administrators for more info")
-		return
-	}
-	if response == nil {
-		msg := "User data not found"
-		l.logger.Info(msg)
-		c.JSON(204, msg)
-	}
-	c.JSON(200, response)
-}
-
-// RefreshShields godoc
-// @Summary Refresh shields API
-// @Description Refresh endpoint to quickly refresh shields data with the latest values
-// @Tags data retrieval
-// @Accept json
-// @Produce json
-// @Param username query string true "user identifier"
-// @Param planet_id query string true "planet identifier"
-// @Success 200 {object} []models.Shield
-// @Router /refresh/shields [post]
-func (l *LoginController) RefreshShields(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request controllerModels.RefreshRequest
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		l.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
-		return
-	}
-	l.logger.Printf("Refreshing shields data for: %s", request.Username)
-
-	response, err := l.refreshService.RefreshShields(request.Username, request.PlanetId)
-	if err != nil {
-		l.logger.Error("error in getting user data", err)
-		c.JSON(500, "error in getting user data. contact administrators for more info")
-		return
-	}
-	if response == nil {
-		msg := "User data not found"
-		l.logger.Info(msg)
-		c.JSON(204, msg)
-	}
-	c.JSON(200, response)
-}
-
-// RefreshMissions godoc
-// @Summary Refresh missions API
-// @Description Refresh endpoint to quickly refresh missions data with the latest values
-// @Tags data retrieval
-// @Accept json
-// @Produce json
-// @Param username query string true "user identifier"
-// @Param planet_id query string true "planet identifier"
-// @Success 200 {object} map[string][]models.ActiveMission
-// @Router /refresh/shields [post]
-func (l *LoginController) RefreshMissions(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request controllerModels.RefreshRequest
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		l.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
-		return
-	}
-	l.logger.Printf("Refreshing missions data for: %s", request.Username)
-
-	response, err := l.refreshService.RefreshMissions(request.Username, request.PlanetId)
-	if err != nil {
-		l.logger.Error("error in getting user data", err)
-		c.JSON(500, "error in getting user data. contact administrators for more info")
-		return
-	}
-	if response == nil {
-		msg := "User data not found"
-		l.logger.Info(msg)
-		c.JSON(204, msg)
+		l.logger.Printf("resources data not found for user: %s, planet_id: %s", username, planetId)
+		c.JSON(204, "data not found")
 	}
 	c.JSON(200, response)
 }
