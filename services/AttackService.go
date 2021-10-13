@@ -42,26 +42,26 @@ func NewAttackService(
 	}
 }
 
-func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controllerModels.MissionResponse, error) {
+func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) error {
 	var squadSpeed float64
 	userData, err := a.userRepository.FindByUsername(spyRequest.Attacker)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	fromPlanetUni, err := a.universeRepository.FindById(spyRequest.FromPlanetId)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	toPlanetUni, err := a.universeRepository.FindById(spyRequest.ToPlanetId)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if planetUser, ok := userData.OccupiedPlanets[spyRequest.FromPlanetId]; ok {
 		availableShips := planetUser.GetAvailableShips()
 		scoutMap := map[string]int{}
 		for _, formation := range spyRequest.Scouts {
 			if availableShips[formation.ShipName] < formation.Quantity {
-				return nil, errors.New("error! found insufficient ships for attack formation")
+				return errors.New("error! found insufficient ships for attack formation")
 			}
 			availableShips[formation.ShipName] -= formation.Quantity
 			currentLevel := strconv.Itoa(planetUser.Ships[formation.ShipName].Level)
@@ -81,14 +81,12 @@ func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controller
 			primitive.NewDateTimeFromTime(time.Now()), primitive.NewDateTimeFromTime(missionTime), primitive.NewDateTimeFromTime(returnTime),
 		)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		a.scheduledMissionManager.ScheduleSpyMission(*spyMission, missionTime, returnTime)
-
-		response := controllerModels.MissionResponse{MissionTime: missionTime.String(), ReturnTime: returnTime.String()}
-		return &response, nil
+		return nil
 	}
-	return nil, errors.New("error occurred in retrieving planet data")
+	return errors.New("error occurred in retrieving planet data")
 }
 
 func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) error {
