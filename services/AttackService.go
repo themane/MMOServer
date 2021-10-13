@@ -91,34 +91,34 @@ func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) (*controller
 	return nil, errors.New("error occurred in retrieving planet data")
 }
 
-func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) (*controllerModels.MissionResponse, error) {
+func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) error {
 	var squadSpeed float64
 	userData, err := a.userRepository.FindByUsername(attackRequest.Attacker)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	fromPlanetUni, err := a.universeRepository.FindById(attackRequest.FromPlanetId)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	toPlanetUni, err := a.universeRepository.FindById(attackRequest.ToPlanetId)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if planetUser, ok := userData.OccupiedPlanets[attackRequest.FromPlanetId]; ok {
 		availableShips := planetUser.GetAvailableShips()
 		for attackPointId, formationMap := range attackRequest.Formation {
 			if !validAttackPointId(attackPointId) {
-				return nil, errors.New("error! found invalid attack point id: " + attackPointId)
+				return errors.New("error! found invalid attack point id: " + attackPointId)
 			}
 			err := validateAttackLineIds(formationMap, attackPointId)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			for _, formations := range formationMap {
 				for _, formation := range formations {
 					if availableShips[formation.ShipName] < formation.Quantity {
-						return nil, errors.New("error! found insufficient ships for attack formation")
+						return errors.New("error! found insufficient ships for attack formation")
 					}
 					availableShips[formation.ShipName] -= formation.Quantity
 					currentLevel := strconv.Itoa(planetUser.Ships[formation.ShipName].Level)
@@ -138,14 +138,12 @@ func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) (*c
 			primitive.NewDateTimeFromTime(time.Now()), primitive.NewDateTimeFromTime(missionTime), primitive.NewDateTimeFromTime(returnTime),
 		)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		a.scheduledMissionManager.ScheduleAttackMission(*attackMission, missionTime, returnTime)
-
-		response := controllerModels.MissionResponse{MissionTime: missionTime.String(), ReturnTime: returnTime.String()}
-		return &response, nil
+		return nil
 	}
-	return nil, errors.New("error occurred in retrieving planet data")
+	return errors.New("error occurred in retrieving planet data")
 }
 
 func distance(fromPlanet repoModels.PlanetUni, toPlanet repoModels.PlanetUni) float64 {

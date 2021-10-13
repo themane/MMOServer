@@ -6,11 +6,6 @@ import (
 	"time"
 )
 
-type MissionResponse struct {
-	MissionTime string `json:"mission_time"`
-	ReturnTime  string `json:"return_time"`
-}
-
 type SpyRequest struct {
 	Attacker     string             `json:"attacker" example:"devashish"`
 	FromPlanetId string             `json:"from_planet_id" example:"001:002:03"`

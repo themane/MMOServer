@@ -142,3 +142,51 @@ func (r *QuickRefreshService) RefreshMissions(username string, inputPlanetId str
 	}
 	return nil, nil
 }
+
+func (r *QuickRefreshService) RefreshAttackMissions(username string, inputPlanetId string) ([]models.ActiveMission, error) {
+	userData, errUser := r.userRepository.FindByUsername(username)
+	if errUser != nil {
+		return nil, errUser
+	}
+	for planetId := range userData.OccupiedPlanets {
+		if planetId == inputPlanetId {
+			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetId)
+			if err != nil {
+				r.logger.Error("error in retrieving attack missions for: "+planetId, err)
+				return nil, errors.New("error in retrieving attack missions")
+			}
+			var activeMissions []models.ActiveMission
+			for _, attackMission := range attackMissions {
+				activeMission := models.ActiveMission{}
+				activeMission.InitAttackMission(attackMission)
+				activeMissions = append(activeMissions, activeMission)
+			}
+			return activeMissions, nil
+		}
+	}
+	return nil, nil
+}
+
+func (r *QuickRefreshService) RefreshSpyMissions(username string, inputPlanetId string) ([]models.ActiveMission, error) {
+	userData, errUser := r.userRepository.FindByUsername(username)
+	if errUser != nil {
+		return nil, errUser
+	}
+	for planetId := range userData.OccupiedPlanets {
+		if planetId == inputPlanetId {
+			spyMissions, err := r.missionRepository.FindSpyMissionsFromPlanetId(planetId)
+			if err != nil {
+				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
+				return nil, errors.New("error in retrieving spy missions")
+			}
+			var activeMissions []models.ActiveMission
+			for _, spyMission := range spyMissions {
+				activeMission := models.ActiveMission{}
+				activeMission.InitSpyMission(spyMission)
+				activeMissions = append(activeMissions, activeMission)
+			}
+			return activeMissions, nil
+		}
+	}
+	return nil, nil
+}
