@@ -78,7 +78,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MissionResponse"
+                            "$ref": "#/definitions/models.OccupiedPlanet"
                         }
                     }
                 }
@@ -139,9 +139,9 @@ var doc = `{
                 }
             }
         },
-        "/refresh/mines": {
-            "post": {
-                "description": "Refresh endpoint to quickly refresh mine data with the latest values",
+        "/refresh/planet": {
+            "get": {
+                "description": "Refresh endpoint to quickly refresh complete planet data with the latest values",
                 "consumes": [
                     "application/json"
                 ],
@@ -151,7 +151,7 @@ var doc = `{
                 "tags": [
                     "data retrieval"
                 ],
-                "summary": "Refresh mine API",
+                "summary": "Refresh planet API",
                 "parameters": [
                     {
                         "type": "string",
@@ -166,27 +166,20 @@ var doc = `{
                         "name": "planet_id",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "mine identifier",
-                        "name": "mine_id",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Mine"
+                            "$ref": "#/definitions/models.OccupiedPlanet"
                         }
                     }
                 }
             }
         },
         "/refresh/population": {
-            "post": {
+            "get": {
                 "description": "Refresh endpoint to quickly refresh population data with the latest values",
                 "consumes": [
                     "application/json"
@@ -225,7 +218,7 @@ var doc = `{
             }
         },
         "/refresh/resources": {
-            "post": {
+            "get": {
                 "description": "Refresh endpoint to quickly refresh resources data with the latest values",
                 "consumes": [
                     "application/json"
@@ -258,48 +251,6 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Resources"
-                        }
-                    }
-                }
-            }
-        },
-        "/refresh/shields": {
-            "post": {
-                "description": "Refresh endpoint to quickly refresh shields data with the latest values",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "data retrieval"
-                ],
-                "summary": "Refresh shields API",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user identifier",
-                        "name": "username",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "planet identifier",
-                        "name": "planet_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Shield"
-                            }
                         }
                     }
                 }
@@ -352,7 +303,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MissionResponse"
+                            "$ref": "#/definitions/models.OccupiedPlanet"
                         }
                     }
                 }
@@ -406,6 +357,47 @@ var doc = `{
                 },
                 "workers": {
                     "$ref": "#/definitions/models.EmployedPopulation"
+                }
+            }
+        },
+        "models.ActiveMission": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "formation": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Formation"
+                            }
+                        }
+                    }
+                },
+                "launch_time": {
+                    "type": "string"
+                },
+                "mission_time": {
+                    "type": "string"
+                },
+                "mission_type": {
+                    "type": "string"
+                },
+                "return_time": {
+                    "type": "string"
+                },
+                "scouts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "to_planet_id": {
+                    "type": "string"
                 }
             }
         },
@@ -553,6 +545,19 @@ var doc = `{
                 }
             }
         },
+        "models.Formation": {
+            "type": "object",
+            "properties": {
+                "quantity": {
+                    "type": "integer",
+                    "example": 15
+                },
+                "ship_name": {
+                    "type": "string",
+                    "example": "ANUJ"
+                }
+            }
+        },
         "models.LoginResponse": {
             "type": "object",
             "properties": {
@@ -617,17 +622,6 @@ var doc = `{
                 "workers": {
                     "type": "integer",
                     "example": 12
-                }
-            }
-        },
-        "models.MissionResponse": {
-            "type": "object",
-            "properties": {
-                "mission_time": {
-                    "type": "string"
-                },
-                "return_time": {
-                    "type": "string"
                 }
             }
         },
@@ -701,6 +695,12 @@ var doc = `{
         "models.OccupiedPlanet": {
             "type": "object",
             "properties": {
+                "attack_missions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ActiveMission"
+                    }
+                },
                 "available_attack_ships": {
                     "type": "array",
                     "items": {
@@ -760,6 +760,12 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Shield"
+                    }
+                },
+                "spy_missions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ActiveMission"
                     }
                 }
             }

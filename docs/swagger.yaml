@@ -32,6 +32,33 @@ definitions:
       workers:
         $ref: '#/definitions/models.EmployedPopulation'
     type: object
+  models.ActiveMission:
+    properties:
+      _id:
+        type: string
+      formation:
+        additionalProperties:
+          additionalProperties:
+            items:
+              $ref: '#/definitions/models.Formation'
+            type: array
+          type: object
+        type: object
+      launch_time:
+        type: string
+      mission_time:
+        type: string
+      mission_type:
+        type: string
+      return_time:
+        type: string
+      scouts:
+        additionalProperties:
+          type: integer
+        type: object
+      to_planet_id:
+        type: string
+    type: object
   models.BuildingState:
     properties:
       cancel_returns:
@@ -134,6 +161,15 @@ definitions:
         example: 368
         type: integer
     type: object
+  models.Formation:
+    properties:
+      quantity:
+        example: 15
+        type: integer
+      ship_name:
+        example: ANUJ
+        type: string
+    type: object
   models.LoginResponse:
     properties:
       home_sector:
@@ -179,13 +215,6 @@ definitions:
       workers:
         example: 12
         type: integer
-    type: object
-  models.MissionResponse:
-    properties:
-      mission_time:
-        type: string
-      return_time:
-        type: string
     type: object
   models.NextLevelMiningAttributes:
     properties:
@@ -237,6 +266,10 @@ definitions:
     type: object
   models.OccupiedPlanet:
     properties:
+      attack_missions:
+        items:
+          $ref: '#/definitions/models.ActiveMission'
+        type: array
       available_attack_ships:
         items:
           $ref: '#/definitions/models.Ship'
@@ -278,6 +311,10 @@ definitions:
       shields:
         items:
           $ref: '#/definitions/models.Shield'
+        type: array
+      spy_missions:
+        items:
+          $ref: '#/definitions/models.ActiveMission'
         type: array
     type: object
   models.PlanetPosition:
@@ -521,7 +558,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MissionResponse'
+            $ref: '#/definitions/models.OccupiedPlanet'
       summary: Attack API
       tags:
       - Attack
@@ -561,11 +598,12 @@ paths:
       summary: Pings the server
       tags:
       - root
-  /refresh/mines:
-    post:
+  /refresh/planet:
+    get:
       consumes:
       - application/json
-      description: Refresh endpoint to quickly refresh mine data with the latest values
+      description: Refresh endpoint to quickly refresh complete planet data with the
+        latest values
       parameters:
       - description: user identifier
         in: query
@@ -577,23 +615,18 @@ paths:
         name: planet_id
         required: true
         type: string
-      - description: mine identifier
-        in: query
-        name: mine_id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Mine'
-      summary: Refresh mine API
+            $ref: '#/definitions/models.OccupiedPlanet'
+      summary: Refresh planet API
       tags:
       - data retrieval
   /refresh/population:
-    post:
+    get:
       consumes:
       - application/json
       description: Refresh endpoint to quickly refresh population data with the latest
@@ -620,7 +653,7 @@ paths:
       tags:
       - data retrieval
   /refresh/resources:
-    post:
+    get:
       consumes:
       - application/json
       description: Refresh endpoint to quickly refresh resources data with the latest
@@ -644,35 +677,6 @@ paths:
           schema:
             $ref: '#/definitions/models.Resources'
       summary: Refresh resources API
-      tags:
-      - data retrieval
-  /refresh/shields:
-    post:
-      consumes:
-      - application/json
-      description: Refresh endpoint to quickly refresh shields data with the latest
-        values
-      parameters:
-      - description: user identifier
-        in: query
-        name: username
-        required: true
-        type: string
-      - description: planet identifier
-        in: query
-        name: planet_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Shield'
-            type: array
-      summary: Refresh shields API
       tags:
       - data retrieval
   /spy:
@@ -707,7 +711,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MissionResponse'
+            $ref: '#/definitions/models.OccupiedPlanet'
       summary: Spy API
       tags:
       - Attack
