@@ -89,7 +89,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
 	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
-	buildingController := controllers.NewBuildingController(userRepository, buildingConstants, logLevel)
+	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems, logLevel)
 
 	log.Println("Initialized all handlers")
