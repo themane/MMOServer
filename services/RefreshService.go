@@ -15,6 +15,7 @@ type QuickRefreshService struct {
 	waterConstants     constants.MiningConstants
 	grapheneConstants  constants.MiningConstants
 	defenceConstants   map[string]constants.DefenceConstants
+	shipConstants      map[string]constants.ShipConstants
 	logger             *constants.LoggingUtils
 }
 
@@ -25,6 +26,7 @@ func NewQuickRefreshService(
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
+	shipConstants map[string]constants.ShipConstants,
 	logLevel string,
 ) *QuickRefreshService {
 	return &QuickRefreshService{
@@ -35,6 +37,7 @@ func NewQuickRefreshService(
 		waterConstants:     mineConstants[constants.Water],
 		grapheneConstants:  mineConstants[constants.Graphene],
 		defenceConstants:   defenceConstants,
+		shipConstants:      shipConstants,
 		logger:             constants.NewLoggingUtils("REFRESH_SERVICE", logLevel),
 	}
 }
@@ -107,13 +110,17 @@ func (r *QuickRefreshService) RefreshShields(username string, inputPlanetId stri
 	return nil, nil
 }
 
-func (r *QuickRefreshService) RefreshMissions(username string, inputPlanetId string) (map[string][]models.ActiveMission, error) {
+func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId string) (*models.OccupiedPlanet, error) {
 	userData, errUser := r.userRepository.FindByUsername(username)
 	if errUser != nil {
 		return nil, errUser
 	}
-	for planetId := range userData.OccupiedPlanets {
+	for planetId, planetUser := range userData.OccupiedPlanets {
 		if planetId == inputPlanetId {
+			planetUni, err := r.universeRepository.FindById(planetId)
+			if err != nil {
+				return nil, err
+			}
 			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetId)
 			if err != nil {
 				r.logger.Error("error in retrieving attack missions for: "+planetId, err)
@@ -124,20 +131,10 @@ func (r *QuickRefreshService) RefreshMissions(username string, inputPlanetId str
 				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
 				return nil, errors.New("error in retrieving spy missions")
 			}
-			activeMissions := map[string][]models.ActiveMission{}
-			activeMissions["attack_missions"] = []models.ActiveMission{}
-			activeMissions["spy_missions"] = []models.ActiveMission{}
-			for _, attackMission := range attackMissions {
-				activeMission := models.ActiveMission{}
-				activeMission.InitAttackMission(attackMission)
-				activeMissions["attack_missions"] = append(activeMissions["attack_missions"], activeMission)
-			}
-			for _, spyMission := range spyMissions {
-				activeMission := models.ActiveMission{}
-				activeMission.InitSpyMission(spyMission)
-				activeMissions["spy_missions"] = append(activeMissions["spy_missions"], activeMission)
-			}
-			return activeMissions, nil
+			planetResponse := models.OccupiedPlanet{}
+			planetResponse.Init(*planetUni, planetUser, attackMissions, spyMissions,
+				r.buildingConstants, r.waterConstants, r.grapheneConstants, r.defenceConstants, r.shipConstants)
+			return &planetResponse, nil
 		}
 	}
 	return nil, nil
