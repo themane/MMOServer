@@ -5,24 +5,32 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
-	repoModels "github.com/themane/MMOServer/mongoRepository/models"
+	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
 )
 
 type BuildingController struct {
 	buildingService *services.BuildingService
+	refreshService  *services.QuickRefreshService
 	logger          *constants.LoggingUtils
 }
 
 func NewBuildingController(
-	userRepository repoModels.UserRepository,
+	userRepository models.UserRepository,
+	universeRepository models.UniverseRepository,
+	missionRepository models.MissionRepository,
 	buildingConstants map[string]constants.BuildingConstants,
+	mineConstants map[string]constants.MiningConstants,
+	defenceConstants map[string]constants.DefenceConstants,
+	shipConstants map[string]constants.ShipConstants,
 	logLevel string,
 ) *BuildingController {
 	return &BuildingController{
 		buildingService: services.NewBuildingService(userRepository, buildingConstants, logLevel),
-		logger:          constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
+		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
+			buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+		logger: constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
 	}
 }
 
@@ -53,5 +61,11 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 		c.JSON(500, controllerModels.UpdateResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(200, controllerModels.UpdateResponse{Message: "Successfully upgraded"})
+	response, err := b.refreshService.RefreshPlanet(request.Username, request.PlanetId)
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+request.PlanetId, err)
+		c.JSON(500, "internal server error. contact administrators for more info")
+		return
+	}
+	c.JSON(200, response)
 }
