@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
+	"net/url"
 )
 
 type LoginController struct {
@@ -82,17 +84,21 @@ func (l *LoginController) Login(c *gin.Context) {
 // @Router /refresh/planet [get]
 func (l *LoginController) RefreshPlanet(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username := values["username"][0]
-	planetId := values["planet_id"][1]
-	l.logger.Printf("Refreshing planet data for: %s", username)
-	response, err := l.refreshService.RefreshPlanet(username, planetId)
+	username, planetId, err := l.getParams(values)
 	if err != nil {
-		l.logger.Error("error in gathering planet data for: "+planetId, err)
+		c.JSON(400, err.Error())
+		return
+	}
+
+	l.logger.Printf("Refreshing planet data for: %s", *username)
+	response, err := l.refreshService.RefreshPlanet(*username, *planetId)
+	if err != nil {
+		l.logger.Error("error in gathering planet data for: "+*planetId, err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
 	if response == nil {
-		l.logger.Printf("data not found for user: %s, planet_id: %s", username, planetId)
+		l.logger.Printf("data not found for user: %s, planet_id: %s", *username, *planetId)
 		c.JSON(204, "data not found")
 	}
 	c.JSON(200, response)
@@ -110,18 +116,21 @@ func (l *LoginController) RefreshPlanet(c *gin.Context) {
 // @Router /refresh/population [get]
 func (l *LoginController) RefreshPopulation(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username := values["username"][0]
-	planetId := values["planet_id"][1]
-	l.logger.Printf("Refreshing population data for: %s", username)
-
-	response, err := l.refreshService.RefreshPopulation(username, planetId)
+	username, planetId, err := l.getParams(values)
 	if err != nil {
-		l.logger.Error("error in gathering population data for: "+planetId, err)
+		c.JSON(400, err.Error())
+		return
+	}
+
+	l.logger.Printf("Refreshing population data for: %s", *username)
+	response, err := l.refreshService.RefreshPopulation(*username, *planetId)
+	if err != nil {
+		l.logger.Error("error in gathering population data for: "+*planetId, err)
 		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
-		l.logger.Printf("population data not found for user: %s, planet_id: %s", username, planetId)
+		l.logger.Printf("population data not found for user: %s, planet_id: %s", *username, *planetId)
 		c.JSON(204, "data not found")
 	}
 	c.JSON(200, response)
@@ -139,19 +148,35 @@ func (l *LoginController) RefreshPopulation(c *gin.Context) {
 // @Router /refresh/resources [get]
 func (l *LoginController) RefreshResources(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username := values["username"][0]
-	planetId := values["planet_id"][1]
-	l.logger.Printf("Refreshing resources data for: %s", username)
-
-	response, err := l.refreshService.RefreshResources(username, planetId)
+	username, planetId, err := l.getParams(values)
 	if err != nil {
-		l.logger.Error("error in getting resources data for: "+planetId, err)
+		c.JSON(400, err.Error())
+		return
+	}
+
+	l.logger.Printf("Refreshing resources data for: %s", *username)
+	response, err := l.refreshService.RefreshResources(*username, *planetId)
+	if err != nil {
+		l.logger.Error("error in getting resources data for: "+*planetId, err)
 		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
-		l.logger.Printf("resources data not found for user: %s, planet_id: %s", username, planetId)
+		l.logger.Printf("resources data not found for user: %s, planet_id: %s", *username, *planetId)
 		c.JSON(204, "data not found")
 	}
 	c.JSON(200, response)
+}
+
+func (l *LoginController) getParams(values url.Values) (*string, *string, error) {
+	if usernames, ok := values["username"]; ok {
+		if planetIds, ok := values["planet_id"]; ok {
+			if len(usernames) == 1 && len(planetIds) == 1 {
+				return &usernames[0], &planetIds[0], nil
+			}
+		}
+	}
+	msg := "cannot parse request parameters correctly"
+	l.logger.Println(msg)
+	return nil, nil, errors.New(msg)
 }
