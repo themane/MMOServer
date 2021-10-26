@@ -42,30 +42,46 @@ func NewQuickRefreshService(
 	}
 }
 
-func (r *QuickRefreshService) RefreshPopulation(username string, inputPlanetId string) (*models.Population, error) {
-	userData, err := r.userRepository.FindByUsername(username)
-	if err != nil {
-		return nil, err
+func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId string) (*models.OccupiedPlanet, error) {
+	userData, errUser := r.userRepository.FindByUsername(username)
+	if errUser != nil {
+		return nil, errUser
 	}
 	for planetId, planetUser := range userData.OccupiedPlanets {
 		if planetId == inputPlanetId {
-			response := models.Population{}
-			response.Init(planetUser)
-			return &response, nil
+			planetUni, err := r.universeRepository.FindById(planetId)
+			if err != nil {
+				return nil, err
+			}
+			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetId)
+			if err != nil {
+				r.logger.Error("error in retrieving attack missions for: "+planetId, err)
+				return nil, errors.New("error in retrieving attack missions")
+			}
+			spyMissions, err := r.missionRepository.FindSpyMissionsFromPlanetId(planetId)
+			if err != nil {
+				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
+				return nil, errors.New("error in retrieving spy missions")
+			}
+			planetResponse := models.OccupiedPlanet{}
+			planetResponse.Init(*planetUni, planetUser, attackMissions, spyMissions,
+				r.buildingConstants, r.waterConstants, r.grapheneConstants, r.defenceConstants, r.shipConstants)
+			return &planetResponse, nil
 		}
 	}
 	return nil, nil
 }
 
-func (r *QuickRefreshService) RefreshResources(username string, inputPlanetId string) (*models.Resources, error) {
-	userData, err := r.userRepository.FindByUsername(username)
-	if err != nil {
-		return nil, err
+func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId string) (*models.UserPlanetResponse, error) {
+	userData, errUser := r.userRepository.FindByUsername(username)
+	if errUser != nil {
+		return nil, errUser
 	}
 	for planetId, planetUser := range userData.OccupiedPlanets {
 		if planetId == inputPlanetId {
-			response := models.Resources{}
-			response.Init(planetUser)
+			response := models.UserPlanetResponse{}
+			var notifications []models.Notification
+			response.Init(planetUser, r.buildingConstants, r.defenceConstants, r.shipConstants, notifications)
 			return &response, nil
 		}
 	}
@@ -92,49 +108,6 @@ func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string,
 					return &response, nil
 				}
 			}
-		}
-	}
-	return nil, nil
-}
-
-func (r *QuickRefreshService) RefreshShields(username string, inputPlanetId string) ([]models.Shield, error) {
-	userData, errUser := r.userRepository.FindByUsername(username)
-	if errUser != nil {
-		return nil, errUser
-	}
-	for planetId, planetUser := range userData.OccupiedPlanets {
-		if planetId == inputPlanetId {
-			return models.InitAllShields(planetUser, r.defenceConstants, r.buildingConstants[constants.Shield]), nil
-		}
-	}
-	return nil, nil
-}
-
-func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId string) (*models.OccupiedPlanet, error) {
-	userData, errUser := r.userRepository.FindByUsername(username)
-	if errUser != nil {
-		return nil, errUser
-	}
-	for planetId, planetUser := range userData.OccupiedPlanets {
-		if planetId == inputPlanetId {
-			planetUni, err := r.universeRepository.FindById(planetId)
-			if err != nil {
-				return nil, err
-			}
-			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetId)
-			if err != nil {
-				r.logger.Error("error in retrieving attack missions for: "+planetId, err)
-				return nil, errors.New("error in retrieving attack missions")
-			}
-			spyMissions, err := r.missionRepository.FindSpyMissionsFromPlanetId(planetId)
-			if err != nil {
-				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
-				return nil, errors.New("error in retrieving spy missions")
-			}
-			planetResponse := models.OccupiedPlanet{}
-			planetResponse.Init(*planetUni, planetUser, attackMissions, spyMissions,
-				r.buildingConstants, r.waterConstants, r.grapheneConstants, r.defenceConstants, r.shipConstants)
-			return &planetResponse, nil
 		}
 	}
 	return nil, nil
