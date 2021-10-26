@@ -20,8 +20,3 @@ type UpgradeBuildingRequest struct {
 	PlanetId   string `json:"planet_id" example:"001:002:03"`
 	BuildingId string `json:"building_id" example:"GMP0018"`
 }
-
-type UpdateResponse struct {
-	Message string `json:"message"`
-	Error   string `json:"error"`
-}

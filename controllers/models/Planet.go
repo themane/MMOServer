@@ -142,3 +142,15 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		o.SpyMissions = append(o.SpyMissions, activeMission)
 	}
 }
+
+type StaticPlanetData struct {
+	PlanetConfig string                `json:"planet_config" example:"Planet2.json"`
+	Position     models.PlanetPosition `json:"position"`
+	SameSector   bool                  `json:"same_sector" example:"true"`
+}
+
+func (p *StaticPlanetData) Init(planetUni repoModels.PlanetUni, homeSectorId string) {
+	p.PlanetConfig = planetUni.PlanetConfig
+	p.SameSector = homeSectorId == planetUni.Position.SectorId()
+	p.Position = planetUni.Position.Clone()
+}
