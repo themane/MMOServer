@@ -43,7 +43,7 @@ func NewBuildingController(
 // @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param building_id query string true "building identifier"
-// @Success 200 {object} models.OccupiedPlanet
+// @Success 200 {object} models.PlanetResponse
 // @Router /login [post]
 func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)

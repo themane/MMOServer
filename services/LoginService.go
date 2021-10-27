@@ -13,6 +13,7 @@ type LoginService struct {
 	clanRepository          repoModels.ClanRepository
 	universeRepository      repoModels.UniverseRepository
 	missionRepository       repoModels.MissionRepository
+	notificationService     *NotificationService
 	userExperienceConstants constants.ExperienceConstants
 	clanExperienceConstants constants.ExperienceConstants
 	buildingConstants       map[string]constants.BuildingConstants
@@ -40,6 +41,7 @@ func NewLoginService(
 		clanRepository:          clanRepository,
 		universeRepository:      universeRepository,
 		missionRepository:       missionRepository,
+		notificationService:     NewNotificationService(experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		buildingConstants:       buildingConstants,
 		userExperienceConstants: experienceConstants[constants.UserExperiences],
 		clanExperienceConstants: experienceConstants[constants.ClanExperiences],
@@ -51,7 +53,7 @@ func NewLoginService(
 	}
 }
 
-func (l *LoginService) Login(username string) (*controllerModels.LoginResponse, error) {
+func (l *LoginService) Login(username string) (*controllerModels.UserResponse, error) {
 	userData, err := l.userRepository.FindByUsername(username)
 	if err != nil {
 		return nil, err
@@ -65,7 +67,7 @@ func (l *LoginService) Login(username string) (*controllerModels.LoginResponse, 
 		return nil, err
 	}
 
-	var response controllerModels.LoginResponse
+	var response controllerModels.UserResponse
 	response.Profile.Init(*userData, clanData, l.userExperienceConstants)
 	homeSector, err := l.home(userData.OccupiedPlanets, *homePlanetPosition, homeSectorData)
 	if err != nil {
@@ -75,6 +77,13 @@ func (l *LoginService) Login(username string) (*controllerModels.LoginResponse, 
 	response.OccupiedPlanets, err = l.occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), homeSectorData)
 	if err != nil {
 		return nil, err
+	}
+	for _, userPlanet := range userData.OccupiedPlanets {
+		notifications, err1 := l.notificationService.getNotifications(userPlanet)
+		if err1 != nil {
+			return nil, err1
+		}
+		response.Notifications = append(response.Notifications, notifications...)
 	}
 	return &response, nil
 }

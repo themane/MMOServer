@@ -46,7 +46,7 @@ func NewAttackController(userRepository models.UserRepository,
 // @Param from_planet_id query string true "spy launch planet identifier"
 // @Param to_planet_id query string true "spy destination planet identifier"
 // @Param scouts query object true "scout ship details"
-// @Success 200 {object} controllerModels.OccupiedPlanet
+// @Success 200 {object} controllerModels.PlanetResponse
 // @Router /spy [post]
 func (a *AttackController) Spy(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
@@ -84,7 +84,7 @@ func (a *AttackController) Spy(c *gin.Context) {
 // @Param from_planet_id query string true "spy launch planet identifier"
 // @Param to_planet_id query string true "spy destination planet identifier"
 // @Param formation query object true "attack ships details"
-// @Success 200 {object} controllerModels.OccupiedPlanet
+// @Success 200 {object} controllerModels.PlanetResponse
 // @Router /attack [post]
 func (a *AttackController) Attack(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)

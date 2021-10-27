@@ -80,7 +80,7 @@ func (l *LoginController) Login(c *gin.Context) {
 // @Produce json
 // @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
-// @Success 200 {object} models.OccupiedPlanet
+// @Success 200 {object} models.PlanetResponse
 // @Router /refresh/planet [get]
 func (l *LoginController) RefreshPlanet(c *gin.Context) {
 	values := c.Request.URL.Query()
@@ -104,17 +104,17 @@ func (l *LoginController) RefreshPlanet(c *gin.Context) {
 	c.JSON(200, response)
 }
 
-// RefreshPopulation godoc
-// @Summary Refresh population API
-// @Description Refresh endpoint to quickly refresh population data with the latest values
+// RefreshUserPlanet godoc
+// @Summary Refresh user planet API
+// @Description Refresh endpoint to quickly refresh user related planet data with the latest values
 // @Tags data retrieval
 // @Accept json
 // @Produce json
 // @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
-// @Success 200 {object} models.Population
-// @Router /refresh/population [get]
-func (l *LoginController) RefreshPopulation(c *gin.Context) {
+// @Success 200 {object} models.UserPlanetResponse
+// @Router /refresh/user_planet [get]
+func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
 	values := c.Request.URL.Query()
 	username, planetId, err := l.getParams(values)
 	if err != nil {
@@ -131,38 +131,6 @@ func (l *LoginController) RefreshPopulation(c *gin.Context) {
 	}
 	if response == nil {
 		l.logger.Printf("population data not found for user: %s, planet_id: %s", *username, *planetId)
-		c.JSON(204, "data not found")
-	}
-	c.JSON(200, response)
-}
-
-// RefreshResources godoc
-// @Summary Refresh resources API
-// @Description Refresh endpoint to quickly refresh resources data with the latest values
-// @Tags data retrieval
-// @Accept json
-// @Produce json
-// @Param username query string true "user identifier"
-// @Param planet_id query string true "planet identifier"
-// @Success 200 {object} models.Resources
-// @Router /refresh/resources [get]
-func (l *LoginController) RefreshResources(c *gin.Context) {
-	values := c.Request.URL.Query()
-	username, planetId, err := l.getParams(values)
-	if err != nil {
-		c.JSON(400, err.Error())
-		return
-	}
-
-	l.logger.Printf("Refreshing resources data for: %s", *username)
-	response, err := l.refreshService.RefreshResources(*username, *planetId)
-	if err != nil {
-		l.logger.Error("error in getting resources data for: "+*planetId, err)
-		c.JSON(500, "error in getting user data. contact administrators for more info")
-		return
-	}
-	if response == nil {
-		l.logger.Printf("resources data not found for user: %s, planet_id: %s", *username, *planetId)
 		c.JSON(204, "data not found")
 	}
 	c.JSON(200, response)
