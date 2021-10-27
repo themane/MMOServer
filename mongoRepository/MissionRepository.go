@@ -110,7 +110,7 @@ func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId
 
 	id, err := uuid.NewRandom()
 	if err != nil {
-		c.logger.Error("error in persisting attack mission: ", err)
+		c.logger.Error("error in persisting attack mission", err)
 		return nil, errors.New("error in persisting attack mission")
 	}
 	attackMission := repoModels.AttackMission{
