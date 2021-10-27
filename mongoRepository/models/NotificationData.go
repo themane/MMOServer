@@ -2,7 +2,7 @@ package models
 
 import "github.com/themane/MMOServer/models"
 
-type Notification struct {
+type NotificationData struct {
 	Id           string              `json:"_id" bson:"_id"`
 	Notification models.Notification `json:"notification" bson:"notification"`
 	Sent         bool                `json:"sent" bson:"sent"`
@@ -10,7 +10,7 @@ type Notification struct {
 }
 
 type NotificationRepository interface {
-	FindByUserId(userId string) ([]Notification, error)
-	AddNotification(notification models.Notification, userId string) (*Notification, error)
+	FindByUserId(userId string) ([]NotificationData, error)
+	AddNotification(notification models.Notification, userId string) (*NotificationData, error)
 	MarkSent(Id string) error
 }
