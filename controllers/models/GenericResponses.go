@@ -5,12 +5,6 @@ import (
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
 
-type Notification struct {
-	Info    string `json:"info"`
-	Warning string `json:"warn"`
-	Error   string `json:"error"`
-}
-
 type UserResponse struct {
 	Profile         Profile            `json:"profile"`
 	HomeSector      Sector             `json:"home_sector"`
