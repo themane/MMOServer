@@ -1,13 +1,12 @@
 package constants
 
 import (
-	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"strconv"
 )
 
 func GetMiningRate(userData models.UserData, occupiedPlanets []models.PlanetUni,
-	mineConstants map[string]constants.MiningConstants,
+	mineConstants map[string]MiningConstants,
 ) (map[string]map[string]int, map[string]map[string]int) {
 
 	planetIdWaterMiningRateMap := map[string]map[string]int{}
@@ -19,16 +18,16 @@ func GetMiningRate(userData models.UserData, occupiedPlanets []models.PlanetUni,
 			miningPlant := planetUser.Buildings[mineUser.MiningPlantId]
 
 			var miningRatePerWorker int
-			if mineUni.Type == constants.Water {
-				miningRatePerWorker = mineConstants[constants.Water].Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
+			if mineUni.Type == Water {
+				miningRatePerWorker = mineConstants[Water].Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
 				miningRate := GetTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
 				if planetIdWaterMiningRateMap[planetUni.Id] == nil {
 					planetIdWaterMiningRateMap[planetUni.Id] = map[string]int{}
 				}
 				planetIdWaterMiningRateMap[planetUni.Id][mineUni.Id] = miningRate
 			}
-			if mineUni.Type == constants.Graphene {
-				miningRatePerWorker = mineConstants[constants.Graphene].Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
+			if mineUni.Type == Graphene {
+				miningRatePerWorker = mineConstants[Graphene].Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
 				miningRate := GetTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
 				if planetIdGrapheneMiningRateMap[planetUni.Id] == nil {
 					planetIdGrapheneMiningRateMap[planetUni.Id] = map[string]int{}
