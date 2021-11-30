@@ -78,13 +78,13 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 	if err != nil {
 		return nil, err
 	}
-	for _, userPlanet := range userData.OccupiedPlanets {
-		notifications, err1 := l.notificationService.getNotifications(userPlanet)
-		if err1 != nil {
-			return nil, err1
-		}
-		response.Notifications = append(response.Notifications, notifications...)
-	}
+	//for _, userPlanet := range userData.OccupiedPlanets {
+	//notifications, err1 := l.notificationService.getNotifications(userPlanet)
+	//if err1 != nil {
+	//	return nil, err1
+	//}
+	//response.Notifications = append(response.Notifications, notifications...)
+	//}
 	return &response, nil
 }
 
@@ -150,7 +150,7 @@ func (l *LoginService) occupiedPlanets(occupiedPlanets map[string]repoModels.Pla
 func getHomeSectorData(userData *repoModels.UserData, universeRepository repoModels.UniverseRepository) (*models.PlanetPosition, map[string]repoModels.PlanetUni, error) {
 	var homePlanetPosition models.PlanetPosition
 	for planetId, planet := range userData.OccupiedPlanets {
-		if planet.Home {
+		if planet.HomePlanet {
 			homePlanetPosition = models.InitPlanetPositionById(planetId)
 			break
 		}
