@@ -36,7 +36,7 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 	u.Occupied = occupiedUser
 	u.Invulnerable = false
 	shieldIds := constants.GetShieldIds()
-	planetType := constants.GetPlanetType(planetUni)
+	planetType := planetUni.GetPlanetType()
 	if planetType == constants.Primitive || planetType == constants.Resource {
 		for _, shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Unavailable})

@@ -16,7 +16,7 @@ func (j *ScheduledJobManager) scheduledMining() {
 		}
 		userIdplanetsMap := map[string][]models.PlanetUni{}
 		for _, occupiedPlanet := range occupiedPlanets {
-			planetType := constants.GetPlanetType(occupiedPlanet)
+			planetType := occupiedPlanet.GetPlanetType()
 			if planetType == constants.User {
 				if userIdplanetsMap[occupiedPlanet.Occupied] == nil {
 					userIdplanetsMap[occupiedPlanet.Occupied] = []models.PlanetUni{}
@@ -30,7 +30,7 @@ func (j *ScheduledJobManager) scheduledMining() {
 				j.logger.Error("error in retrieving user data for: "+userId, err)
 				return
 			}
-			planetIdWaterMiningRateMap, planetIdGrapheneMiningRateMap := constants.GetMiningRate(*userData, planets, j.waterConstants, j.grapheneConstants)
+			planetIdWaterMiningRateMap, planetIdGrapheneMiningRateMap := models.GetMiningRate(*userData, planets, j.waterConstants, j.grapheneConstants)
 			err1 = j.userRepository.ScheduledWaterIncrease(userId, planetIdWaterMiningRateMap)
 			if err1 != nil {
 				j.logger.Error("error in water increase update for user: "+userId, err)
