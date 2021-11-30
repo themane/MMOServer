@@ -2,7 +2,6 @@ package constants
 
 import (
 	"errors"
-	"github.com/themane/MMOServer/mongoRepository/models"
 	"strings"
 )
 
@@ -172,20 +171,4 @@ func GetAttackPointIds() []string {
 
 func GetAttackLineIds() []string {
 	return []string{"line1", "line2", "line3", "line4"}
-}
-
-func GetPlanetType(planetUni models.PlanetUni) string {
-	if planetUni.Occupied == "" {
-		return Resource
-	}
-	if planetUni.Occupied == Primitive {
-		return Primitive
-	}
-	if strings.HasPrefix(planetUni.Occupied, Bot) {
-		return Bot
-	}
-	if planetUni.BasePlanet {
-		return Base
-	}
-	return User
 }

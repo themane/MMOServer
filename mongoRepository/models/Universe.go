@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/models"
+	"strings"
 )
 
 type PlanetUni struct {
@@ -13,6 +15,22 @@ type PlanetUni struct {
 	Occupied     string                `json:"occupied" bson:"occupied"`
 	Workers      int                   `json:"workers" bson:"workers"`
 	BasePlanet   bool                  `json:"base_planet" bson:"base_planet"`
+}
+
+func (planetUni *PlanetUni) GetPlanetType() string {
+	if planetUni.Occupied == "" {
+		return constants.Resource
+	}
+	if planetUni.Occupied == constants.Primitive {
+		return constants.Primitive
+	}
+	if strings.HasPrefix(planetUni.Occupied, constants.Bot) {
+		return constants.Bot
+	}
+	if planetUni.BasePlanet {
+		return constants.Base
+	}
+	return constants.User
 }
 
 type MineUni struct {
