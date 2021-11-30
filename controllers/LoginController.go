@@ -123,7 +123,7 @@ func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
 	}
 
 	l.logger.Printf("Refreshing population data for: %s", *username)
-	response, err := l.refreshService.RefreshPopulation(*username, *planetId)
+	response, err := l.refreshService.RefreshUserPlanet(*username, *planetId)
 	if err != nil {
 		l.logger.Error("error in gathering population data for: "+*planetId, err)
 		c.JSON(500, "error in getting user data. contact administrators for more info")

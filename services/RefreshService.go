@@ -3,7 +3,8 @@ package services
 import (
 	"errors"
 	"github.com/themane/MMOServer/constants"
-	"github.com/themane/MMOServer/controllers/models"
+	controllerModels "github.com/themane/MMOServer/controllers/models"
+	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
 
@@ -42,7 +43,7 @@ func NewQuickRefreshService(
 	}
 }
 
-func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId string) (*models.OccupiedPlanet, error) {
+func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId string) (*controllerModels.OccupiedPlanet, error) {
 	userData, errUser := r.userRepository.FindByUsername(username)
 	if errUser != nil {
 		return nil, errUser
@@ -63,7 +64,7 @@ func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId strin
 				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
 				return nil, errors.New("error in retrieving spy missions")
 			}
-			planetResponse := models.OccupiedPlanet{}
+			planetResponse := controllerModels.OccupiedPlanet{}
 			planetResponse.Init(*planetUni, planetUser, attackMissions, spyMissions,
 				r.buildingConstants, r.waterConstants, r.grapheneConstants, r.defenceConstants, r.shipConstants)
 			return &planetResponse, nil
@@ -72,14 +73,14 @@ func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId strin
 	return nil, nil
 }
 
-func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId string) (*models.UserPlanetResponse, error) {
+func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId string) (*controllerModels.UserPlanetResponse, error) {
 	userData, errUser := r.userRepository.FindByUsername(username)
 	if errUser != nil {
 		return nil, errUser
 	}
 	for planetId, planetUser := range userData.OccupiedPlanets {
 		if planetId == inputPlanetId {
-			response := models.UserPlanetResponse{}
+			response := controllerModels.UserPlanetResponse{}
 			var notifications []models.Notification
 			response.Init(planetUser, r.buildingConstants, r.defenceConstants, r.shipConstants, notifications)
 			return &response, nil
@@ -88,7 +89,7 @@ func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId s
 	return nil, nil
 }
 
-func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string, inputMineId string) (*models.Mine, error) {
+func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string, inputMineId string) (*controllerModels.Mine, error) {
 	userData, errUser := r.userRepository.FindByUsername(username)
 	if errUser != nil {
 		return nil, errUser
@@ -101,7 +102,7 @@ func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string,
 			}
 			for mineId, mineUni := range planetUni.Mines {
 				if mineId == inputMineId {
-					response := models.Mine{}
+					response := controllerModels.Mine{}
 					response.Init(mineUni, planetUser,
 						r.buildingConstants[constants.WaterMiningPlant], r.buildingConstants[constants.GrapheneMiningPlant],
 						r.waterConstants, r.grapheneConstants)
@@ -113,7 +114,7 @@ func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string,
 	return nil, nil
 }
 
-func (r *QuickRefreshService) RefreshAttackMissions(username string, inputPlanetId string) ([]models.ActiveMission, error) {
+func (r *QuickRefreshService) RefreshAttackMissions(username string, inputPlanetId string) ([]controllerModels.ActiveMission, error) {
 	userData, errUser := r.userRepository.FindByUsername(username)
 	if errUser != nil {
 		return nil, errUser
@@ -125,9 +126,9 @@ func (r *QuickRefreshService) RefreshAttackMissions(username string, inputPlanet
 				r.logger.Error("error in retrieving attack missions for: "+planetId, err)
 				return nil, errors.New("error in retrieving attack missions")
 			}
-			var activeMissions []models.ActiveMission
+			var activeMissions []controllerModels.ActiveMission
 			for _, attackMission := range attackMissions {
-				activeMission := models.ActiveMission{}
+				activeMission := controllerModels.ActiveMission{}
 				activeMission.InitAttackMission(attackMission)
 				activeMissions = append(activeMissions, activeMission)
 			}
@@ -137,7 +138,7 @@ func (r *QuickRefreshService) RefreshAttackMissions(username string, inputPlanet
 	return nil, nil
 }
 
-func (r *QuickRefreshService) RefreshSpyMissions(username string, inputPlanetId string) ([]models.ActiveMission, error) {
+func (r *QuickRefreshService) RefreshSpyMissions(username string, inputPlanetId string) ([]controllerModels.ActiveMission, error) {
 	userData, errUser := r.userRepository.FindByUsername(username)
 	if errUser != nil {
 		return nil, errUser
@@ -149,9 +150,9 @@ func (r *QuickRefreshService) RefreshSpyMissions(username string, inputPlanetId 
 				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
 				return nil, errors.New("error in retrieving spy missions")
 			}
-			var activeMissions []models.ActiveMission
+			var activeMissions []controllerModels.ActiveMission
 			for _, spyMission := range spyMissions {
-				activeMission := models.ActiveMission{}
+				activeMission := controllerModels.ActiveMission{}
 				activeMission.InitSpyMission(spyMission)
 				activeMissions = append(activeMissions, activeMission)
 			}

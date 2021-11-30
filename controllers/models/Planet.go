@@ -98,7 +98,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.PlanetConfig = planetUni.PlanetConfig
 	o.Position = planetUni.Position.Clone()
 	o.Distance = planetUni.Distance
-	if planetUser.Base {
+	if planetUser.BasePlanet {
 		o.BasePlanet = true
 		return
 	}

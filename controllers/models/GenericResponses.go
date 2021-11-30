@@ -19,13 +19,13 @@ type PlanetResponse struct {
 }
 
 type UserPlanetResponse struct {
-	Base                    bool                  `json:"base" example:"true"`
+	BasePlanet              bool                  `json:"base_planet" example:"true"`
 	Resources               Resources             `json:"resources"`
 	Population              Population            `json:"population"`
 	Shields                 []Shield              `json:"shields"`
 	IdleDefences            []Defence             `json:"idle_defences" bson:"idle_defences"`
 	IdleDefenceShipCarriers []DefenceShipCarrier  `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
-	Home                    bool                  `json:"home" example:"true"`
+	HomePlanet              bool                  `json:"home_planet" example:"true"`
 	Notifications           []models.Notification `json:"notifications"`
 }
 
@@ -34,8 +34,8 @@ func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants,
 	notifications []models.Notification) {
 
-	if planetUser.Base {
-		p.Base = true
+	if planetUser.BasePlanet {
+		p.BasePlanet = true
 		return
 	}
 	p.Resources.Init(planetUser)
@@ -43,6 +43,6 @@ func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 	p.Shields = InitAllShields(planetUser, defenceConstants, buildingConstants[constants.Shield])
 	p.IdleDefences = InitAllIdleDefences(planetUser.Defences, defenceConstants)
 	p.IdleDefenceShipCarriers = InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
-	p.Home = planetUser.Home
+	p.HomePlanet = planetUser.HomePlanet
 	p.Notifications = notifications
 }
