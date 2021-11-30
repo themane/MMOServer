@@ -75,7 +75,7 @@ type OccupiedPlanet struct {
 	PlanetConfig            string                `json:"planet_config" example:"Planet2.json"`
 	Position                models.PlanetPosition `json:"position"`
 	Distance                int                   `json:"distance" example:"14"`
-	Base                    bool                  `json:"base" example:"true"`
+	BasePlanet              bool                  `json:"base_planet" example:"true"`
 	Resources               Resources             `json:"resources"`
 	Population              Population            `json:"population"`
 	Mines                   []Mine                `json:"mines"`
@@ -84,7 +84,7 @@ type OccupiedPlanet struct {
 	IdleDefenceShipCarriers []DefenceShipCarrier  `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
 	AvailableAttackShips    []Ship                `json:"available_attack_ships" bson:"available_attack_ships"`
 	Scouts                  []Ship                `json:"scouts" bson:"scouts"`
-	Home                    bool                  `json:"home" example:"true"`
+	HomePlanet              bool                  `json:"home_planet" example:"true"`
 	AttackMissions          []ActiveMission       `json:"attack_missions"`
 	SpyMissions             []ActiveMission       `json:"spy_missions"`
 }
@@ -99,7 +99,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.Position = planetUni.Position.Clone()
 	o.Distance = planetUni.Distance
 	if planetUser.Base {
-		o.Base = true
+		o.BasePlanet = true
 		return
 	}
 	o.Resources.Init(planetUser)
@@ -129,7 +129,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		}
 
 	}
-	o.Home = planetUser.Home
+	o.HomePlanet = planetUser.HomePlanet
 
 	for _, attackMission := range attackMissions {
 		activeMission := ActiveMission{}
