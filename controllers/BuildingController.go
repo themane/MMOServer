@@ -58,7 +58,7 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 
 	err = b.buildingService.UpgradeBuilding(request.Username, request.PlanetId, request.BuildingId)
 	if err != nil {
-		c.JSON(500, controllerModels.UpdateResponse{Error: err.Error()})
+		c.JSON(500, err.Error())
 		return
 	}
 	response, err := b.refreshService.RefreshPlanet(request.Username, request.PlanetId)
