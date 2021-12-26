@@ -6,6 +6,15 @@ import (
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
 
+//  Planet Types
+const (
+	ResourcePlanet  string = "RESOURCE_PLANET"
+	AbandonedPlanet string = "ABANDONED_PLANET"
+	HomePlanet      string = "HOME_PLANET"
+	BasePlanet      string = "BASE_PLANET"
+	EnemyPlanet     string = "ENEMY_PLANET"
+)
+
 type UnoccupiedPlanet struct {
 	Position     models.PlanetPosition     `json:"position"`
 	PlanetConfig string                    `json:"planet_config" example:"Planet2.json"`
@@ -16,6 +25,7 @@ type UnoccupiedPlanet struct {
 	Defences     []UnoccupiedPlanetDefence `json:"defences"`
 	Occupied     string                    `json:"occupied" example:"devashish"`
 	Invulnerable bool                      `json:"invulnerable" example:"true"`
+	PlanetType   string                    `json:"planet_type" example:"ENEMY_PLANET"`
 }
 
 type UnoccupiedPlanetShield struct {
@@ -41,15 +51,18 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 		for _, shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Unavailable})
 		}
+		u.PlanetType = ResourcePlanet
 	} else if planetType == constants.Base {
 		for _, shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Invulnerable})
 		}
+		u.PlanetType = BasePlanet
 		u.Invulnerable = true
 	} else if planetType == constants.Bot {
 		for _, shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Broken})
 		}
+		u.PlanetType = AbandonedPlanet
 		u.Water = planetUser.Water.Amount
 		u.Graphene = planetUser.Graphene.Amount
 		for defenceType, defence := range planetUser.Defences {
@@ -63,6 +76,7 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 				u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Disabled})
 			}
 		}
+		u.PlanetType = EnemyPlanet
 		u.Water = planetUser.Water.Amount
 		u.Graphene = planetUser.Graphene.Amount
 		for defenceType, defence := range planetUser.Defences {
@@ -87,6 +101,7 @@ type OccupiedPlanet struct {
 	HomePlanet              bool                  `json:"home_planet" example:"true"`
 	AttackMissions          []ActiveMission       `json:"attack_missions"`
 	SpyMissions             []ActiveMission       `json:"spy_missions"`
+	PlanetType              string                `json:"planet_type" example:"BASE_PLANET"`
 }
 
 func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser,
@@ -100,8 +115,10 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.Distance = planetUni.Distance
 	if planetUser.BasePlanet {
 		o.BasePlanet = true
+		o.PlanetType = BasePlanet
 		return
 	}
+	o.PlanetType = HomePlanet
 	o.Resources.Init(planetUser)
 	o.Population.Init(planetUser)
 	for mineId := range planetUser.Mines {
