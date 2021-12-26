@@ -26,8 +26,8 @@ type PlanetUser struct {
 	Defences            map[string]Defence            `json:"defences" bson:"defences"`
 	DefenceShipCarriers map[string]DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
 	Buildings           map[string]Building           `json:"buildings" bson:"buildings"`
-	HomePlanet          bool                          `json:"home_planet" bson:"home"`
-	BasePlanet          bool                          `json:"base_planet" bson:"base"`
+	HomePlanet          bool                          `json:"home_planet" bson:"home_planet"`
+	BasePlanet          bool                          `json:"base_planet" bson:"base_planet"`
 }
 
 func (p *PlanetUser) GetAvailableShip(shipName string) int {
