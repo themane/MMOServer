@@ -46,6 +46,9 @@ func (b *BuildingService) UpdateWorkers(username string, planetId string, buildi
 	if err != nil {
 		return err
 	}
+	if constants.IsShieldId(buildingId) && userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingMinutesPerWorker == 0 {
+		return errors.New("workers not employed at working shield")
+	}
 	currentWorkers := userData.OccupiedPlanets[planetId].Buildings[buildingId].Workers
 	idleWorkers := userData.OccupiedPlanets[planetId].Population.Workers.Idle
 	if currentWorkers == workers {
