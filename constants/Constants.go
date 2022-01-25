@@ -165,6 +165,10 @@ func GetShieldIds() []string {
 	return []string{"SHLD01", "SHLD02", "SHLD03"}
 }
 
+func IsShieldId(id string) bool {
+	return id == "SHLD01" || id == "SHLD02" || id == "SHLD03"
+}
+
 func GetAttackPointIds() []string {
 	return []string{"point1", "point2", "point3", "point4", "point5", "point6"}
 }
