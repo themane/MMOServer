@@ -56,7 +56,8 @@ func main() {
 	r.GET("/refresh/planet", loginController.RefreshPlanet)
 	r.GET("/refresh/user_planet", loginController.RefreshUserPlanet)
 
-	r.POST("/upgrade/building", buildingController.UpgradeBuilding)
+	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
+	r.PUT("/update/workers", buildingController.UpdateWorkers)
 	r.POST("/spy", attackController.Spy)
 	r.POST("/attack", attackController.Attack)
 
