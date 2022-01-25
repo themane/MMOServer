@@ -44,7 +44,7 @@ func NewBuildingController(
 // @Param planet_id query string true "planet identifier"
 // @Param building_id query string true "building identifier"
 // @Success 200 {object} models.PlanetResponse
-// @Router /login [post]
+// @Router /upgrade/building [put]
 func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request controllerModels.UpgradeBuildingRequest
@@ -57,6 +57,46 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 	b.logger.Printf("Upgrading: %s, %s, %s", request.Username, request.PlanetId, request.BuildingId)
 
 	err = b.buildingService.UpgradeBuilding(request.Username, request.PlanetId, request.BuildingId)
+	if err != nil {
+		c.JSON(500, err.Error())
+		return
+	}
+	response, err := b.refreshService.RefreshPlanet(request.Username, request.PlanetId)
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+request.PlanetId, err)
+		c.JSON(500, "internal server error. contact administrators for more info")
+		return
+	}
+	c.JSON(200, response)
+}
+
+// UpdateWorkers godoc
+// @Summary Update workers for a building
+// @Description Update API for updating workers employed on a building
+// @Tags Update
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Param building_id query string true "building identifier"
+// @Param workers query int true "updated workers count"
+// @Success 200 {object} models.PlanetResponse
+// @Router /update/workers [post]
+func (b *BuildingController) UpdateWorkers(c *gin.Context) {
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	var request controllerModels.UpdateBuildingWorkersRequest
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		b.logger.Error("request not parseable", err)
+		c.JSON(400, "Request not parseable")
+		return
+	}
+	if request.Workers < 0 {
+		c.JSON(400, "invalid worker count")
+	}
+	b.logger.Printf("Updating: %s, %s, %s", request.Username, request.PlanetId, request.BuildingId)
+
+	err = b.buildingService.UpdateWorkers(request.Username, request.PlanetId, request.BuildingId, request.Workers)
 	if err != nil {
 		c.JSON(500, err.Error())
 		return
