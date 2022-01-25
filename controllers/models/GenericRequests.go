@@ -20,3 +20,10 @@ type UpgradeBuildingRequest struct {
 	PlanetId   string `json:"planet_id" example:"001:002:03"`
 	BuildingId string `json:"building_id" example:"GMP0018"`
 }
+
+type UpdateBuildingWorkersRequest struct {
+	Username   string `json:"username" example:"devashish"`
+	PlanetId   string `json:"planet_id" example:"001:002:03"`
+	BuildingId string `json:"building_id" example:"GMP0018"`
+	Workers    int    `json:"workers" example:"10"`
+}

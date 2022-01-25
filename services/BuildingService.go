@@ -41,6 +41,21 @@ func (b *BuildingService) UpgradeBuilding(username string, planetId string, buil
 	return nil
 }
 
+func (b *BuildingService) UpdateWorkers(username string, planetId string, buildingId string, workers int) error {
+	userData, err := b.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	currentWorkers := userData.OccupiedPlanets[planetId].Buildings[buildingId].Workers
+	idleWorkers := userData.OccupiedPlanets[planetId].Population.Workers.Idle
+	if currentWorkers == workers {
+		return nil
+	} else if workers > currentWorkers && idleWorkers < workers-currentWorkers {
+		return errors.New("not enough workers")
+	}
+	return b.userRepository.UpdateWorkers(userData.Id, planetId, buildingId, workers-currentWorkers)
+}
+
 func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.UserData,
 	planetId string, buildingId string) (int, int, int, int, error) {
 
