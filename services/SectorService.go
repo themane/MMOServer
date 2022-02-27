@@ -46,12 +46,12 @@ func NewSectorService(
 	}
 }
 
-func (s *SectorService) Visit(visitRequest controllerModels.VisitSectorRequest) (*controllerModels.SectorResponse, error) {
-	userData, err := s.userRepository.FindByUsername(visitRequest.Username)
+func (s *SectorService) Visit(username string, sectorId string) (*controllerModels.SectorResponse, error) {
+	userData, err := s.userRepository.FindByUsername(username)
 	if err != nil {
 		return nil, err
 	}
-	sectorPosition, err := models.InitSectorPositionById(visitRequest.Sector)
+	sectorPosition, err := models.InitSectorPositionById(sectorId)
 	if err != nil {
 		return nil, err
 	}
@@ -87,15 +87,15 @@ func (s *SectorService) Visit(visitRequest controllerModels.VisitSectorRequest) 
 	return &response, nil
 }
 
-func (s *SectorService) Teleport(teleportRequest controllerModels.TeleportRequest) (*controllerModels.SectorResponse, error) {
-	userData, err := s.userRepository.FindByUsername(teleportRequest.Username)
+func (s *SectorService) Teleport(username string, planetId string) (*controllerModels.SectorResponse, error) {
+	userData, err := s.userRepository.FindByUsername(username)
 	if err != nil {
 		return nil, err
 	}
-	if _, ok := userData.OccupiedPlanets[teleportRequest.Planet]; !ok {
+	if _, ok := userData.OccupiedPlanets[planetId]; !ok {
 		return nil, errors.New("not a user occupied planet")
 	}
-	planetPosition, err := models.InitPlanetPositionById(teleportRequest.Planet)
+	planetPosition, err := models.InitPlanetPositionById(planetId)
 	if err != nil {
 		return nil, err
 	}
