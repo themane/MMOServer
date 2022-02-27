@@ -36,7 +36,7 @@ type UserPlanetResponse struct {
 }
 
 func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
-	buildingConstants map[string]constants.BuildingConstants,
+	upgradeConstants map[string]constants.UpgradeConstants,
 	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants,
 	notifications []models.Notification) {
 
@@ -46,7 +46,7 @@ func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 	}
 	p.Resources.Init(planetUser)
 	p.Population.Init(planetUser)
-	p.Shields = InitAllShields(planetUser, defenceConstants, buildingConstants[constants.Shield])
+	p.Shields = InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
 	p.IdleDefences = InitAllIdleDefences(planetUser.Defences, defenceConstants)
 	p.IdleDefenceShipCarriers = InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
 	p.HomePlanet = planetUser.HomePlanet
