@@ -2,14 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
-	"net/url"
 )
 
 type LoginController struct {
@@ -87,21 +85,22 @@ func (l *LoginController) Login(c *gin.Context) {
 // @Router /refresh/planet [get]
 func (l *LoginController) RefreshPlanet(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username, planetId, err := l.getPlanetParams(values)
+	parsedParams, err := parseStrings(values, "username", "planet_id")
 	if err != nil {
+		l.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 
-	l.logger.Printf("Refreshing planet data for: %s", *username)
-	response, err := l.refreshService.RefreshPlanet(*username, *planetId)
+	l.logger.Printf("Refreshing planet data for: %s", parsedParams["username"])
+	response, err := l.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
-		l.logger.Error("error in gathering planet data for: "+*planetId, err)
+		l.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
 	if response == nil {
-		l.logger.Printf("data not found for user: %s, planet_id: %s", *username, *planetId)
+		l.logger.Printf("data not found for user: %s, planet_id: %s", parsedParams["username"], parsedParams["planet_id"])
 		c.JSON(204, "data not found")
 	}
 	c.JSON(200, response)
@@ -119,21 +118,22 @@ func (l *LoginController) RefreshPlanet(c *gin.Context) {
 // @Router /refresh/user_planet [get]
 func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username, planetId, err := l.getPlanetParams(values)
+	parsedParams, err := parseStrings(values, "username", "planet_id")
 	if err != nil {
+		l.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 
-	l.logger.Printf("Refreshing population data for: %s", *username)
-	response, err := l.refreshService.RefreshUserPlanet(*username, *planetId)
+	l.logger.Printf("Refreshing population data for: %s", parsedParams["username"])
+	response, err := l.refreshService.RefreshUserPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
-		l.logger.Error("error in gathering population data for: "+*planetId, err)
+		l.logger.Error("error in gathering population data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, "error in getting user data. contact administrators for more info")
 		return
 	}
 	if response == nil {
-		l.logger.Printf("population data not found for user: %s, planet_id: %s", *username, *planetId)
+		l.logger.Printf("population data not found for user: %s, planet_id: %s", parsedParams["username"], parsedParams["planet_id"])
 		c.JSON(204, "data not found")
 	}
 	c.JSON(200, response)
@@ -151,16 +151,17 @@ func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
 // @Router /sector/visit [get]
 func (l *LoginController) Visit(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username, sectorId, err := l.getSectorParams(values)
+	parsedParams, err := parseStrings(values, "username", "sector_id")
 	if err != nil {
+		l.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 
-	l.logger.Printf("Username: %s visiting sector: %s", username, sectorId)
-	response, err := l.sectorService.Visit(*username, *sectorId)
+	l.logger.Printf("Username: %s visiting sector: %s", parsedParams["username"], parsedParams["sector_id"])
+	response, err := l.sectorService.Visit(parsedParams["username"], parsedParams["sector_id"])
 	if err != nil {
-		l.logger.Error("error in visiting sector: "+*sectorId, err)
+		l.logger.Error("error in visiting sector: "+parsedParams["sector_id"], err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
@@ -179,44 +180,19 @@ func (l *LoginController) Visit(c *gin.Context) {
 // @Router /sector/teleport [get]
 func (l *LoginController) Teleport(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username, planetId, err := l.getPlanetParams(values)
+	parsedParams, err := parseStrings(values, "username", "planet_id")
 	if err != nil {
+		l.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 
-	l.logger.Printf("Username: %s teleporting to planet: %s", username, planetId)
-	response, err := l.sectorService.Teleport(*username, *planetId)
+	l.logger.Printf("Username: %s teleporting to planet: %s", parsedParams["username"], parsedParams["planet_id"])
+	response, err := l.sectorService.Teleport(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
-		l.logger.Error("error in visiting planet: "+*planetId, err)
+		l.logger.Error("error in visiting planet: "+parsedParams["planet_id"], err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
 	c.JSON(200, response)
-}
-
-func (l *LoginController) getPlanetParams(values url.Values) (*string, *string, error) {
-	if usernames, ok := values["username"]; ok {
-		if planetIds, ok := values["planet_id"]; ok {
-			if len(usernames) == 1 && len(planetIds) == 1 {
-				return &usernames[0], &planetIds[0], nil
-			}
-		}
-	}
-	msg := "cannot parse request parameters correctly"
-	l.logger.Println(msg)
-	return nil, nil, errors.New(msg)
-}
-
-func (l *LoginController) getSectorParams(values url.Values) (*string, *string, error) {
-	if usernames, ok := values["username"]; ok {
-		if sectorIds, ok := values["sector_id"]; ok {
-			if len(usernames) == 1 && len(sectorIds) == 1 {
-				return &usernames[0], &sectorIds[0], nil
-			}
-		}
-	}
-	msg := "cannot parse request parameters correctly"
-	l.logger.Println(msg)
-	return nil, nil, errors.New(msg)
 }

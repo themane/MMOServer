@@ -1,13 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
-	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
-	"io/ioutil"
+	"strconv"
 )
 
 type BuildingController struct {
@@ -46,24 +44,23 @@ func NewBuildingController(
 // @Success 200 {object} models.PlanetResponse
 // @Router /upgrade/building [put]
 func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request controllerModels.UpgradeBuildingRequest
-	err := json.Unmarshal(body, &request)
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id", "building_id")
 	if err != nil {
-		b.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
 		return
 	}
-	b.logger.Printf("Upgrading: %s, %s, %s", request.Username, request.PlanetId, request.BuildingId)
+	b.logger.Printf("Upgrading: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
 
-	err = b.buildingService.UpgradeBuilding(request.Username, request.PlanetId, request.BuildingId)
+	err = b.buildingService.UpgradeBuilding(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
 	if err != nil {
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(request.Username, request.PlanetId)
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
-		b.logger.Error("error in gathering planet data for: "+request.PlanetId, err)
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
@@ -81,29 +78,69 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 // @Param building_id query string true "building identifier"
 // @Param workers query int true "updated workers count"
 // @Success 200 {object} models.PlanetResponse
-// @Router /update/workers [post]
+// @Router /update/workers [put]
 func (b *BuildingController) UpdateWorkers(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request controllerModels.UpdateBuildingWorkersRequest
-	err := json.Unmarshal(body, &request)
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id", "building_id", "workers")
 	if err != nil {
-		b.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
 		return
 	}
-	if request.Workers < 0 {
+	workers, err := strconv.Atoi(parsedParams["workers"])
+	if err != nil || workers < 0 {
 		c.JSON(400, "invalid worker count")
 	}
-	b.logger.Printf("Updating: %s, %s, %s", request.Username, request.PlanetId, request.BuildingId)
+	b.logger.Printf("Updating workers: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], workers)
 
-	err = b.buildingService.UpdateWorkers(request.Username, request.PlanetId, request.BuildingId, request.Workers)
+	err = b.buildingService.UpdateWorkers(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], workers)
 	if err != nil {
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(request.Username, request.PlanetId)
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
-		b.logger.Error("error in gathering planet data for: "+request.PlanetId, err)
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
+		c.JSON(500, "internal server error. contact administrators for more info")
+		return
+	}
+	c.JSON(200, response)
+}
+
+// UpdatePopulationGrowth godoc
+// @Summary Update population growth for the planet
+// @Description Update API for updating workers employed on a building
+// @Tags Update
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Param building_id query string true "building identifier"
+// @Param workers query int true "updated workers count"
+// @Success 200 {object} models.PlanetResponse
+// @Router /update/population-growth [put]
+func (b *BuildingController) UpdatePopulationGrowth(c *gin.Context) {
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id", "value")
+	if err != nil {
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	newValue, err := strconv.Atoi(parsedParams["value"])
+	if err != nil || newValue < 0 {
+		c.JSON(400, "invalid population growth value")
+	}
+	b.logger.Printf("Updating population growth: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], newValue)
+
+	err = b.buildingService.UpdatePopulationGrowth(parsedParams["username"], parsedParams["planet_id"], newValue)
+	if err != nil {
+		c.JSON(500, err.Error())
+		return
+	}
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
