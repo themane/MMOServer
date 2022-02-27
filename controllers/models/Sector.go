@@ -2,9 +2,6 @@ package models
 
 import (
 	"github.com/themane/MMOServer/models"
-	"log"
-	"strconv"
-	"strings"
 )
 
 type Sector struct {

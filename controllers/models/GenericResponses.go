@@ -13,6 +13,12 @@ type UserResponse struct {
 	Notifications   []models.Notification `json:"notifications"`
 }
 
+type SectorResponse struct {
+	Sector          Sector                `json:"sector"`
+	OccupiedPlanets []StaticPlanetData    `json:"occupied_planets"`
+	Notifications   []models.Notification `json:"notifications"`
+}
+
 type PlanetResponse struct {
 	OccupiedPlanet OccupiedPlanet        `json:"occupied_planet"`
 	Notifications  []models.Notification `json:"notifications"`
