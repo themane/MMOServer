@@ -21,6 +21,10 @@ type NextLevelPopulationControlCenterAttributes struct {
 	CurrentMaxPopulationGenerationRateMultiplier float64 `json:"current_max_population_generation_rate_multiplier" example:"0.1"`
 	NextMaxPopulationGenerationRateMultiplier    float64 `json:"next_max_population_generation_rate_multiplier" example:"0.2"`
 	MaxPopulationGenerationRateMultiplier        float64 `json:"max_population_generation_rate_multiplier" example:"0.5"`
+	CurrentMinimumWorkersRequired                int     `json:"current_minimum_workers_required" example:"10"`
+	NextMinimumWorkersRequired                   int     `json:"next_minimum_workers_required" example:"15"`
+	CurrentMinimumSoldiersRequired               int     `json:"current_minimum_soldiers_required" example:"8"`
+	NextMinimumSoldiersRequired                  int     `json:"next_minimum_soldiers_required" example:"12"`
 }
 
 func (p *PopulationControlCenter) InitPopulationControlCenter(planetUser models.PlanetUser,
@@ -44,6 +48,10 @@ func (p *NextLevelPopulationControlCenterAttributes) Init(currentLevel int, maxL
 		strconv.Atoi(populationControlCenterBuildingConstants.Levels[currentLevelString]["max_population_generation_rate"])
 	p.CurrentMaxPopulationGenerationRateMultiplier, _ =
 		strconv.ParseFloat(populationControlCenterBuildingConstants.Levels[currentLevelString]["max_population_generation_rate_multiplier"], 64)
+	p.CurrentMinimumWorkersRequired, _ =
+		strconv.Atoi(populationControlCenterBuildingConstants.Levels[currentLevelString]["workers_required"])
+	p.CurrentMinimumSoldiersRequired, _ =
+		strconv.Atoi(populationControlCenterBuildingConstants.Levels[currentLevelString]["soldiers_required"])
 	p.MaxPopulationGenerationRate, _ =
 		strconv.Atoi(populationControlCenterBuildingConstants.Levels[maxLevelString]["max_population_generation_rate"])
 	p.MaxPopulationGenerationRateMultiplier, _ =
@@ -54,5 +62,11 @@ func (p *NextLevelPopulationControlCenterAttributes) Init(currentLevel int, maxL
 			strconv.Atoi(populationControlCenterBuildingConstants.Levels[nextLevelString]["max_population_generation_rate"])
 		p.NextMaxPopulationGenerationRateMultiplier, _ =
 			strconv.ParseFloat(populationControlCenterBuildingConstants.Levels[nextLevelString]["max_population_generation_rate_multiplier"], 64)
+		p.NextMaxPopulationGenerationRateMultiplier, _ =
+			strconv.ParseFloat(populationControlCenterBuildingConstants.Levels[nextLevelString]["max_population_generation_rate_multiplier"], 64)
+		p.NextMinimumWorkersRequired, _ =
+			strconv.Atoi(populationControlCenterBuildingConstants.Levels[nextLevelString]["workers_required"])
+		p.NextMinimumSoldiersRequired, _ =
+			strconv.Atoi(populationControlCenterBuildingConstants.Levels[nextLevelString]["soldiers_required"])
 	}
 }

@@ -22,8 +22,6 @@ type NextLevelRequirements struct {
 	GrapheneRequired         int `json:"graphene_required" example:"101"`
 	WaterRequired            int `json:"water_required" example:"5"`
 	ShelioRequired           int `json:"shelio_required" example:"0"`
-	MinimumWorkersRequired   int `json:"minimum_workers_required" example:"0"`
-	MinimumSoldiersRequired  int `json:"minimum_soldiers_required" example:"2"`
 	MinutesRequiredPerWorker int `json:"minutes_required_per_worker" example:"1440"`
 }
 

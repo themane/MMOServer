@@ -206,41 +206,31 @@
         "water_required": 11,
         "graphene_required": 11,
         "shelio_required": 0,
-        "minutes_required": 10,
-        "workers_required": 10,
-        "soldiers_required": 8
+        "minutes_required": 10
       },
       "2": {
         "water_required": 22,
         "graphene_required": 22,
         "shelio_required": 0,
-        "minutes_required": 30,
-        "workers_required": 30,
-        "soldiers_required": 25
+        "minutes_required": 30
       },
       "3": {
         "water_required": 44,
         "graphene_required": 44,
         "shelio_required": 0,
-        "minutes_required": 90,
-        "workers_required": 90,
-        "soldiers_required": 78
+        "minutes_required": 90
       },
       "4": {
         "water_required": 101,
         "graphene_required": 101,
         "shelio_required": 0,
-        "minutes_required": 270,
-        "workers_required": 270,
-        "soldiers_required": 250
+        "minutes_required": 270
       },
       "5": {
         "water_required": 202,
         "graphene_required": 202,
         "shelio_required": 0,
-        "minutes_required": 780,
-        "workers_required": 780,
-        "soldiers_required": 700
+        "minutes_required": 780
       }
     }
   }
