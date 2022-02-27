@@ -44,7 +44,7 @@ func NewAttackService(
 
 func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) error {
 	var squadSpeed float64
-	userData, err := a.userRepository.FindByUsername(spyRequest.Attacker)
+	userData, err := a.userRepository.FindByUsername(spyRequest.Username)
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func (a *AttackService) Spy(spyRequest controllerModels.SpyRequest) error {
 
 func (a *AttackService) Attack(attackRequest controllerModels.AttackRequest) error {
 	var squadSpeed float64
-	userData, err := a.userRepository.FindByUsername(attackRequest.Attacker)
+	userData, err := a.userRepository.FindByUsername(attackRequest.Username)
 	if err != nil {
 		return err
 	}

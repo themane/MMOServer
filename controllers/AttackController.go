@@ -65,7 +65,7 @@ func (a *AttackController) Spy(c *gin.Context) {
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
-	response, err := a.refreshService.RefreshPlanet(request.Attacker, request.FromPlanetId)
+	response, err := a.refreshService.RefreshPlanet(request.Username, request.FromPlanetId)
 	if err != nil {
 		a.logger.Error("error in gathering planet data for: "+request.FromPlanetId, err)
 		c.JSON(500, "internal server error. contact administrators for more info")
@@ -103,7 +103,7 @@ func (a *AttackController) Attack(c *gin.Context) {
 		c.JSON(500, "internal server error. contact administrators for more info")
 		return
 	}
-	response, err := a.refreshService.RefreshPlanet(request.Attacker, request.FromPlanetId)
+	response, err := a.refreshService.RefreshPlanet(request.Username, request.FromPlanetId)
 	if err != nil {
 		a.logger.Error("error in gathering planet data for: "+request.FromPlanetId, err)
 		c.JSON(500, "internal server error. contact administrators for more info")

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -32,24 +33,28 @@ func InitPlanetPositionByPosition(system int, sector int, planet int) PlanetPosi
 	return position
 }
 
-func InitPlanetPositionById(id string) PlanetPosition {
+func InitPlanetPositionById(id string) (*PlanetPosition, error) {
 	split := strings.Split(id, ":")
+	if len(split) != 3 {
+		return nil, errors.New("planet-id not correct: " + id)
+	}
 	system, err := strconv.Atoi(split[0])
 	if err != nil {
 		log.Print(err)
-		return PlanetPosition{}
+		return nil, errors.New("planet-id not correct: " + id)
 	}
 	sector, err := strconv.Atoi(split[1])
 	if err != nil {
 		log.Print(err)
-		return PlanetPosition{}
+		return nil, errors.New("planet-id not correct: " + id)
 	}
 	planet, err := strconv.Atoi(split[2])
 	if err != nil {
 		log.Print(err)
-		return PlanetPosition{}
+		return nil, errors.New("planet-id not correct: " + id)
 	}
-	return InitPlanetPositionByPosition(system, sector, planet)
+	position := InitPlanetPositionByPosition(system, sector, planet)
+	return &position, nil
 }
 
 func (p PlanetPosition) SystemId() string {
