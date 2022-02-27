@@ -10,6 +10,7 @@ import (
 
 type BuildingController struct {
 	buildingService *services.BuildingService
+	planetService   *services.PlanetService
 	refreshService  *services.QuickRefreshService
 	logger          *constants.LoggingUtils
 }
@@ -18,6 +19,7 @@ func NewBuildingController(
 	userRepository models.UserRepository,
 	universeRepository models.UniverseRepository,
 	missionRepository models.MissionRepository,
+	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
@@ -25,7 +27,8 @@ func NewBuildingController(
 	logLevel string,
 ) *BuildingController {
 	return &BuildingController{
-		buildingService: services.NewBuildingService(userRepository, buildingConstants, logLevel),
+		buildingService: services.NewBuildingService(userRepository, upgradeConstants, logLevel),
+		planetService:   services.NewPlanetService(userRepository, buildingConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
 			buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		logger: constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
@@ -107,33 +110,32 @@ func (b *BuildingController) UpdateWorkers(c *gin.Context) {
 	c.JSON(200, response)
 }
 
-// UpdatePopulationGrowth godoc
-// @Summary Update population growth for the planet
-// @Description Update API for updating workers employed on a building
+// UpdatePopulationRate godoc
+// @Summary Update population generation rate for the planet
+// @Description Update API for population generation rate for the planet
 // @Tags Update
 // @Accept json
 // @Produce json
 // @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
-// @Param building_id query string true "building identifier"
-// @Param workers query int true "updated workers count"
+// @Param generation_rate query int true "updated population generation rate"
 // @Success 200 {object} models.PlanetResponse
-// @Router /update/population-growth [put]
-func (b *BuildingController) UpdatePopulationGrowth(c *gin.Context) {
+// @Router /update/population-rate [put]
+func (b *BuildingController) UpdatePopulationRate(c *gin.Context) {
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "value")
+	parsedParams, err := parseStrings(values, "username", "planet_id", "generation_rate")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
-	newValue, err := strconv.Atoi(parsedParams["value"])
-	if err != nil || newValue < 0 {
-		c.JSON(400, "invalid population growth value")
+	generationRate, err := strconv.Atoi(parsedParams["generation_rate"])
+	if err != nil || generationRate < 0 {
+		c.JSON(400, "invalid population generation rate")
 	}
-	b.logger.Printf("Updating population growth: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], newValue)
+	b.logger.Printf("Updating population generation rate: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], generationRate)
 
-	err = b.buildingService.UpdatePopulationGrowth(parsedParams["username"], parsedParams["planet_id"], newValue)
+	err = b.planetService.UpdatePopulationRate(parsedParams["username"], parsedParams["planet_id"], generationRate)
 	if err != nil {
 		c.JSON(500, err.Error())
 		return

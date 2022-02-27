@@ -51,15 +51,20 @@ func main() {
 	scheduledJobManager.SchedulePlanetUpdates()
 
 	r.GET("/ping", controllers.Ping)
-	r.POST("/login", loginController.Login)
 
+	r.POST("/login", loginController.Login)
 	r.GET("/refresh/planet", loginController.RefreshPlanet)
 	r.GET("/refresh/user_planet", loginController.RefreshUserPlanet)
 
 	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
 	r.PUT("/update/workers", buildingController.UpdateWorkers)
+	r.PUT("/update/population-growth", buildingController.UpdatePopulationGrowth)
+
 	r.POST("/spy", attackController.Spy)
 	r.POST("/attack", attackController.Attack)
+
+	r.GET("/sector/visit", loginController.Visit)
+	r.GET("/sector/teleport", loginController.Teleport)
 
 	err := r.Run()
 	if err != nil {
