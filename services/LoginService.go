@@ -15,6 +15,7 @@ type LoginService struct {
 	notificationService     *NotificationService
 	userExperienceConstants constants.ExperienceConstants
 	clanExperienceConstants constants.ExperienceConstants
+	upgradeConstants        map[string]constants.UpgradeConstants
 	buildingConstants       map[string]constants.BuildingConstants
 	waterConstants          constants.MiningConstants
 	grapheneConstants       constants.MiningConstants
@@ -29,6 +30,7 @@ func NewLoginService(
 	universeRepository repoModels.UniverseRepository,
 	missionRepository repoModels.MissionRepository,
 	experienceConstants map[string]constants.ExperienceConstants,
+	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
@@ -41,6 +43,7 @@ func NewLoginService(
 		universeRepository:      universeRepository,
 		missionRepository:       missionRepository,
 		notificationService:     NewNotificationService(experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+		upgradeConstants:        upgradeConstants,
 		buildingConstants:       buildingConstants,
 		userExperienceConstants: experienceConstants[constants.UserExperiences],
 		clanExperienceConstants: experienceConstants[constants.ClanExperiences],
@@ -71,7 +74,7 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 	homeSector, err := generateSectorData(userData.OccupiedPlanets,
 		homePlanetPosition.SectorPosition(), homeSectorData, "",
 		l.userRepository, l.missionRepository,
-		l.buildingConstants, l.waterConstants, l.grapheneConstants, l.defenceConstants, l.shipConstants, l.logger,
+		l.upgradeConstants, l.buildingConstants, l.waterConstants, l.grapheneConstants, l.defenceConstants, l.shipConstants, l.logger,
 	)
 	if err != nil {
 		return nil, err

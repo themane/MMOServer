@@ -13,6 +13,7 @@ type SectorService struct {
 	universeRepository  repoModels.UniverseRepository
 	missionRepository   repoModels.MissionRepository
 	notificationService *NotificationService
+	upgradeConstants    map[string]constants.UpgradeConstants
 	buildingConstants   map[string]constants.BuildingConstants
 	waterConstants      constants.MiningConstants
 	grapheneConstants   constants.MiningConstants
@@ -26,6 +27,7 @@ func NewSectorService(
 	universeRepository repoModels.UniverseRepository,
 	missionRepository repoModels.MissionRepository,
 	experienceConstants map[string]constants.ExperienceConstants,
+	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
@@ -37,6 +39,7 @@ func NewSectorService(
 		universeRepository:  universeRepository,
 		missionRepository:   missionRepository,
 		notificationService: NewNotificationService(experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+		upgradeConstants:    upgradeConstants,
 		buildingConstants:   buildingConstants,
 		waterConstants:      mineConstants[constants.Water],
 		grapheneConstants:   mineConstants[constants.Graphene],
@@ -63,7 +66,7 @@ func (s *SectorService) Visit(username string, sectorId string) (*controllerMode
 	var response controllerModels.SectorResponse
 	sector, err := generateSectorData(userData.OccupiedPlanets, *sectorPosition, sectorData, "",
 		s.userRepository, s.missionRepository,
-		s.buildingConstants, s.waterConstants, s.grapheneConstants, s.defenceConstants, s.shipConstants, s.logger,
+		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants, s.defenceConstants, s.shipConstants, s.logger,
 	)
 	if err != nil {
 		return nil, err
@@ -107,7 +110,7 @@ func (s *SectorService) Teleport(username string, planetId string) (*controllerM
 	var response controllerModels.SectorResponse
 	sector, err := generateSectorData(userData.OccupiedPlanets, planetPosition.SectorPosition(), sectorData, planetPosition.PlanetId(),
 		s.userRepository, s.missionRepository,
-		s.buildingConstants, s.waterConstants, s.grapheneConstants, s.defenceConstants, s.shipConstants, s.logger,
+		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants, s.defenceConstants, s.shipConstants, s.logger,
 	)
 	if err != nil {
 		return nil, err

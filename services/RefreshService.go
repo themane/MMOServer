@@ -12,6 +12,7 @@ type QuickRefreshService struct {
 	userRepository     repoModels.UserRepository
 	universeRepository repoModels.UniverseRepository
 	missionRepository  repoModels.MissionRepository
+	upgradeConstants   map[string]constants.UpgradeConstants
 	buildingConstants  map[string]constants.BuildingConstants
 	waterConstants     constants.MiningConstants
 	grapheneConstants  constants.MiningConstants
@@ -24,6 +25,7 @@ func NewQuickRefreshService(
 	userRepository repoModels.UserRepository,
 	universeRepository repoModels.UniverseRepository,
 	missionRepository repoModels.MissionRepository,
+	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
@@ -34,6 +36,7 @@ func NewQuickRefreshService(
 		userRepository:     userRepository,
 		universeRepository: universeRepository,
 		missionRepository:  missionRepository,
+		upgradeConstants:   upgradeConstants,
 		buildingConstants:  buildingConstants,
 		waterConstants:     mineConstants[constants.Water],
 		grapheneConstants:  mineConstants[constants.Graphene],
@@ -66,7 +69,7 @@ func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId strin
 			}
 			planetResponse := controllerModels.OccupiedPlanet{}
 			planetResponse.Init(*planetUni, planetUser, inputPlanetId, attackMissions, spyMissions,
-				r.buildingConstants, r.waterConstants, r.grapheneConstants, r.defenceConstants, r.shipConstants)
+				r.upgradeConstants, r.buildingConstants, r.waterConstants, r.grapheneConstants, r.defenceConstants, r.shipConstants)
 			return &planetResponse, nil
 		}
 	}
@@ -82,7 +85,7 @@ func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId s
 		if planetId == inputPlanetId {
 			response := controllerModels.UserPlanetResponse{}
 			var notifications []models.Notification
-			response.Init(planetUser, r.buildingConstants, r.defenceConstants, r.shipConstants, notifications)
+			response.Init(planetUser, r.upgradeConstants, r.defenceConstants, r.shipConstants, notifications)
 			return &response, nil
 		}
 	}
@@ -104,7 +107,7 @@ func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string,
 				if mineId == inputMineId {
 					response := controllerModels.Mine{}
 					response.Init(mineUni, planetUser,
-						r.buildingConstants[constants.WaterMiningPlant], r.buildingConstants[constants.GrapheneMiningPlant],
+						r.upgradeConstants[constants.WaterMiningPlant], r.upgradeConstants[constants.GrapheneMiningPlant],
 						r.waterConstants, r.grapheneConstants)
 					return &response, nil
 				}
