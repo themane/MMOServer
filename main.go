@@ -58,7 +58,7 @@ func main() {
 
 	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
 	r.PUT("/update/workers", buildingController.UpdateWorkers)
-	r.PUT("/update/population-growth", buildingController.UpdatePopulationGrowth)
+	r.PUT("/update/population-growth", buildingController.UpdatePopulationRate)
 
 	r.POST("/spy", attackController.Spy)
 	r.POST("/attack", attackController.Attack)
@@ -77,6 +77,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
 
+	upgradeConstants := constants.GetUpgradeConstants()
 	buildingConstants := constants.GetBuildingConstants()
 	experienceConstants := constants.GetExperienceConstants()
 	mineConstants := constants.GetMiningConstants()
@@ -94,7 +95,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
 	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
-	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
+	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems, logLevel)
 
 	log.Println("Initialized all handlers")
