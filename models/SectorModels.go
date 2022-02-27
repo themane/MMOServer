@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/themane/MMOServer/models"
 	"log"
 	"strconv"
 	"strings"
@@ -24,12 +23,6 @@ func (s *SectorPosition) Init(system int, sector int) {
 func InitSectorPositionByPosition(system int, sector int) SectorPosition {
 	position := SectorPosition{}
 	position.Init(system, sector)
-	return position
-}
-
-func InitSectorPositionByPlanetPosition(planetPosition models.PlanetPosition) SectorPosition {
-	position := SectorPosition{}
-	position.Init(planetPosition.System, planetPosition.Sector)
 	return position
 }
 

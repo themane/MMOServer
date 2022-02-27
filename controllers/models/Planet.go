@@ -104,7 +104,7 @@ type OccupiedPlanet struct {
 	PlanetType              string                `json:"planet_type" example:"BASE_PLANET"`
 }
 
-func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser,
+func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser, customHomePlanetId string,
 	attackMissions []repoModels.AttackMission, spyMissions []repoModels.SpyMission,
 	buildingConstants map[string]constants.BuildingConstants,
 	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants,
@@ -146,7 +146,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		}
 
 	}
-	o.HomePlanet = planetUser.HomePlanet
+	o.HomePlanet = planetUser.HomePlanet || planetUni.Position.Id == customHomePlanetId
 
 	for _, attackMission := range attackMissions {
 		activeMission := ActiveMission{}

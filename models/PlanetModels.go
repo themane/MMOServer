@@ -65,6 +65,12 @@ func (p PlanetPosition) SectorId() string {
 	return fmt.Sprintf("%03d:%03d", p.System, p.Sector)
 }
 
+func (p PlanetPosition) SectorPosition() SectorPosition {
+	position := SectorPosition{}
+	position.Init(p.System, p.Sector)
+	return position
+}
+
 func (p PlanetPosition) PlanetId() string {
 	return fmt.Sprintf("%03d:%03d:%02d", p.System, p.Sector, p.Planet)
 }
