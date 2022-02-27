@@ -93,7 +93,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB, logLevel)
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB, logLevel)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
-	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository, experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
+	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository, experienceConstants, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
 	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
 	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
 	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems, logLevel)
