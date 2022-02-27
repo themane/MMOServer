@@ -102,6 +102,8 @@ type UserRepository interface {
 	UpdateMineResources(id string, planetId string, mineId string, water int, graphene int) error
 	UpdateWorkers(id string, planetId string, buildingId string, workers int) error
 	AddPopulation(id string, planetId string, population int) error
+
+	UpdatePopulationRate(id string, planetId string, generationRate int) error
 	RecruitWorkers(id string, planetId string, worker int) error
 	RecruitSoldiers(id string, planetId string, soldiers int) error
 
