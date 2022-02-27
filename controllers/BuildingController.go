@@ -30,7 +30,7 @@ func NewBuildingController(
 		buildingService: services.NewBuildingService(userRepository, upgradeConstants, logLevel),
 		planetService:   services.NewPlanetService(userRepository, buildingConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		logger: constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
 	}
 }
