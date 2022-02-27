@@ -33,7 +33,7 @@ type NextLevelMiningAttributes struct {
 }
 
 func (m *Mine) Init(mineUni models.MineUni, planetUser models.PlanetUser,
-	waterMiningPlantConstants constants.BuildingConstants, grapheneMiningPlantConstants constants.BuildingConstants,
+	waterMiningPlantConstants constants.UpgradeConstants, grapheneMiningPlantConstants constants.UpgradeConstants,
 	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants) {
 
 	m.Id = mineUni.Id
@@ -49,14 +49,14 @@ func (m *Mine) Init(mineUni models.MineUni, planetUser models.PlanetUser,
 }
 
 func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string,
-	miningConstants constants.MiningConstants, miningPlantConstants constants.BuildingConstants) {
+	miningConstants constants.MiningConstants, miningPlantUpgradeConstants constants.UpgradeConstants) {
 
 	m.BuildingId = planetUser.Mines[mineId].MiningPlantId
 	m.Level = planetUser.Buildings[m.BuildingId].BuildingLevel
 	m.Workers = planetUser.Buildings[m.BuildingId].Workers
-	m.BuildingState.Init(planetUser.Buildings[m.BuildingId], miningPlantConstants)
+	m.BuildingState.Init(planetUser.Buildings[m.BuildingId], miningPlantUpgradeConstants)
 	m.NextLevelMiningAttributes.Init(m.Level, miningConstants)
-	m.NextLevelRequirements.Init(m.Level, miningPlantConstants)
+	m.NextLevelRequirements.Init(m.Level, miningPlantUpgradeConstants)
 }
 
 func (n *NextLevelMiningAttributes) Init(currentLevel int, miningConstants constants.MiningConstants) {

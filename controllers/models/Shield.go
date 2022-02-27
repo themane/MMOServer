@@ -43,7 +43,7 @@ type NextLevelShieldAttributes struct {
 }
 
 func InitAllShields(planetUser models.PlanetUser,
-	defenceConstants map[string]constants.DefenceConstants, shieldBuildingConstants constants.BuildingConstants) []Shield {
+	defenceConstants map[string]constants.DefenceConstants, shieldBuildingUpgradeConstants constants.UpgradeConstants) []Shield {
 
 	var shields []Shield
 	shieldIds := constants.GetShieldIds()
@@ -51,9 +51,9 @@ func InitAllShields(planetUser models.PlanetUser,
 		s := Shield{}
 		s.Id = shieldId
 		s.Level = planetUser.Buildings[shieldId].BuildingLevel
-		s.BuildingState.Init(planetUser.Buildings[shieldId], shieldBuildingConstants)
+		s.BuildingState.Init(planetUser.Buildings[shieldId], shieldBuildingUpgradeConstants)
 		s.Workers = planetUser.Buildings[shieldId].Workers
-		s.NextLevelRequirements.Init(planetUser.Buildings[shieldId].BuildingLevel, shieldBuildingConstants)
+		s.NextLevelRequirements.Init(planetUser.Buildings[shieldId].BuildingLevel, shieldBuildingUpgradeConstants)
 		s.NextLevelShieldAttributes.Init(planetUser.Buildings[shieldId].BuildingLevel, defenceConstants[constants.Shield])
 		for defenceType, defenceUser := range planetUser.Defences {
 			if deployedDefences, ok := defenceUser.GuardingShield[shieldId]; ok {

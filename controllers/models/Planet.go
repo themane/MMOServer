@@ -86,26 +86,28 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 }
 
 type OccupiedPlanet struct {
-	PlanetConfig            string                `json:"planet_config" example:"Planet2.json"`
-	Position                models.PlanetPosition `json:"position"`
-	Distance                int                   `json:"distance" example:"14"`
-	BasePlanet              bool                  `json:"base_planet" example:"true"`
-	Resources               Resources             `json:"resources"`
-	Population              Population            `json:"population"`
-	Mines                   []Mine                `json:"mines"`
-	Shields                 []Shield              `json:"shields"`
-	IdleDefences            []Defence             `json:"idle_defences" bson:"idle_defences"`
-	IdleDefenceShipCarriers []DefenceShipCarrier  `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
-	AvailableAttackShips    []Ship                `json:"available_attack_ships" bson:"available_attack_ships"`
-	Scouts                  []Ship                `json:"scouts" bson:"scouts"`
-	HomePlanet              bool                  `json:"home_planet" example:"true"`
-	AttackMissions          []ActiveMission       `json:"attack_missions"`
-	SpyMissions             []ActiveMission       `json:"spy_missions"`
-	PlanetType              string                `json:"planet_type" example:"BASE_PLANET"`
+	PlanetConfig            string                  `json:"planet_config" example:"Planet2.json"`
+	Position                models.PlanetPosition   `json:"position"`
+	Distance                int                     `json:"distance" example:"14"`
+	BasePlanet              bool                    `json:"base_planet" example:"true"`
+	Resources               Resources               `json:"resources"`
+	Population              Population              `json:"population"`
+	Mines                   []Mine                  `json:"mines"`
+	Shields                 []Shield                `json:"shields"`
+	PopulationControlCenter PopulationControlCenter `json:"population_control_center"`
+	IdleDefences            []Defence               `json:"idle_defences" bson:"idle_defences"`
+	IdleDefenceShipCarriers []DefenceShipCarrier    `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
+	AvailableAttackShips    []Ship                  `json:"available_attack_ships" bson:"available_attack_ships"`
+	Scouts                  []Ship                  `json:"scouts" bson:"scouts"`
+	HomePlanet              bool                    `json:"home_planet" example:"true"`
+	AttackMissions          []ActiveMission         `json:"attack_missions"`
+	SpyMissions             []ActiveMission         `json:"spy_missions"`
+	PlanetType              string                  `json:"planet_type" example:"BASE_PLANET"`
 }
 
 func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser, customHomePlanetId string,
 	attackMissions []repoModels.AttackMission, spyMissions []repoModels.SpyMission,
+	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants) {
@@ -124,12 +126,12 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	for mineId := range planetUser.Mines {
 		mine := Mine{}
 		mine.Init(planetUni.Mines[mineId], planetUser,
-			buildingConstants[constants.WaterMiningPlant], buildingConstants[constants.GrapheneMiningPlant],
+			upgradeConstants[constants.WaterMiningPlant], upgradeConstants[constants.GrapheneMiningPlant],
 			waterConstants, grapheneConstants,
 		)
 		o.Mines = append(o.Mines, mine)
 	}
-	o.Shields = InitAllShields(planetUser, defenceConstants, buildingConstants[constants.Shield])
+	o.Shields = InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
 	o.IdleDefences = InitAllIdleDefences(planetUser.Defences, defenceConstants)
 	o.IdleDefenceShipCarriers = InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
 	for shipName, shipUser := range planetUser.Ships {

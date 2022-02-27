@@ -6,52 +6,53 @@ import (
 	"strconv"
 )
 
-type BuildingState struct {
-	State            string        `json:"state" example:"WORKING"`
-	MinutesRemaining int           `json:"minutes_remaining_per_worker" example:"1440"`
-	CancelReturns    CancelReturns `json:"cancel_returns"`
+type PopulationControlCenter struct {
+	BuildingId            string                                     `json:"building_id,omitempty" example:"WMP101"`
+	Level                 int                                        `json:"level" example:"3"`
+	Workers               int                                        `json:"workers" example:"12"`
+	BuildingState         BuildingState                              `json:"building_state"`
+	NextLevelAttributes   NextLevelPopulationControlCenterAttributes `json:"next_level_attributes"`
+	NextLevelRequirements NextLevelRequirements                      `json:"next_level_requirements"`
+}
+type NextLevelPopulationControlCenterAttributes struct {
+	CurrentMaxPopulationGenerationRate           int     `json:"current_max_population_generation_rate" example:"2"`
+	NextMaxPopulationGenerationRate              int     `json:"next_max_population_generation_rate" example:"4"`
+	MaxPopulationGenerationRate                  int     `json:"max_population_generation_rate" example:"16"`
+	CurrentMaxPopulationGenerationRateMultiplier float64 `json:"current_max_population_generation_rate_multiplier" example:"0.1"`
+	NextMaxPopulationGenerationRateMultiplier    float64 `json:"next_max_population_generation_rate_multiplier" example:"0.2"`
+	MaxPopulationGenerationRateMultiplier        float64 `json:"max_population_generation_rate_multiplier" example:"0.5"`
 }
 
-type CancelReturns struct {
-	WaterReturned    int `json:"water_returned" example:"5"`
-	GrapheneReturned int `json:"graphene_returned" example:"101"`
-	ShelioReturned   int `json:"shelio_returned" example:"0"`
+func (p *PopulationControlCenter) InitPopulationControlCenter(planetUser models.PlanetUser,
+	populationControlCenterUpgradeConstants constants.UpgradeConstants,
+	populationControlCenterBuildingConstants constants.BuildingConstants) {
+
+	p.BuildingId = constants.PopulationControlCenter
+	p.Level = planetUser.Buildings[constants.PopulationControlCenter].BuildingLevel
+	p.Workers = planetUser.Buildings[constants.PopulationControlCenter].Workers
+	p.BuildingState.Init(planetUser.Buildings[constants.PopulationControlCenter], populationControlCenterUpgradeConstants)
+	p.NextLevelRequirements.Init(planetUser.Buildings[constants.PopulationControlCenter].BuildingLevel, populationControlCenterUpgradeConstants)
+	p.NextLevelAttributes.Init(planetUser.Buildings[constants.PopulationControlCenter].BuildingLevel,
+		populationControlCenterUpgradeConstants.MaxLevel, populationControlCenterBuildingConstants)
 }
 
-type NextLevelRequirements struct {
-	GrapheneRequired         int `json:"graphene_required" example:"101"`
-	WaterRequired            int `json:"water_required" example:"5"`
-	ShelioRequired           int `json:"shelio_required" example:"0"`
-	MinutesRequiredPerWorker int `json:"minutes_required_per_worker" example:"1440"`
-}
-
-func (b *BuildingState) Init(building models.Building, buildingConstants constants.BuildingConstants) {
-	if building.BuildingMinutesPerWorker > 0 {
-		b.State = constants.UpgradingState
-	} else {
-		b.State = constants.WorkingState
-	}
-	b.MinutesRemaining = building.BuildingMinutesPerWorker
-	b.CancelReturns.Init(building.BuildingMinutesPerWorker, building.BuildingLevel, buildingConstants)
-}
-
-func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, buildingConstants constants.BuildingConstants) {
-	if buildingLevel < buildingConstants.MaxLevel {
-		nextLevelString := strconv.Itoa(buildingLevel + 1)
-		ratio := buildingMinutesPerWorker / buildingConstants.Levels[nextLevelString].MinutesRequired
-
-		c.WaterReturned = buildingConstants.Levels[nextLevelString].WaterRequired * ratio
-		c.GrapheneReturned = buildingConstants.Levels[nextLevelString].GrapheneRequired * ratio
-		c.ShelioReturned = buildingConstants.Levels[nextLevelString].ShelioRequired * ratio
-	}
-}
-
-func (n *NextLevelRequirements) Init(currentLevel int, buildingConstants constants.BuildingConstants) {
-	if currentLevel+1 < buildingConstants.MaxLevel {
+func (p *NextLevelPopulationControlCenterAttributes) Init(currentLevel int, maxLevel int,
+	populationControlCenterBuildingConstants constants.BuildingConstants) {
+	currentLevelString := strconv.Itoa(currentLevel)
+	maxLevelString := strconv.Itoa(maxLevel)
+	p.CurrentMaxPopulationGenerationRate, _ =
+		strconv.Atoi(populationControlCenterBuildingConstants.Levels[currentLevelString]["max_population_generation_rate"])
+	p.CurrentMaxPopulationGenerationRateMultiplier, _ =
+		strconv.ParseFloat(populationControlCenterBuildingConstants.Levels[currentLevelString]["max_population_generation_rate_multiplier"], 64)
+	p.MaxPopulationGenerationRate, _ =
+		strconv.Atoi(populationControlCenterBuildingConstants.Levels[maxLevelString]["max_population_generation_rate"])
+	p.MaxPopulationGenerationRateMultiplier, _ =
+		strconv.ParseFloat(populationControlCenterBuildingConstants.Levels[maxLevelString]["max_population_generation_rate_multiplier"], 64)
+	if currentLevel+1 < maxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
-		n.GrapheneRequired = buildingConstants.Levels[nextLevelString].GrapheneRequired
-		n.WaterRequired = buildingConstants.Levels[nextLevelString].WaterRequired
-		n.ShelioRequired = buildingConstants.Levels[nextLevelString].ShelioRequired
-		n.MinutesRequiredPerWorker = buildingConstants.Levels[nextLevelString].MinutesRequired
+		p.NextMaxPopulationGenerationRate, _ =
+			strconv.Atoi(populationControlCenterBuildingConstants.Levels[nextLevelString]["max_population_generation_rate"])
+		p.NextMaxPopulationGenerationRateMultiplier, _ =
+			strconv.ParseFloat(populationControlCenterBuildingConstants.Levels[nextLevelString]["max_population_generation_rate_multiplier"], 64)
 	}
 }
