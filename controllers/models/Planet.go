@@ -131,6 +131,8 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		)
 		o.Mines = append(o.Mines, mine)
 	}
+	o.PopulationControlCenter.Init(planetUser,
+		upgradeConstants[constants.PopulationControlCenter], buildingConstants[constants.PopulationControlCenter])
 	o.Shields = InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
 	o.IdleDefences = InitAllIdleDefences(planetUser.Defences, defenceConstants)
 	o.IdleDefenceShipCarriers = InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)

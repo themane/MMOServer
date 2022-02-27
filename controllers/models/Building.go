@@ -27,7 +27,7 @@ type NextLevelPopulationControlCenterAttributes struct {
 	NextMinimumSoldiersRequired                  int     `json:"next_minimum_soldiers_required" example:"12"`
 }
 
-func (p *PopulationControlCenter) InitPopulationControlCenter(planetUser models.PlanetUser,
+func (p *PopulationControlCenter) Init(planetUser models.PlanetUser,
 	populationControlCenterUpgradeConstants constants.UpgradeConstants,
 	populationControlCenterBuildingConstants constants.BuildingConstants) {
 

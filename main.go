@@ -47,8 +47,8 @@ func main() {
 	url := ginSwagger.URL(baseURL + "/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	loginController, buildingController, attackController, scheduledJobManager := getHandlers()
-	scheduledJobManager.SchedulePlanetUpdates()
+	loginController, buildingController, attackController, _ := getHandlers()
+	//scheduledJobManager.SchedulePlanetUpdates()
 
 	r.GET("/ping", controllers.Ping)
 
