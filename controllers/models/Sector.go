@@ -19,3 +19,13 @@ func (sp *SectorPosition) Init(planetPosition models.PlanetPosition) {
 	sp.System = planetPosition.System
 	sp.Sector = planetPosition.Sector
 }
+
+type VisitSectorRequest struct {
+	Username string `json:"username" example:"devashish"`
+	Sector   string `json:"sector" example:"005:001"`
+}
+
+type TeleportRequest struct {
+	Username string `json:"username" example:"devashish"`
+	Planet   string `json:"planet" example:"005:001:03"`
+}
