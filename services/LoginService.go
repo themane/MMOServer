@@ -1,7 +1,6 @@
 package services
 
 import (
-	"errors"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
@@ -69,12 +68,17 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 
 	var response controllerModels.UserResponse
 	response.Profile.Init(*userData, clanData, l.userExperienceConstants)
-	homeSector, err := l.home(userData.OccupiedPlanets, *homePlanetPosition, homeSectorData)
+	homeSector, err := generateSectorData(userData.OccupiedPlanets,
+		homePlanetPosition.SectorPosition(), homeSectorData, "",
+		l.userRepository, l.missionRepository,
+		l.buildingConstants, l.waterConstants, l.grapheneConstants, l.defenceConstants, l.shipConstants, l.logger,
+	)
 	if err != nil {
 		return nil, err
 	}
 	response.HomeSector = *homeSector
-	response.OccupiedPlanets, err = l.occupiedPlanets(userData.OccupiedPlanets, homePlanetPosition.SectorId(), homeSectorData)
+	response.OccupiedPlanets, err = generateOccupiedPlanetsData(userData.OccupiedPlanets,
+		homePlanetPosition.SectorId(), homeSectorData, l.universeRepository)
 	if err != nil {
 		return nil, err
 	}
@@ -88,70 +92,15 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 	return &response, nil
 }
 
-func (l *LoginService) home(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
-	homePlanetPosition models.PlanetPosition, homeSectorData map[string]repoModels.PlanetUni) (*controllerModels.Sector, error) {
-
-	var homeSector controllerModels.Sector
-	homeSector.Position.Init(homePlanetPosition)
-
-	for planetId, planetUni := range homeSectorData {
-		if planetUser, ok := allOccupiedPlanetIds[planetId]; ok {
-			planetData := controllerModels.OccupiedPlanet{}
-			attackMissions, err := l.missionRepository.FindAttackMissionsFromPlanetId(planetId)
-			if err != nil {
-				l.logger.Error("error in retrieving attack missions for: "+planetId, err)
-				return nil, errors.New("error in retrieving attack missions for: " + planetId)
-			}
-			spyMissions, err := l.missionRepository.FindSpyMissionsFromPlanetId(planetId)
-			if err != nil {
-				l.logger.Error("error in retrieving spy missions for: "+planetId, err)
-				return nil, errors.New("error in retrieving spy missions for: " + planetId)
-			}
-			planetData.Init(planetUni, planetUser,
-				attackMissions, spyMissions,
-				l.buildingConstants,
-				l.waterConstants, l.grapheneConstants,
-				l.defenceConstants, l.shipConstants,
-			)
-			homeSector.OccupiedPlanets = append(homeSector.OccupiedPlanets, planetData)
-			continue
-		}
-		planetData := controllerModels.UnoccupiedPlanet{}
-		userData, err := l.userRepository.FindById(planetUni.Occupied)
-		if err != nil {
-			planetData.Init(planetUni, repoModels.PlanetUser{}, "")
-		} else {
-			planetData.Init(planetUni, userData.OccupiedPlanets[planetId], userData.Profile.Username)
-		}
-		homeSector.UnoccupiedPlanets = append(homeSector.UnoccupiedPlanets, planetData)
-	}
-	return &homeSector, nil
-}
-
-func (l *LoginService) occupiedPlanets(occupiedPlanets map[string]repoModels.PlanetUser,
-	homeSectorId string, homeSectorData map[string]repoModels.PlanetUni) ([]controllerModels.StaticPlanetData, error) {
-	var staticPlanets []controllerModels.StaticPlanetData
-	for planetId := range occupiedPlanets {
-		planetUni := homeSectorData[planetId]
-		if planetUni.Id == "" {
-			planet, err := l.universeRepository.FindById(planetId)
-			if err != nil {
-				return nil, errors.New("Error in retrieving universe data for planetId: " + planetId)
-			}
-			planetUni = *planet
-		}
-		staticPlanet := controllerModels.StaticPlanetData{}
-		staticPlanet.Init(planetUni, homeSectorId)
-		staticPlanets = append(staticPlanets, staticPlanet)
-	}
-	return staticPlanets, nil
-}
-
 func getHomeSectorData(userData *repoModels.UserData, universeRepository repoModels.UniverseRepository) (*models.PlanetPosition, map[string]repoModels.PlanetUni, error) {
-	var homePlanetPosition models.PlanetPosition
+	var homePlanetPosition *models.PlanetPosition
 	for planetId, planet := range userData.OccupiedPlanets {
 		if planet.HomePlanet {
-			homePlanetPosition = models.InitPlanetPositionById(planetId)
+			var err error
+			homePlanetPosition, err = models.InitPlanetPositionById(planetId)
+			if err != nil {
+				return nil, nil, err
+			}
 			break
 		}
 	}
@@ -159,7 +108,7 @@ func getHomeSectorData(userData *repoModels.UserData, universeRepository repoMod
 	if err != nil {
 		return nil, nil, err
 	}
-	return &homePlanetPosition, homeSectorData, nil
+	return homePlanetPosition, homeSectorData, nil
 }
 
 func getClanData(clanId string, clanRepository repoModels.ClanRepository) (*repoModels.ClanData, error) {
