@@ -19,16 +19,28 @@ func GetExperienceConstants() map[string]ExperienceConstants {
 	return experienceConstants
 }
 
+func GetUpgradeConstants() map[string]UpgradeConstants {
+	var upgradeConstants map[string]UpgradeConstants
+	constantsFile, _ := os.Open("resources/UpgradeConstants.json")
+	responseByteValue, _ := ioutil.ReadAll(constantsFile)
+	err := json.Unmarshal(responseByteValue, &upgradeConstants)
+	if err != nil {
+		log.Fatal("Error in initializing upgrade constants: ", err)
+		return nil
+	}
+	return upgradeConstants
+}
+
 func GetBuildingConstants() map[string]BuildingConstants {
-	var mineConstants map[string]BuildingConstants
+	var buildingConstants map[string]BuildingConstants
 	constantsFile, _ := os.Open("resources/BuildingConstants.json")
 	responseByteValue, _ := ioutil.ReadAll(constantsFile)
-	err := json.Unmarshal(responseByteValue, &mineConstants)
+	err := json.Unmarshal(responseByteValue, &buildingConstants)
 	if err != nil {
 		log.Fatal("Error in initializing building constants: ", err)
 		return nil
 	}
-	return mineConstants
+	return buildingConstants
 }
 
 func GetMiningConstants() map[string]MiningConstants {

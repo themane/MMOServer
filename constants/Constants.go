@@ -142,16 +142,20 @@ type ShipLevelConstant struct {
 	Speed            int `json:"speed"`
 }
 
-type BuildingConstants struct {
-	MaxLevel int                              `json:"max_level"`
-	Levels   map[string]BuildingLevelConstant `json:"levels"`
+type UpgradeConstants struct {
+	MaxLevel int                             `json:"max_level"`
+	Levels   map[string]UpgradeLevelConstant `json:"levels"`
 }
 
-type BuildingLevelConstant struct {
+type UpgradeLevelConstant struct {
 	WaterRequired    int `json:"water_required"`
 	GrapheneRequired int `json:"graphene_required"`
 	ShelioRequired   int `json:"shelio_required"`
 	MinutesRequired  int `json:"minutes_required"`
+}
+
+type BuildingConstants struct {
+	Levels map[string]map[string]string `json:"levels"`
 }
 
 func GetBuildingType(buildingId string) (string, error) {
