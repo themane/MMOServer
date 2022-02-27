@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
@@ -90,6 +91,9 @@ func (s *SectorService) Teleport(teleportRequest controllerModels.TeleportReques
 	userData, err := s.userRepository.FindByUsername(teleportRequest.Username)
 	if err != nil {
 		return nil, err
+	}
+	if _, ok := userData.OccupiedPlanets[teleportRequest.Planet]; !ok {
+		return nil, errors.New("not a user occupied planet")
 	}
 	planetPosition, err := models.InitPlanetPositionById(teleportRequest.Planet)
 	if err != nil {
