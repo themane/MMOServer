@@ -154,6 +154,18 @@ func (u *UserRepositoryImpl) AddPopulation(id string, planetId string, populatio
 	return nil
 }
 
+func (u *UserRepositoryImpl) UpdatePopulationRate(id string, planetId string, generationRate int) error {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{
+		"occupied_planets." + planetId + ".population.generation_rate": generationRate,
+	}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Updated population generation rate id: %s, planetId: %s, rate: %d\n", id, planetId, generationRate)
+	return nil
+}
+
 func (u *UserRepositoryImpl) RecruitWorkers(id string, planetId string, workers int) error {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)

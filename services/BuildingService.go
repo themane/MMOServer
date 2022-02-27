@@ -8,20 +8,20 @@ import (
 )
 
 type BuildingService struct {
-	userRepository    repoModels.UserRepository
-	buildingConstants map[string]constants.BuildingConstants
-	logger            *constants.LoggingUtils
+	userRepository   repoModels.UserRepository
+	upgradeConstants map[string]constants.UpgradeConstants
+	logger           *constants.LoggingUtils
 }
 
 func NewBuildingService(
 	userRepository repoModels.UserRepository,
-	buildingConstants map[string]constants.BuildingConstants,
+	upgradeConstants map[string]constants.UpgradeConstants,
 	logLevel string,
 ) *BuildingService {
 	return &BuildingService{
-		userRepository:    userRepository,
-		buildingConstants: buildingConstants,
-		logger:            constants.NewLoggingUtils("BUILDING_SERVICE", logLevel),
+		userRepository:   userRepository,
+		upgradeConstants: upgradeConstants,
+		logger:           constants.NewLoggingUtils("BUILDING_SERVICE", logLevel),
 	}
 }
 
@@ -71,7 +71,7 @@ func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.User
 	if err != nil {
 		return 0, 0, 0, 0, errors.New("building not found")
 	}
-	if buildingConstants, ok := b.buildingConstants[buildingType]; ok {
+	if buildingConstants, ok := b.upgradeConstants[buildingType]; ok {
 		if buildingConstants.MaxLevel <= buildingLevel {
 			return 0, 0, 0, 0, errors.New("max level reached")
 		}
