@@ -65,7 +65,7 @@ func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId strin
 				return nil, errors.New("error in retrieving spy missions")
 			}
 			planetResponse := controllerModels.OccupiedPlanet{}
-			planetResponse.Init(*planetUni, planetUser, attackMissions, spyMissions,
+			planetResponse.Init(*planetUni, planetUser, inputPlanetId, attackMissions, spyMissions,
 				r.buildingConstants, r.waterConstants, r.grapheneConstants, r.defenceConstants, r.shipConstants)
 			return &planetResponse, nil
 		}

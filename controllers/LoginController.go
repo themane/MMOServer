@@ -15,6 +15,7 @@ import (
 type LoginController struct {
 	loginService   *services.LoginService
 	refreshService *services.QuickRefreshService
+	sectorService  *services.SectorService
 	logger         *constants.LoggingUtils
 }
 
@@ -34,6 +35,8 @@ func NewLoginController(userRepository models.UserRepository,
 			experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
 			buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+		sectorService: services.NewSectorService(userRepository, universeRepository, missionRepository,
+			experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
 		logger: constants.NewLoggingUtils("LOGIN_CONTROLLER", logLevel),
 	}
 }
@@ -84,7 +87,7 @@ func (l *LoginController) Login(c *gin.Context) {
 // @Router /refresh/planet [get]
 func (l *LoginController) RefreshPlanet(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username, planetId, err := l.getParams(values)
+	username, planetId, err := l.getPlanetParams(values)
 	if err != nil {
 		c.JSON(400, err.Error())
 		return
@@ -116,7 +119,7 @@ func (l *LoginController) RefreshPlanet(c *gin.Context) {
 // @Router /refresh/user_planet [get]
 func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
 	values := c.Request.URL.Query()
-	username, planetId, err := l.getParams(values)
+	username, planetId, err := l.getPlanetParams(values)
 	if err != nil {
 		c.JSON(400, err.Error())
 		return
@@ -136,11 +139,80 @@ func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
 	c.JSON(200, response)
 }
 
-func (l *LoginController) getParams(values url.Values) (*string, *string, error) {
+// Visit godoc
+// @Summary Visit Sector API
+// @Description Endpoint to switch to another sector to visit and check globally available data on planets
+// @Tags Sector
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param sector_id query string true "sector id to visit"
+// @Success 200 {object} controllerModels.SectorResponse
+// @Router /sector/visit [get]
+func (l *LoginController) Visit(c *gin.Context) {
+	values := c.Request.URL.Query()
+	username, sectorId, err := l.getSectorParams(values)
+	if err != nil {
+		c.JSON(400, err.Error())
+		return
+	}
+
+	l.logger.Printf("Username: %s visiting sector: %s", username, sectorId)
+	response, err := l.sectorService.Visit(*username, *sectorId)
+	if err != nil {
+		l.logger.Error("error in visiting sector: "+*sectorId, err)
+		c.JSON(500, "internal server error. contact administrators for more info")
+		return
+	}
+	c.JSON(200, response)
+}
+
+// Teleport godoc
+// @Summary Teleport to Sector API
+// @Description Endpoint to teleport to owned planet in another sector
+// @Tags Sector
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet id to visit"
+// @Success 200 {object} controllerModels.SectorResponse
+// @Router /sector/teleport [get]
+func (l *LoginController) Teleport(c *gin.Context) {
+	values := c.Request.URL.Query()
+	username, planetId, err := l.getPlanetParams(values)
+	if err != nil {
+		c.JSON(400, err.Error())
+		return
+	}
+
+	l.logger.Printf("Username: %s teleporting to planet: %s", username, planetId)
+	response, err := l.sectorService.Teleport(*username, *planetId)
+	if err != nil {
+		l.logger.Error("error in visiting planet: "+*planetId, err)
+		c.JSON(500, "internal server error. contact administrators for more info")
+		return
+	}
+	c.JSON(200, response)
+}
+
+func (l *LoginController) getPlanetParams(values url.Values) (*string, *string, error) {
 	if usernames, ok := values["username"]; ok {
 		if planetIds, ok := values["planet_id"]; ok {
 			if len(usernames) == 1 && len(planetIds) == 1 {
 				return &usernames[0], &planetIds[0], nil
+			}
+		}
+	}
+	msg := "cannot parse request parameters correctly"
+	l.logger.Println(msg)
+	return nil, nil, errors.New(msg)
+}
+
+func (l *LoginController) getSectorParams(values url.Values) (*string, *string, error) {
+	if usernames, ok := values["username"]; ok {
+		if sectorIds, ok := values["sector_id"]; ok {
+			if len(usernames) == 1 && len(sectorIds) == 1 {
+				return &usernames[0], &sectorIds[0], nil
 			}
 		}
 	}
