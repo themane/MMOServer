@@ -51,10 +51,19 @@ const (
 
 //  Building Types
 const (
-	WaterMiningPlant    string = "WATER_MINING_PLANT"
-	GrapheneMiningPlant string = "GRAPHENE_MINING_PLANT"
-	Shield              string = "SHIELD"
-	Vikram              string = "VIKRAM"
+	WaterMiningPlant        string = "WATER_MINING_PLANT"
+	GrapheneMiningPlant     string = "GRAPHENE_MINING_PLANT"
+	Shield                  string = "SHIELD"
+	Vikram                  string = "VIKRAM"
+	PopulationControlCenter string = "POPULATION_CONTROL_CENTER"
+	AttackProductionCenter  string = "ATTACK_PRODUCTION_CENTER"
+	DefenceProductionCenter string = "DEFENCE_PRODUCTION_CENTER"
+	DiamondStorage          string = "DIAMOND_STORAGE"
+	WaterPressureTank       string = "WATER_PRESSURE_TANK"
+	WarRoom                 string = "WAR_ROOM"
+	CommunicationCenter     string = "COMMUNICATION_CENTER"
+	ResearchLab             string = "RESEARCH_LAB"
+	Library                 string = "LIBRARY"
 )
 
 //  Ship Types
