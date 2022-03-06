@@ -54,3 +54,8 @@ func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 	p.HomePlanet = planetUser.HomePlanet
 	p.Notifications = notifications
 }
+
+type ErrorResponse struct {
+	Message  string `json:"message"`
+	HttpCode int    `json:"http_code"`
+}

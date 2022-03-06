@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
+	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"strconv"
@@ -64,7 +65,7 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	c.JSON(200, response)
@@ -104,7 +105,7 @@ func (b *BuildingController) UpdateWorkers(c *gin.Context) {
 	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	c.JSON(200, response)
@@ -143,7 +144,7 @@ func (b *BuildingController) UpdatePopulationRate(c *gin.Context) {
 	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	c.JSON(200, response)

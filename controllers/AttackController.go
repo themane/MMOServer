@@ -55,7 +55,7 @@ func (a *AttackController) Spy(c *gin.Context) {
 	err := json.Unmarshal(body, &request)
 	if err != nil {
 		a.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
+		c.JSON(400, err.Error())
 		return
 	}
 	a.logger.Printf("Launching spy mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
@@ -63,13 +63,13 @@ func (a *AttackController) Spy(c *gin.Context) {
 	err = a.attackService.Spy(request)
 	if err != nil {
 		a.logger.Error("error in launching spy mission", err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "internal server error. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	response, err := a.refreshService.RefreshPlanet(request.Username, request.FromPlanetId)
 	if err != nil {
 		a.logger.Error("error in gathering planet data for: "+request.FromPlanetId, err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	c.JSON(200, response)
@@ -101,13 +101,13 @@ func (a *AttackController) Attack(c *gin.Context) {
 	err = a.attackService.Attack(request)
 	if err != nil {
 		a.logger.Error("error in launching attack mission", err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "internal server error. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	response, err := a.refreshService.RefreshPlanet(request.Username, request.FromPlanetId)
 	if err != nil {
 		a.logger.Error("error in gathering planet data for: "+request.FromPlanetId, err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	c.JSON(200, response)

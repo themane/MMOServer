@@ -63,13 +63,14 @@ func (l *LoginController) Login(c *gin.Context) {
 	response, err := l.loginService.Login(request.Username)
 	if err != nil {
 		l.logger.Error("error in getting user data", err)
-		c.JSON(500, "error in getting user data. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	if response == nil {
 		msg := "User data not found"
 		l.logger.Info(msg)
 		c.JSON(204, msg)
+		return
 	}
 	c.JSON(200, response)
 }
@@ -97,12 +98,13 @@ func (l *LoginController) RefreshPlanet(c *gin.Context) {
 	response, err := l.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
 		l.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	if response == nil {
 		l.logger.Printf("data not found for user: %s, planet_id: %s", parsedParams["username"], parsedParams["planet_id"])
-		c.JSON(204, "data not found")
+		c.JSON(204, nil)
+		return
 	}
 	c.JSON(200, response)
 }
@@ -130,12 +132,13 @@ func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
 	response, err := l.refreshService.RefreshUserPlanet(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
 		l.logger.Error("error in gathering population data for: "+parsedParams["planet_id"], err)
-		c.JSON(500, "error in getting user data. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	if response == nil {
 		l.logger.Printf("population data not found for user: %s, planet_id: %s", parsedParams["username"], parsedParams["planet_id"])
-		c.JSON(204, "data not found")
+		c.JSON(204, nil)
+		return
 	}
 	c.JSON(200, response)
 }
@@ -163,7 +166,7 @@ func (l *LoginController) Visit(c *gin.Context) {
 	response, err := l.sectorService.Visit(parsedParams["username"], parsedParams["sector_id"])
 	if err != nil {
 		l.logger.Error("error in visiting sector: "+parsedParams["sector_id"], err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "internal server error. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	c.JSON(200, response)
@@ -192,7 +195,7 @@ func (l *LoginController) Teleport(c *gin.Context) {
 	response, err := l.sectorService.Teleport(parsedParams["username"], parsedParams["planet_id"])
 	if err != nil {
 		l.logger.Error("error in visiting planet: "+parsedParams["planet_id"], err)
-		c.JSON(500, "internal server error. contact administrators for more info")
+		c.JSON(500, controllerModels.ErrorResponse{Message: "internal server error. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	c.JSON(200, response)

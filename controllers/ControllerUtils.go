@@ -7,7 +7,7 @@ import (
 )
 
 func parseStrings(urlValues url.Values, paramNames ...string) (map[string]string, error) {
-	var parsedParams map[string]string
+	parsedParams := map[string]string{}
 	for _, paramName := range paramNames {
 		if paramValues, ok := urlValues[paramName]; ok {
 			if len(paramValues) == 1 {
