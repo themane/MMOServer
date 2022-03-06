@@ -90,18 +90,18 @@ type OccupiedPlanet struct {
 	Position                models.PlanetPosition   `json:"position"`
 	Distance                int                     `json:"distance" example:"14"`
 	BasePlanet              bool                    `json:"base_planet" example:"true"`
-	Resources               Resources               `json:"resources"`
-	Population              Population              `json:"population"`
-	Mines                   []Mine                  `json:"mines"`
-	Shields                 []Shield                `json:"shields"`
-	PopulationControlCenter PopulationControlCenter `json:"population_control_center"`
-	IdleDefences            []Defence               `json:"idle_defences" bson:"idle_defences"`
-	IdleDefenceShipCarriers []DefenceShipCarrier    `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
-	AvailableAttackShips    []Ship                  `json:"available_attack_ships" bson:"available_attack_ships"`
-	Scouts                  []Ship                  `json:"scouts" bson:"scouts"`
+	Resources               Resources               `json:"resources,omitempty"`
+	Population              Population              `json:"population,omitempty"`
+	Mines                   []Mine                  `json:"mines,omitempty"`
+	Shields                 []Shield                `json:"shields,omitempty"`
+	PopulationControlCenter PopulationControlCenter `json:"population_control_center,omitempty"`
+	IdleDefences            []Defence               `json:"idle_defences" bson:"idle_defences,omitempty"`
+	IdleDefenceShipCarriers []DefenceShipCarrier    `json:"defence_ship_carriers" bson:"defence_ship_carriers,omitempty"`
+	AvailableAttackShips    []Ship                  `json:"available_attack_ships" bson:"available_attack_ships,omitempty"`
+	Scouts                  []Ship                  `json:"scouts" bson:"scouts,omitempty"`
 	HomePlanet              bool                    `json:"home_planet" example:"true"`
-	AttackMissions          []ActiveMission         `json:"attack_missions"`
-	SpyMissions             []ActiveMission         `json:"spy_missions"`
+	AttackMissions          []ActiveMission         `json:"attack_missions,omitempty"`
+	SpyMissions             []ActiveMission         `json:"spy_missions,omitempty"`
 	PlanetType              string                  `json:"planet_type" example:"BASE_PLANET"`
 }
 

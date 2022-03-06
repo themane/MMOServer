@@ -105,7 +105,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 func initialize() {
 	baseURL = os.Getenv("BASE_URL")
 	if baseURL == "" {
-		baseURL = "localhost:8080"
+		baseURL = "http://localhost:8080"
 	}
 	secretName = os.Getenv("SECRET_NAME")
 	mongoDB = os.Getenv("MONGO_DB")
