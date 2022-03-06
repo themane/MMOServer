@@ -6,31 +6,31 @@
         "max_population_generation_rate": "1",
         "population_generation_rate_multiplier": "0.0",
         "workers_required": "10",
-        "soldiers_required": "8"
+        "workers_max_limit": "25"
       },
       "2": {
         "max_population_generation_rate": "2",
         "population_generation_rate_multiplier": "0.1",
         "workers_required": "30",
-        "soldiers_required": "25"
+        "workers_max_limit": "75"
       },
       "3": {
         "max_population_generation_rate": "4",
         "population_generation_rate_multiplier": "0.1",
         "workers_required": "90",
-        "soldiers_required": "78"
+        "workers_max_limit": "225"
       },
       "4": {
         "max_population_generation_rate": "8",
         "population_generation_rate_multiplier": "0.2",
         "workers_required": "270",
-        "soldiers_required": "250"
+        "workers_max_limit": "675"
       },
       "5": {
         "max_population_generation_rate": "15",
         "population_generation_rate_multiplier": "0.3",
         "workers_required": "780",
-        "soldiers_required": "700"
+        "workers_max_limit": "1950"
       }
     }
   }

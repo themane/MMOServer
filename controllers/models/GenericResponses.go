@@ -2,6 +2,8 @@ package models
 
 import (
 	"github.com/themane/MMOServer/constants"
+	"github.com/themane/MMOServer/controllers/models/buildings"
+	"github.com/themane/MMOServer/controllers/models/military"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
@@ -25,14 +27,14 @@ type PlanetResponse struct {
 }
 
 type UserPlanetResponse struct {
-	BasePlanet              bool                  `json:"base_planet" example:"true"`
-	Resources               Resources             `json:"resources"`
-	Population              Population            `json:"population"`
-	Shields                 []Shield              `json:"shields"`
-	IdleDefences            []Defence             `json:"idle_defences" bson:"idle_defences"`
-	IdleDefenceShipCarriers []DefenceShipCarrier  `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
-	HomePlanet              bool                  `json:"home_planet" example:"true"`
-	Notifications           []models.Notification `json:"notifications"`
+	BasePlanet              bool                          `json:"base_planet" example:"true"`
+	Resources               *Resources                    `json:"resources"`
+	Population              *Population                   `json:"population"`
+	Shields                 []buildings.Shield            `json:"shields"`
+	IdleDefences            []military.Defence            `json:"idle_defences" bson:"idle_defences"`
+	IdleDefenceShipCarriers []military.DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
+	HomePlanet              bool                          `json:"home_planet" example:"true"`
+	Notifications           []models.Notification         `json:"notifications"`
 }
 
 func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
@@ -44,11 +46,11 @@ func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 		p.BasePlanet = true
 		return
 	}
-	p.Resources.Init(planetUser)
-	p.Population.Init(planetUser)
-	p.Shields = InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
-	p.IdleDefences = InitAllIdleDefences(planetUser.Defences, defenceConstants)
-	p.IdleDefenceShipCarriers = InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
+	p.Resources = InitResources(planetUser)
+	p.Population = InitPopulation(planetUser)
+	p.Shields = buildings.InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
+	p.IdleDefences = military.InitAllIdleDefences(planetUser.Defences, defenceConstants)
+	p.IdleDefenceShipCarriers = military.InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
 	p.HomePlanet = planetUser.HomePlanet
 	p.Notifications = notifications
 }

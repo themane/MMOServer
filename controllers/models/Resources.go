@@ -18,11 +18,13 @@ type Resource struct {
 	Reserved int     `json:"reserved" example:"14"`
 }
 
-func (r *Resources) Init(planetUser models.PlanetUser) {
+func InitResources(planetUser models.PlanetUser) *Resources {
+	r := new(Resources)
 	limit := getMaxLimit(planetUser.Water.Amount, planetUser.Graphene.Amount)
 	r.Water = Resource{Amount: planetUser.Water.Amount, Reserved: planetUser.Water.Reserved, MaxLimit: limit}
 	r.Graphene = Resource{Amount: planetUser.Graphene.Amount, Reserved: planetUser.Graphene.Reserved, MaxLimit: limit}
 	r.Shelio = planetUser.Shelio
+	return r
 }
 
 func getMaxLimit(water int, graphene int) float64 {

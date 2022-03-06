@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
+	"github.com/themane/MMOServer/controllers/models/buildings"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
@@ -92,7 +93,7 @@ func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId s
 	return nil, nil
 }
 
-func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string, inputMineId string) (*controllerModels.Mine, error) {
+func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string, inputMineId string) (*buildings.Mine, error) {
 	userData, errUser := r.userRepository.FindByUsername(username)
 	if errUser != nil {
 		return nil, errUser
@@ -103,9 +104,10 @@ func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string,
 			if errUni != nil {
 				return nil, errUni
 			}
+
 			for mineId, mineUni := range planetUni.Mines {
 				if mineId == inputMineId {
-					response := controllerModels.Mine{}
+					response := buildings.Mine{}
 					response.Init(mineUni, planetUser,
 						r.upgradeConstants[constants.WaterMiningPlant], r.upgradeConstants[constants.GrapheneMiningPlant],
 						r.waterConstants, r.grapheneConstants)

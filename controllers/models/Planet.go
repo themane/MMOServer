@@ -2,6 +2,8 @@ package models
 
 import (
 	"github.com/themane/MMOServer/constants"
+	"github.com/themane/MMOServer/controllers/models/buildings"
+	"github.com/themane/MMOServer/controllers/models/military"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
@@ -86,23 +88,23 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 }
 
 type OccupiedPlanet struct {
-	PlanetConfig            string                  `json:"planet_config" example:"Planet2.json"`
-	Position                models.PlanetPosition   `json:"position"`
-	Distance                int                     `json:"distance" example:"14"`
-	BasePlanet              bool                    `json:"base_planet" example:"true"`
-	Resources               Resources               `json:"resources,omitempty"`
-	Population              Population              `json:"population,omitempty"`
-	Mines                   []Mine                  `json:"mines,omitempty"`
-	Shields                 []Shield                `json:"shields,omitempty"`
-	PopulationControlCenter PopulationControlCenter `json:"population_control_center,omitempty"`
-	IdleDefences            []Defence               `json:"idle_defences" bson:"idle_defences,omitempty"`
-	IdleDefenceShipCarriers []DefenceShipCarrier    `json:"defence_ship_carriers" bson:"defence_ship_carriers,omitempty"`
-	AvailableAttackShips    []Ship                  `json:"available_attack_ships" bson:"available_attack_ships,omitempty"`
-	Scouts                  []Ship                  `json:"scouts" bson:"scouts,omitempty"`
-	HomePlanet              bool                    `json:"home_planet" example:"true"`
-	AttackMissions          []ActiveMission         `json:"attack_missions,omitempty"`
-	SpyMissions             []ActiveMission         `json:"spy_missions,omitempty"`
-	PlanetType              string                  `json:"planet_type" example:"BASE_PLANET"`
+	PlanetConfig            string                             `json:"planet_config" example:"Planet2.json"`
+	Position                models.PlanetPosition              `json:"position"`
+	Distance                int                                `json:"distance" example:"14"`
+	BasePlanet              bool                               `json:"base_planet" example:"true"`
+	Resources               *Resources                         `json:"resources,omitempty"`
+	Population              *Population                        `json:"population,omitempty"`
+	Mines                   []buildings.Mine                   `json:"mines,omitempty"`
+	Shields                 []buildings.Shield                 `json:"shields,omitempty"`
+	PopulationControlCenter *buildings.PopulationControlCenter `json:"population_control_center,omitempty"`
+	IdleDefences            []military.Defence                 `json:"idle_defences,omitempty"`
+	IdleDefenceShipCarriers []military.DefenceShipCarrier      `json:"defence_ship_carriers,omitempty"`
+	AvailableAttackShips    []military.Ship                    `json:"available_attack_ships,omitempty"`
+	Scouts                  []military.Ship                    `json:"scouts,omitempty"`
+	HomePlanet              bool                               `json:"home_planet" example:"true"`
+	AttackMissions          []ActiveMission                    `json:"attack_missions,omitempty"`
+	SpyMissions             []ActiveMission                    `json:"spy_missions,omitempty"`
+	PlanetType              string                             `json:"planet_type" example:"BASE_PLANET"`
 }
 
 func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser, customHomePlanetId string,
@@ -121,34 +123,29 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		return
 	}
 	o.PlanetType = HomePlanet
-	o.Resources.Init(planetUser)
-	o.Population.Init(planetUser)
-	for mineId := range planetUser.Mines {
-		mine := Mine{}
-		mine.Init(planetUni.Mines[mineId], planetUser,
-			upgradeConstants[constants.WaterMiningPlant], upgradeConstants[constants.GrapheneMiningPlant],
-			waterConstants, grapheneConstants,
-		)
-		o.Mines = append(o.Mines, mine)
-	}
-	o.PopulationControlCenter.Init(planetUser,
+	o.Resources = InitResources(planetUser)
+	o.Population = InitPopulation(planetUser)
+	o.Mines = buildings.InitAllMines(planetUni, planetUser,
+		upgradeConstants[constants.WaterMiningPlant], upgradeConstants[constants.GrapheneMiningPlant],
+		waterConstants, grapheneConstants)
+	o.PopulationControlCenter = buildings.InitPopulationControlCenter(planetUser,
 		upgradeConstants[constants.PopulationControlCenter], buildingConstants[constants.PopulationControlCenter])
-	o.Shields = InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
-	o.IdleDefences = InitAllIdleDefences(planetUser.Defences, defenceConstants)
-	o.IdleDefenceShipCarriers = InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
+	o.Shields = buildings.InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
+	o.IdleDefences = military.InitAllIdleDefences(planetUser.Defences, defenceConstants)
+	o.IdleDefenceShipCarriers = military.InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
+
 	for shipName, shipUser := range planetUser.Ships {
 		availableShips := planetUser.GetAvailableShip(shipName)
 		if availableShips <= 0 {
 			continue
 		}
-		s := Ship{}
+		s := military.Ship{}
 		s.Init(shipName, availableShips, shipUser, shipConstants[shipName])
 		if s.Type == constants.Scout {
 			o.Scouts = append(o.Scouts, s)
 		} else {
 			o.AvailableAttackShips = append(o.AvailableAttackShips, s)
 		}
-
 	}
 	o.HomePlanet = planetUser.HomePlanet || planetUni.Position.Id == customHomePlanetId
 

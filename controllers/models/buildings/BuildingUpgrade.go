@@ -1,4 +1,4 @@
-package models
+package buildings
 
 import (
 	"github.com/themane/MMOServer/constants"

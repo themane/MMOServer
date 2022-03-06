@@ -13,10 +13,12 @@ type Population struct {
 	Soldiers       models.EmployedPopulation `json:"soldiers"`
 }
 
-func (p *Population) Init(planetUser repoModels.PlanetUser) {
+func InitPopulation(planetUser repoModels.PlanetUser) *Population {
+	p := new(Population)
 	p.Total = planetUser.Population.Unemployed + planetUser.Population.Workers.Total + planetUser.Population.Soldiers.Total
 	p.GenerationRate = planetUser.Population.GenerationRate
 	p.Unemployed = planetUser.Population.Unemployed
 	p.Workers = planetUser.Population.Workers
 	p.Soldiers = planetUser.Population.Soldiers
+	return p
 }

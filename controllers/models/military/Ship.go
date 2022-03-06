@@ -1,4 +1,4 @@
-package models
+package military
 
 import (
 	"github.com/themane/MMOServer/constants"
