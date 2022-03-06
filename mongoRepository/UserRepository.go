@@ -134,8 +134,8 @@ func (u *UserRepositoryImpl) UpdateWorkers(id string, planetId string, buildingI
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".buildings." + buildingId + "workers": workers,
-		"occupied_planets." + planetId + ".population.workers.idle":             -workers,
+		"occupied_planets." + planetId + ".buildings." + buildingId + ".workers": workers,
+		"occupied_planets." + planetId + ".population.workers.idle":              -workers,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
 	u.logger.Printf("Employed workers updated id: %s, planetId: %s, buildingId: %s, workers: %d\n", id, planetId, buildingId, workers)

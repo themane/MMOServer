@@ -59,6 +59,7 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 
 	err = b.buildingService.UpgradeBuilding(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
 	if err != nil {
+		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
@@ -99,6 +100,7 @@ func (b *BuildingController) UpdateWorkers(c *gin.Context) {
 
 	err = b.buildingService.UpdateWorkers(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], workers)
 	if err != nil {
+		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
@@ -138,6 +140,7 @@ func (b *BuildingController) UpdatePopulationRate(c *gin.Context) {
 
 	err = b.planetService.UpdatePopulationRate(parsedParams["username"], parsedParams["planet_id"], generationRate)
 	if err != nil {
+		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}

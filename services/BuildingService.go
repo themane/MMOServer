@@ -79,9 +79,9 @@ func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.User
 		grapheneRequired := buildingConstants.Levels[nextBuildingLevelString].GrapheneRequired
 		shelioRequired := buildingConstants.Levels[nextBuildingLevelString].ShelioRequired
 		minutesRequired := buildingConstants.Levels[nextBuildingLevelString].MinutesRequired
-		if userData.OccupiedPlanets[planetId].Water.Amount >= waterRequired &&
-			userData.OccupiedPlanets[planetId].Graphene.Amount >= grapheneRequired &&
-			userData.OccupiedPlanets[planetId].Shelio >= shelioRequired {
+		if userData.OccupiedPlanets[planetId].Water.Amount < waterRequired ||
+			userData.OccupiedPlanets[planetId].Graphene.Amount < grapheneRequired ||
+			userData.OccupiedPlanets[planetId].Shelio < shelioRequired {
 			return 0, 0, 0, 0, errors.New("not enough resources")
 		}
 		return waterRequired, grapheneRequired, shelioRequired, minutesRequired, nil

@@ -2,8 +2,8 @@ package buildings
 
 import (
 	"github.com/themane/MMOServer/constants"
-	"github.com/themane/MMOServer/mongoRepository/models"
-	"math"
+	"github.com/themane/MMOServer/models"
+	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"strconv"
 )
 
@@ -22,7 +22,7 @@ type PopulationControlCenterAttributes struct {
 	WorkersMaxLimit                    IntegerBuildingAttributes `json:"workers_max_limit" `
 }
 
-func InitPopulationControlCenter(planetUser models.PlanetUser,
+func InitPopulationControlCenter(planetUser repoModels.PlanetUser,
 	populationControlCenterUpgradeConstants constants.UpgradeConstants,
 	populationControlCenterBuildingConstants constants.BuildingConstants) *PopulationControlCenter {
 
@@ -51,7 +51,8 @@ func (p *PopulationControlCenterAttributes) Init(currentLevel int, maxLevel int,
 	p.WorkersMaxLimit.Current, _ =
 		strconv.Atoi(populationControlCenterBuildingConstants.Levels[currentLevelString]["workers_max_limit"])
 
-	p.MaxPopulationGenerationRate.Max = getMaxPopulationGenerationRate(populationControlCenterBuildingConstants.Levels[maxLevelString])
+	workersMaxLimit, _ := strconv.Atoi(populationControlCenterBuildingConstants.Levels[maxLevelString]["workers_max_limit"])
+	p.MaxPopulationGenerationRate.Max = models.GetMaxPopulationGenerationRate(populationControlCenterBuildingConstants.Levels[maxLevelString], workersMaxLimit)
 	p.WorkersMaxLimit.Max, _ = strconv.Atoi(populationControlCenterBuildingConstants.Levels[maxLevelString]["workers_max_limit"])
 
 	if currentLevel+1 < maxLevel {
@@ -65,12 +66,4 @@ func (p *PopulationControlCenterAttributes) Init(currentLevel int, maxLevel int,
 		p.WorkersMaxLimit.Next, _ =
 			strconv.Atoi(populationControlCenterBuildingConstants.Levels[nextLevelString]["workers_max_limit"])
 	}
-}
-
-func getMaxPopulationGenerationRate(
-	populationControlCenterBuildingMaxConstants map[string]string) int {
-	maxPopulationGenerationRate, _ := strconv.Atoi(populationControlCenterBuildingMaxConstants["max_population_generation_rate"])
-	maxPopulationGenerationRateMultiplier, _ := strconv.ParseFloat(populationControlCenterBuildingMaxConstants["population_generation_rate_multiplier"], 64)
-	workersMaxLimit, _ := strconv.Atoi(populationControlCenterBuildingMaxConstants["workers_max_limit"])
-	return int(math.Floor(float64(maxPopulationGenerationRate) + maxPopulationGenerationRateMultiplier*float64(workersMaxLimit)))
 }

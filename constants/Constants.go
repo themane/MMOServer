@@ -171,11 +171,22 @@ func GetBuildingType(buildingId string) (string, error) {
 	if strings.HasPrefix(buildingId, "DSC") {
 		return Vikram, nil
 	}
-	return "", errors.New("error. invalid building id" + buildingId)
+	if _, ok := GetUpgradableBuildingIds()[buildingId]; ok {
+		return buildingId, nil
+	}
+	return "", errors.New("error. invalid building id: " + buildingId)
 }
 
 func GetShieldIds() []string {
 	return []string{"SHLD01", "SHLD02", "SHLD03"}
+}
+
+func GetUpgradableBuildingIds() map[string]struct{} {
+	return map[string]struct{}{
+		PopulationControlCenter: {},
+		AttackProductionCenter:  {}, DefenceProductionCenter: {},
+		DiamondStorage: {}, WaterPressureTank: {},
+		ResearchLab: {}}
 }
 
 func IsShieldId(id string) bool {
