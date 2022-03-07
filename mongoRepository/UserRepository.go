@@ -95,7 +95,12 @@ func (u *UserRepositoryImpl) UpgradeBuildingLevel(id string, planetId string, bu
 			"occupied_planets." + planetId + ".shelio":                                      -shelioRequired,
 		},
 	}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	result := u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	bsonResult, err := result.DecodeBytes()
+	if err != nil {
+		return err
+	}
+	u.logger.Printf(bsonResult.String())
 	u.logger.Printf("Upgraded id: %s, planetId: %s, buildingId: %s\n", id, planetId, buildingId)
 	return nil
 }

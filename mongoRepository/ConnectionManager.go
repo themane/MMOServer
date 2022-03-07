@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	connectTimeoutSecs = 5
+	connectTimeoutSecs = 30
 )
 
 func getConnection(mongoURL string) (*mongo.Client, context.Context) {
