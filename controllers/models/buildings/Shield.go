@@ -12,7 +12,7 @@ type Shield struct {
 	Level                 int                   `json:"level" example:"3"`
 	BuildingState         BuildingState         `json:"building_state"`
 	Workers               int                   `json:"workers" example:"12"`
-	BuildingAttributes    ShieldAttributes      `json:"next_level_attributes"`
+	BuildingAttributes    ShieldAttributes      `json:"building_attributes"`
 	NextLevelRequirements NextLevelRequirements `json:"next_level_requirements"`
 	DeployedDefences      []military.Defence    `json:"deployed_defences"`
 }

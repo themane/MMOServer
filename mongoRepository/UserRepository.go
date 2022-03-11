@@ -171,29 +171,17 @@ func (u *UserRepositoryImpl) UpdatePopulationRate(id string, planetId string, ge
 	return nil
 }
 
-func (u *UserRepositoryImpl) RecruitWorkers(id string, planetId string, workers int) error {
+func (u *UserRepositoryImpl) Recruit(id string, planetId string, workers int, soldiers int) error {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".population.unemployed":   -workers,
-		"occupied_planets." + planetId + ".population.workers.idle": workers,
-	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	u.logger.Printf("Assigned workers id: %s, planetId: %s, workers: %d\n", id, planetId, workers)
-	return nil
-}
-
-func (u *UserRepositoryImpl) RecruitSoldiers(id string, planetId string, soldiers int) error {
-	client, ctx := u.getMongoClient()
-	defer disconnect(client, ctx)
-	filter := bson.M{"_id": id}
-	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".population.unemployed":    -soldiers,
+		"occupied_planets." + planetId + ".population.unemployed":    -(workers + soldiers),
+		"occupied_planets." + planetId + ".population.workers.idle":  workers,
 		"occupied_planets." + planetId + ".population.soldiers.idle": soldiers,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
-	u.logger.Printf("Assigned soldiers id: %s, planetId: %s, soldiers: %d\n", id, planetId, soldiers)
+	u.logger.Printf("Assigned workers and soldiers id: %s, planetId: %s, workers: %d, soldiers: %d\n", id, planetId, workers, soldiers)
 	return nil
 }
 

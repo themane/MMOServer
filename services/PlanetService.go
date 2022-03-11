@@ -47,3 +47,20 @@ func (p *PlanetService) UpdatePopulationRate(username string, planetId string, g
 	}
 	return nil
 }
+
+func (p *PlanetService) EmployPopulation(username string, planetId string, workers int, soldiers int) error {
+	userData, err := p.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	unemployedPopulation := userData.OccupiedPlanets[planetId].Population.Unemployed
+	if workers+soldiers > unemployedPopulation {
+		return errors.New("not enough population to employ")
+	}
+
+	err = p.userRepository.Recruit(userData.Id, planetId, workers, soldiers)
+	if err != nil {
+		return err
+	}
+	return nil
+}

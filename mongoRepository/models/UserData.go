@@ -104,8 +104,7 @@ type UserRepository interface {
 	AddPopulation(id string, planetId string, population int) error
 
 	UpdatePopulationRate(id string, planetId string, generationRate int) error
-	RecruitWorkers(id string, planetId string, worker int) error
-	RecruitSoldiers(id string, planetId string, soldiers int) error
+	Recruit(id string, planetId string, worker int, soldiers int) error
 
 	ScheduledPopulationIncrease(id string, planetIdGenerationRateMap map[string]int) error
 	ScheduledWaterIncrease(id string, planetIdGenerationRateMap map[string]map[string]int) error
