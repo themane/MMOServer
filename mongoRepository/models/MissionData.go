@@ -1,21 +1,20 @@
 package models
 
 import (
-	"github.com/themane/MMOServer/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AttackMission struct {
-	Id           string                                   `json:"_id" bson:"_id"`
-	FromPlanetId string                                   `json:"from_planet_id" bson:"from_planet_id"`
-	ToPlanetId   string                                   `json:"to_planet_id" bson:"to_planet_id"`
-	Formation    map[string]map[string][]models.Formation `json:"formation"`
-	Result       AttackResult                             `json:"result" bson:"result"`
-	LaunchTime   primitive.DateTime                       `json:"launch_time" bson:"launch_time"`
-	MissionTime  primitive.DateTime                       `json:"mission_time" bson:"mission_time"`
-	ReturnTime   primitive.DateTime                       `json:"return_time" bson:"return_time"`
-	State        string                                   `json:"state" bson:"state"`
-	MissionType  string                                   `json:"mission_type" bson:"mission_type"`
+	Id           string                               `json:"_id" bson:"_id"`
+	FromPlanetId string                               `json:"from_planet_id" bson:"from_planet_id"`
+	ToPlanetId   string                               `json:"to_planet_id" bson:"to_planet_id"`
+	Formation    map[string]map[string]map[string]int `json:"formation"`
+	Result       AttackResult                         `json:"result" bson:"result"`
+	LaunchTime   primitive.DateTime                   `json:"launch_time" bson:"launch_time"`
+	MissionTime  primitive.DateTime                   `json:"mission_time" bson:"mission_time"`
+	ReturnTime   primitive.DateTime                   `json:"return_time" bson:"return_time"`
+	State        string                               `json:"state" bson:"state"`
+	MissionType  string                               `json:"mission_type" bson:"mission_type"`
 }
 
 type AttackResult struct {
@@ -43,10 +42,8 @@ type MissionRepository interface {
 	FindAttackMissionsToPlanetId(id string) ([]AttackMission, error)
 	FindSpyMissionsToPlanetId(id string) ([]SpyMission, error)
 
-	AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation,
-		launchTime primitive.DateTime, missionTime primitive.DateTime, returnTime primitive.DateTime) (*AttackMission, error)
-	AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int, launchTime primitive.DateTime,
-		missionTime primitive.DateTime, returnTime primitive.DateTime) (*SpyMission, error)
+	AddAttackMission(mission AttackMission) error
+	AddSpyMission(mission SpyMission) error
 
 	UpdateAttackResult(id string, result AttackResult) error
 	UpdateSpyResult(id string, result SpyResult) error

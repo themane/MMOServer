@@ -13,6 +13,7 @@ type UserData struct {
 type ProfileUser struct {
 	Username   string `json:"username" bson:"username"`
 	Experience int    `json:"experience" bson:"experience"`
+	Species    string `json:"species" bson:"species"`
 	ClanId     string `json:"clan_id" bson:"clan_id"`
 }
 
@@ -85,6 +86,7 @@ type Defence struct {
 }
 
 type DefenceShipCarrier struct {
+	Name           string         `json:"name" bson:"name"`
 	Level          int            `json:"level" bson:"level"`
 	HostingShips   map[string]int `json:"hosting_ships" bson:"hosting_ships"`
 	GuardingShield string         `json:"guarding_shield" bson:"guarding_shield"`

@@ -25,13 +25,14 @@ func NewBuildingController(
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *BuildingController {
 	return &BuildingController{
 		buildingService: services.NewBuildingService(userRepository, upgradeConstants, logLevel),
 		planetService:   services.NewPlanetService(userRepository, buildingConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel),
 		logger: constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
 	}
 }

@@ -21,6 +21,7 @@ type LoginService struct {
 	grapheneConstants       constants.MiningConstants
 	defenceConstants        map[string]constants.DefenceConstants
 	shipConstants           map[string]constants.ShipConstants
+	speciesConstants        map[string]constants.SpeciesConstants
 	logger                  *constants.LoggingUtils
 }
 
@@ -35,6 +36,7 @@ func NewLoginService(
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *LoginService {
 	return &LoginService{
@@ -51,6 +53,7 @@ func NewLoginService(
 		grapheneConstants:       mineConstants[constants.Graphene],
 		defenceConstants:        defenceConstants,
 		shipConstants:           shipConstants,
+		speciesConstants:        speciesConstants,
 		logger:                  constants.NewLoggingUtils("LOGIN_SERVICE", logLevel),
 	}
 }
@@ -74,7 +77,9 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 	homeSector, err := generateSectorData(userData.OccupiedPlanets,
 		homePlanetPosition.SectorPosition(), homeSectorData, "",
 		l.userRepository, l.missionRepository,
-		l.upgradeConstants, l.buildingConstants, l.waterConstants, l.grapheneConstants, l.defenceConstants, l.shipConstants, l.logger,
+		l.upgradeConstants, l.buildingConstants, l.waterConstants, l.grapheneConstants,
+		l.defenceConstants, l.shipConstants, l.speciesConstants[userData.Profile.Species],
+		l.logger,
 	)
 	if err != nil {
 		return nil, err

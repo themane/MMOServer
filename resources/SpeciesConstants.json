@@ -1,0 +1,66 @@
+{
+  "ARYANS": {
+    "available_units": [
+      "GRAPHENE SCOUT",
+      "ANUJ",
+      "AGRAJA",
+      "YATA",
+      "YAVASA",
+      "WAHED",
+      "DHANUR",
+      "BHEEM",
+      "BOMBER",
+      "MISSILE",
+      "DUET",
+      "VIKRAM"
+    ]
+  },
+  "HUMANS": {
+    "available_units": [
+      "GRAPHENE SCOUT",
+      "ANUJ",
+      "AGRAJA",
+      "YATA",
+      "YAVASA",
+      "WAHED",
+      "DHANUR",
+      "BHEEM",
+      "BOMBER",
+      "MISSILE",
+      "DUET",
+      "VIKRAM"
+    ]
+  },
+  "KLAYANS": {
+    "available_units": [
+      "GRAPHENE SCOUT",
+      "ANUJ",
+      "AGRAJA",
+      "YATA",
+      "YAVASA",
+      "WAHED",
+      "DHANUR",
+      "BHEEM",
+      "BOMBER",
+      "MISSILE",
+      "DUET",
+      "VIKRAM"
+    ]
+  },
+  "ASYRIANS": {
+    "available_units": [
+      "SILICONE SCOUT",
+      "ANUJ",
+      "AGRAJA",
+      "YATA",
+      "YAVASA",
+      "WAHED",
+      "DHANUR",
+      "BHEEM",
+      "BOMBER",
+      "MISSILE",
+      "DUET",
+      "VIKRAM"
+    ]
+  }
+}

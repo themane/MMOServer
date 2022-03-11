@@ -6,10 +6,19 @@ import (
 	"strconv"
 )
 
+type DeployedDefence struct {
+	Name  string `json:"name" example:"BOMBER"`
+	Level int    `json:"level" example:"1"`
+	Units int    `json:"units" example:"5"`
+}
+
 type Defence struct {
-	Type             string `json:"type" example:"BOMBER"`
+	Name             string `json:"name" example:"BOMBER"`
 	Level            int    `json:"level" example:"1"`
-	Quantity         int    `json:"quantity" example:"5"`
+	TotalUnits       int    `json:"total_units" example:"5"`
+	IdleUnits        int    `json:"idle_units" example:"5"`
+	RequiredSoldiers int    `json:"required_soldiers" example:"40"`
+	RequiredWorkers  int    `json:"required_workers" example:"20"`
 	HitPoints        int    `json:"hit_points" example:"400"`
 	Armor            int    `json:"armor" example:"2"`
 	MinAttack        int    `json:"min_attack" example:"10"`
@@ -18,19 +27,20 @@ type Defence struct {
 	SingleHitTargets int    `json:"single_hit_targets" example:"1"`
 }
 
-type DefenceShipCarrier struct {
-	Id            string `json:"_id" example:"DSC001"`
-	Level         int    `json:"level" example:"1"`
-	HitPoints     int    `json:"hit_points" example:"400"`
-	Armor         int    `json:"armor" example:"5"`
-	DeployedShips []Ship `json:"deployed_ships"`
-}
-
-func (d *Defence) Init(defenceType string, quantity int, defenceUser models.Defence, defenceConstants constants.DefenceConstants) {
-	d.Type = defenceType
+func (d *Defence) Init(unitName string, defenceUser models.Defence, defenceConstants constants.DefenceConstants) {
+	d.Name = unitName
 	d.Level = defenceUser.Level
-	d.Quantity = quantity
+	d.TotalUnits = defenceUser.Quantity
+
+	deployedUnits := 0
+	for _, quantity := range defenceUser.GuardingShield {
+		deployedUnits += quantity
+	}
+	d.IdleUnits = d.TotalUnits - deployedUnits
+
 	currentLevelString := strconv.Itoa(defenceUser.Level)
+	d.RequiredSoldiers = defenceConstants.Levels[currentLevelString].RequiredSoldiers
+	d.RequiredWorkers = defenceConstants.Levels[currentLevelString].RequiredWorkers
 	d.HitPoints = defenceConstants.Levels[currentLevelString].HitPoints
 	d.Armor = defenceConstants.Levels[currentLevelString].Armor
 	d.MinAttack = defenceConstants.Levels[currentLevelString].MinAttack
@@ -39,46 +49,56 @@ func (d *Defence) Init(defenceType string, quantity int, defenceUser models.Defe
 	d.SingleHitTargets = defenceConstants.Levels[currentLevelString].SingleHitTargets
 }
 
-func InitAllIdleDefences(defencesUser map[string]models.Defence,
-	defenceConstants map[string]constants.DefenceConstants) []Defence {
-
-	var defences []Defence
-	for defenceType, defenceUser := range defencesUser {
-		deployedOnShields := 0
-		for _, deployed := range defenceUser.GuardingShield {
-			deployedOnShields += deployed
-		}
-		idleDefences := defenceUser.Quantity - deployedOnShields
-		if idleDefences <= 0 {
-			continue
-		}
-		d := Defence{}
-		d.Init(defenceType, idleDefences, defenceUser, defenceConstants[defenceType])
-		defences = append(defences, d)
-	}
-	return defences
+type DeployedDefenceShipCarrier struct {
+	Id            string         `json:"_id" example:"DSC001"`
+	Name          string         `json:"name" example:"VIKRAM"`
+	Level         int            `json:"level" example:"1"`
+	DeployedShips []DeployedShip `json:"deployed_ships"`
 }
 
-func InitAllIdleDefenceShipCarriers(planetUser models.PlanetUser,
-	defenceShipCarrierConstants constants.DefenceConstants, shipConstants map[string]constants.ShipConstants) []DefenceShipCarrier {
+type DefenceShipCarrier struct {
+	Id               string         `json:"_id" example:"DSC001"`
+	Name             string         `json:"name" example:"VIKRAM"`
+	Level            int            `json:"level" example:"1"`
+	RequiredSoldiers int            `json:"required_soldiers" example:"40"`
+	RequiredWorkers  int            `json:"required_workers" example:"20"`
+	HitPoints        int            `json:"hit_points" example:"400"`
+	Armor            int            `json:"armor" example:"5"`
+	DeployedShips    []DeployedShip `json:"deployed_ships"`
+	Idle             bool           `json:"idle" example:"true"`
+}
+
+func InitAllDefenceShipCarriers(planetUser models.PlanetUser,
+	defenceConstants map[string]constants.DefenceConstants) []DefenceShipCarrier {
 
 	var defenceShipCarriers []DefenceShipCarrier
 	for id, defenceShipCarrierUser := range planetUser.DefenceShipCarriers {
-		if defenceShipCarrierUser.GuardingShield == "" {
-			continue
-		}
-		d := DefenceShipCarrier{}
-		d.Id = id
-		d.Level = defenceShipCarrierUser.Level
 		currentLevelString := strconv.Itoa(defenceShipCarrierUser.Level)
-		d.HitPoints = defenceShipCarrierConstants.Levels[currentLevelString].HitPoints
-		d.Armor = defenceShipCarrierConstants.Levels[currentLevelString].Armor
-		for shipName, shipQuantity := range defenceShipCarrierUser.HostingShips {
-			s := Ship{}
-			s.Init(shipName, shipQuantity, planetUser.Ships[shipName], shipConstants[shipName])
-			d.DeployedShips = append(d.DeployedShips, s)
+		d := DefenceShipCarrier{
+			Id:               id,
+			Name:             defenceShipCarrierUser.Name,
+			Level:            defenceShipCarrierUser.Level,
+			RequiredSoldiers: defenceConstants[defenceShipCarrierUser.Name].Levels[currentLevelString].RequiredSoldiers,
+			RequiredWorkers:  defenceConstants[defenceShipCarrierUser.Name].Levels[currentLevelString].RequiredWorkers,
+			HitPoints:        defenceConstants[defenceShipCarrierUser.Name].Levels[currentLevelString].HitPoints,
+			Armor:            defenceConstants[defenceShipCarrierUser.Name].Levels[currentLevelString].Armor,
+			DeployedShips:    GetDeployedShips(planetUser.Ships, defenceShipCarrierUser.HostingShips),
+			Idle:             defenceShipCarrierUser.GuardingShield != "",
 		}
 		defenceShipCarriers = append(defenceShipCarriers, d)
 	}
 	return defenceShipCarriers
+}
+
+func GetDeployedShips(ships map[string]models.Ship, hostingShips map[string]int) []DeployedShip {
+	var deployedShips []DeployedShip
+	for unitName, units := range hostingShips {
+		s := DeployedShip{
+			Name:  unitName,
+			Level: ships[unitName].Level,
+			Units: units,
+		}
+		deployedShips = append(deployedShips, s)
+	}
+	return deployedShips
 }

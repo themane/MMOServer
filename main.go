@@ -10,7 +10,6 @@ import (
 	"github.com/themane/MMOServer/controllers"
 	"github.com/themane/MMOServer/mongoRepository"
 	"github.com/themane/MMOServer/mongoRepository/models"
-	"github.com/themane/MMOServer/schedulers"
 	secretManagerPb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 	"log"
 	"os"
@@ -47,7 +46,7 @@ func main() {
 	url := ginSwagger.URL(baseURL + "/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	loginController, buildingController, attackController, _ := getHandlers()
+	loginController, buildingController, missionController := getHandlers()
 	//scheduledJobManager.SchedulePlanetUpdates()
 
 	r.GET("/ping", controllers.Ping)
@@ -61,8 +60,8 @@ func main() {
 	r.PUT("/update/population-growth", buildingController.UpdatePopulationRate)
 	r.PUT("/update/recruit", buildingController.EmployPopulation)
 
-	r.POST("/spy", attackController.Spy)
-	r.POST("/attack", attackController.Attack)
+	r.POST("/spy", missionController.Spy)
+	r.POST("/attack", missionController.Attack)
 
 	r.GET("/sector/visit", loginController.Visit)
 	r.GET("/sector/teleport", loginController.Teleport)
@@ -74,7 +73,7 @@ func main() {
 	}
 }
 
-func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.AttackController, *schedulers.ScheduledJobManager) {
+func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.MissionController) {
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
 
@@ -84,23 +83,25 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	mineConstants := constants.GetMiningConstants()
 	defenceConstants := constants.GetDefenceConstants()
 	shipConstants := constants.GetShipConstants()
+	speciesConstants := constants.GetSpeciesConstants()
 
 	var userRepository models.UserRepository
 	var clanRepository models.ClanRepository
 	var universeRepository models.UniverseRepository
 	var missionRepository models.MissionRepository
-	scheduledMissionManager := schedulers.NewScheduledMissionManager(userRepository, universeRepository, logLevel)
 	userRepository = mongoRepository.NewUserRepository(mongoURL, mongoDB, logLevel)
 	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB, logLevel)
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB, logLevel)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
-	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository, experienceConstants, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
-	attackController := controllers.NewAttackController(userRepository, universeRepository, missionRepository, *scheduledMissionManager, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
-	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel)
-	scheduledJobManager := schedulers.NewScheduledJobManager(userRepository, universeRepository, mineConstants, maxSystems, logLevel)
+	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository,
+		experienceConstants, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel)
+	missionController := controllers.NewMissionController(userRepository, universeRepository, missionRepository,
+		upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel)
+	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository,
+		upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel)
 
 	log.Println("Initialized all handlers")
-	return loginController, buildingController, attackController, scheduledJobManager
+	return loginController, buildingController, missionController
 }
 
 func initialize() {

@@ -6,34 +6,32 @@ import (
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/mongoRepository/models"
-	"github.com/themane/MMOServer/schedulers"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
 )
 
-type AttackController struct {
-	attackService  *services.AttackService
+type MissionController struct {
+	missionService *services.MissionService
 	refreshService *services.QuickRefreshService
 	logger         *constants.LoggingUtils
 }
 
-func NewAttackController(userRepository models.UserRepository,
+func NewMissionController(userRepository models.UserRepository,
 	universeRepository models.UniverseRepository,
 	missionRepository models.MissionRepository,
-	scheduledMissionManager schedulers.ScheduledMissionManager,
 	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
-) *AttackController {
-	return &AttackController{
-		attackService: services.NewAttackService(userRepository, universeRepository, missionRepository, scheduledMissionManager,
-			shipConstants, logLevel),
+) *MissionController {
+	return &MissionController{
+		missionService: services.NewMissionService(userRepository, universeRepository, missionRepository, shipConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
-		logger: constants.NewLoggingUtils("ATTACK_CONTROLLER", logLevel),
+			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel),
+		logger: constants.NewLoggingUtils("MISSION_CONTROLLER", logLevel),
 	}
 }
 
@@ -49,7 +47,7 @@ func NewAttackController(userRepository models.UserRepository,
 // @Param scouts query object true "scout ship details"
 // @Success 200 {object} controllerModels.PlanetResponse
 // @Router /spy [post]
-func (a *AttackController) Spy(c *gin.Context) {
+func (a *MissionController) Spy(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request controllerModels.SpyRequest
 	err := json.Unmarshal(body, &request)
@@ -60,7 +58,7 @@ func (a *AttackController) Spy(c *gin.Context) {
 	}
 	a.logger.Printf("Launching spy mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
-	err = a.attackService.Spy(request)
+	err = a.missionService.Spy(request)
 	if err != nil {
 		a.logger.Error("error in launching spy mission", err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "internal server error. contact administrators for more info", HttpCode: 500})
@@ -87,7 +85,7 @@ func (a *AttackController) Spy(c *gin.Context) {
 // @Param formation query object true "attack ships details"
 // @Success 200 {object} controllerModels.PlanetResponse
 // @Router /attack [post]
-func (a *AttackController) Attack(c *gin.Context) {
+func (a *MissionController) Attack(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request controllerModels.AttackRequest
 	err := json.Unmarshal(body, &request)
@@ -98,7 +96,7 @@ func (a *AttackController) Attack(c *gin.Context) {
 	}
 	a.logger.Printf("Launching attack mission from %s to %s", request.FromPlanetId, request.ToPlanetId)
 
-	err = a.attackService.Attack(request)
+	err = a.missionService.Attack(request)
 	if err != nil {
 		a.logger.Error("error in launching attack mission", err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "internal server error. contact administrators for more info", HttpCode: 500})

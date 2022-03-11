@@ -36,6 +36,7 @@
   },
   "BOMBER": {
     "max_level": 5,
+    "type": "DEFENDER",
     "levels": {
       "1": {
         "req_soldiers": 1,
@@ -81,6 +82,7 @@
   },
   "MISSILE": {
     "max_level": 5,
+    "type": "DEFENDER",
     "levels": {
       "1": {
         "req_soldiers": 3,
@@ -126,6 +128,7 @@
   },
   "DUET": {
     "max_level": 5,
+    "type": "DEFENDER",
     "levels": {
       "1": {
         "req_soldiers": 7,
@@ -171,6 +174,7 @@
   },
   "VIKRAM": {
     "max_level": 10,
+    "type": "DEFENCE_SHIP_CARRIER",
     "levels": {
       "1": {
         "req_soldiers": 50,

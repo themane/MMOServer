@@ -78,3 +78,15 @@ func GetShipConstants() map[string]ShipConstants {
 	}
 	return shipConstants
 }
+
+func GetSpeciesConstants() map[string]SpeciesConstants {
+	var speciesConstants map[string]SpeciesConstants
+	constantsFile, _ := os.Open("resources/SpeciesConstants.json")
+	responseByteValue, _ := ioutil.ReadAll(constantsFile)
+	err := json.Unmarshal(responseByteValue, &speciesConstants)
+	if err != nil {
+		log.Fatal("Error in initializing species constants: ", err)
+		return nil
+	}
+	return speciesConstants
+}

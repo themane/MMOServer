@@ -27,19 +27,19 @@ type PlanetResponse struct {
 }
 
 type UserPlanetResponse struct {
-	BasePlanet              bool                          `json:"base_planet" example:"true"`
-	Resources               *Resources                    `json:"resources"`
-	Population              *Population                   `json:"population"`
-	Shields                 []buildings.Shield            `json:"shields"`
-	IdleDefences            []military.Defence            `json:"idle_defences" bson:"idle_defences"`
-	IdleDefenceShipCarriers []military.DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
-	HomePlanet              bool                          `json:"home_planet" example:"true"`
-	Notifications           []models.Notification         `json:"notifications"`
+	BasePlanet          bool                          `json:"base_planet" example:"true"`
+	Resources           *Resources                    `json:"resources"`
+	Population          *Population                   `json:"population"`
+	Shields             []buildings.Shield            `json:"shields"`
+	Defences            []military.Defence            `json:"idle_defences" bson:"idle_defences"`
+	DefenceShipCarriers []military.DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
+	HomePlanet          bool                          `json:"home_planet" example:"true"`
+	Notifications       []models.Notification         `json:"notifications"`
 }
 
 func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 	upgradeConstants map[string]constants.UpgradeConstants,
-	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants,
+	defenceConstants map[string]constants.DefenceConstants, speciesConstants constants.SpeciesConstants,
 	notifications []models.Notification) {
 
 	if planetUser.BasePlanet {
@@ -49,8 +49,16 @@ func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 	p.Resources = InitResources(planetUser)
 	p.Population = InitPopulation(planetUser)
 	p.Shields = buildings.InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
-	p.IdleDefences = military.InitAllIdleDefences(planetUser.Defences, defenceConstants)
-	p.IdleDefenceShipCarriers = military.InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
+	for _, unitName := range speciesConstants.AvailableUnits {
+		if defenceConstant, ok := defenceConstants[unitName]; ok {
+			if defenceConstant.Type == constants.Defender {
+				d := military.Defence{}
+				d.Init(unitName, planetUser.Defences[unitName], defenceConstant)
+				p.Defences = append(p.Defences, d)
+			}
+		}
+	}
+	p.DefenceShipCarriers = military.InitAllDefenceShipCarriers(planetUser, defenceConstants)
 	p.HomePlanet = planetUser.HomePlanet
 	p.Notifications = notifications
 }

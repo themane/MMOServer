@@ -3,12 +3,9 @@ package mongoRepository
 import (
 	"context"
 	"errors"
-	"github.com/google/uuid"
 	"github.com/themane/MMOServer/constants"
-	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -104,63 +101,25 @@ func (c *MissionRepositoryImpl) FindSpyMissionsToPlanetId(toPlanetId string) ([]
 	return result, nil
 }
 
-func (c *MissionRepositoryImpl) AddAttackMission(fromPlanetId string, toPlanetId string, formation map[string]map[string][]models.Formation,
-	launchTime primitive.DateTime, missionTime primitive.DateTime, returnTime primitive.DateTime,
-) (*repoModels.AttackMission, error) {
-
-	id, err := uuid.NewRandom()
-	if err != nil {
-		c.logger.Error("error in persisting attack mission", err)
-		return nil, errors.New("error in persisting attack mission")
-	}
-	attackMission := repoModels.AttackMission{
-		Id:           id.String(),
-		FromPlanetId: fromPlanetId,
-		ToPlanetId:   toPlanetId,
-		Formation:    formation,
-		LaunchTime:   launchTime,
-		MissionTime:  missionTime,
-		ReturnTime:   returnTime,
-		State:        constants.DepartureState,
-		MissionType:  constants.AttackMission,
-	}
+func (c *MissionRepositoryImpl) AddAttackMission(attackMission repoModels.AttackMission) error {
 	client, ctx := c.getMongoClient()
 	defer disconnect(client, ctx)
-	_, err = c.getCollection(client).InsertOne(ctx, attackMission)
+	_, err := c.getCollection(client).InsertOne(ctx, attackMission)
 	if err != nil {
 		c.logger.Error("error in persisting attack mission", err)
-		return nil, errors.New("error in persisting attack mission")
+		return errors.New("error in persisting attack mission")
 	}
-	return &attackMission, nil
+	return nil
 }
-func (c *MissionRepositoryImpl) AddSpyMission(fromPlanetId string, toPlanetId string, scouts map[string]int,
-	launchTime primitive.DateTime, missionTime primitive.DateTime, returnTime primitive.DateTime,
-) (*repoModels.SpyMission, error) {
-
-	id, err := uuid.NewRandom()
-	if err != nil {
-		c.logger.Error("error in persisting spy mission", err)
-		return nil, errors.New("error in persisting spy mission")
-	}
-	spyMission := repoModels.SpyMission{
-		Id:           id.String(),
-		FromPlanetId: fromPlanetId,
-		ToPlanetId:   toPlanetId,
-		Scouts:       scouts,
-		LaunchTime:   launchTime,
-		MissionTime:  missionTime,
-		ReturnTime:   returnTime,
-		State:        constants.DepartureState,
-		MissionType:  constants.SpyMission,
-	}
+func (c *MissionRepositoryImpl) AddSpyMission(spyMission repoModels.SpyMission) error {
 	client, ctx := c.getMongoClient()
 	defer disconnect(client, ctx)
-	_, err = c.getCollection(client).InsertOne(ctx, spyMission)
+	_, err := c.getCollection(client).InsertOne(ctx, spyMission)
 	if err != nil {
 		c.logger.Error("error in persisting spy mission: ", err)
-		return nil, errors.New("error in persisting spy mission")
+		return errors.New("error in persisting spy mission")
 	}
-	return &spyMission, nil
+	return nil
 }
 
 func (c *MissionRepositoryImpl) UpdateAttackResult(id string, result repoModels.AttackResult) error {

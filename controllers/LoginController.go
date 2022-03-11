@@ -27,15 +27,16 @@ func NewLoginController(userRepository models.UserRepository,
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *LoginController {
 	return &LoginController{
 		loginService: services.NewLoginService(userRepository, clanRepository, universeRepository, missionRepository,
-			experienceConstants, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+			experienceConstants, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel),
 		sectorService: services.NewSectorService(userRepository, universeRepository, missionRepository,
-			experienceConstants, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+			experienceConstants, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel),
 		logger: constants.NewLoggingUtils("LOGIN_CONTROLLER", logLevel),
 	}
 }

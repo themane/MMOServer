@@ -18,6 +18,7 @@ func generateSectorData(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
 	grapheneConstants constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	speciesConstants constants.SpeciesConstants,
 	logger *constants.LoggingUtils,
 ) (*controllerModels.Sector, error) {
 
@@ -41,7 +42,7 @@ func generateSectorData(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
 				attackMissions, spyMissions,
 				upgradeConstants, buildingConstants,
 				waterConstants, grapheneConstants,
-				defenceConstants, shipConstants,
+				defenceConstants, shipConstants, speciesConstants,
 			)
 			homeSector.OccupiedPlanets = append(homeSector.OccupiedPlanets, planetData)
 			continue

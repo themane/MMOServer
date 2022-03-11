@@ -19,6 +19,7 @@ type SectorService struct {
 	grapheneConstants   constants.MiningConstants
 	defenceConstants    map[string]constants.DefenceConstants
 	shipConstants       map[string]constants.ShipConstants
+	speciesConstants    map[string]constants.SpeciesConstants
 	logger              *constants.LoggingUtils
 }
 
@@ -32,6 +33,7 @@ func NewSectorService(
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *SectorService {
 	return &SectorService{
@@ -45,6 +47,7 @@ func NewSectorService(
 		grapheneConstants:   mineConstants[constants.Graphene],
 		defenceConstants:    defenceConstants,
 		shipConstants:       shipConstants,
+		speciesConstants:    speciesConstants,
 		logger:              constants.NewLoggingUtils("SECTOR_SERVICE", logLevel),
 	}
 }
@@ -66,7 +69,9 @@ func (s *SectorService) Visit(username string, sectorId string) (*controllerMode
 	var response controllerModels.SectorResponse
 	sector, err := generateSectorData(userData.OccupiedPlanets, *sectorPosition, sectorData, "",
 		s.userRepository, s.missionRepository,
-		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants, s.defenceConstants, s.shipConstants, s.logger,
+		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants,
+		s.defenceConstants, s.shipConstants, s.speciesConstants[userData.Profile.Species],
+		s.logger,
 	)
 	if err != nil {
 		return nil, err
@@ -110,7 +115,9 @@ func (s *SectorService) Teleport(username string, planetId string) (*controllerM
 	var response controllerModels.SectorResponse
 	sector, err := generateSectorData(userData.OccupiedPlanets, planetPosition.SectorPosition(), sectorData, planetPosition.PlanetId(),
 		s.userRepository, s.missionRepository,
-		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants, s.defenceConstants, s.shipConstants, s.logger,
+		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants,
+		s.defenceConstants, s.shipConstants, s.speciesConstants[userData.Profile.Species],
+		s.logger,
 	)
 	if err != nil {
 		return nil, err

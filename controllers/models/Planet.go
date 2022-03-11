@@ -97,9 +97,9 @@ type OccupiedPlanet struct {
 	Mines                   []buildings.Mine                   `json:"mines,omitempty"`
 	Shields                 []buildings.Shield                 `json:"shields,omitempty"`
 	PopulationControlCenter *buildings.PopulationControlCenter `json:"population_control_center,omitempty"`
-	IdleDefences            []military.Defence                 `json:"idle_defences,omitempty"`
-	IdleDefenceShipCarriers []military.DefenceShipCarrier      `json:"defence_ship_carriers,omitempty"`
-	AvailableAttackShips    []military.Ship                    `json:"available_attack_ships,omitempty"`
+	Defences                []military.Defence                 `json:"defences,omitempty"`
+	DefenceShipCarriers     []military.DefenceShipCarrier      `json:"defence_ship_carriers,omitempty"`
+	Ships                   []military.Ship                    `json:"ships,omitempty"`
 	Scouts                  []military.Ship                    `json:"scouts,omitempty"`
 	HomePlanet              bool                               `json:"home_planet" example:"true"`
 	AttackMissions          []ActiveMission                    `json:"attack_missions,omitempty"`
@@ -112,7 +112,9 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]constants.BuildingConstants,
 	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants,
-	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants) {
+	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants,
+	speciesConstants constants.SpeciesConstants,
+) {
 
 	o.PlanetConfig = planetUni.PlanetConfig
 	o.Position = planetUni.Position.Clone()
@@ -131,22 +133,29 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.PopulationControlCenter = buildings.InitPopulationControlCenter(planetUser,
 		upgradeConstants[constants.PopulationControlCenter], buildingConstants[constants.PopulationControlCenter])
 	o.Shields = buildings.InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
-	o.IdleDefences = military.InitAllIdleDefences(planetUser.Defences, defenceConstants)
-	o.IdleDefenceShipCarriers = military.InitAllIdleDefenceShipCarriers(planetUser, defenceConstants[constants.Vikram], shipConstants)
 
-	for shipName, shipUser := range planetUser.Ships {
-		availableShips := planetUser.GetAvailableShip(shipName)
-		if availableShips <= 0 {
-			continue
+	for _, unitName := range speciesConstants.AvailableUnits {
+		if defenceConstant, ok := defenceConstants[unitName]; ok {
+			if defenceConstant.Type == constants.Defender {
+				d := military.Defence{}
+				d.Init(unitName, planetUser.Defences[unitName], defenceConstant)
+				o.Defences = append(o.Defences, d)
+			}
 		}
-		s := military.Ship{}
-		s.Init(shipName, availableShips, shipUser, shipConstants[shipName])
-		if s.Type == constants.Scout {
-			o.Scouts = append(o.Scouts, s)
-		} else {
-			o.AvailableAttackShips = append(o.AvailableAttackShips, s)
+		if shipConstant, ok := shipConstants[unitName]; ok {
+			if shipConstant.Type == constants.Scout {
+				s := military.Ship{}
+				s.InitScout(unitName, planetUser.Ships[unitName], spyMissions, shipConstants[unitName])
+				o.Scouts = append(o.Scouts, s)
+			} else {
+				s := military.Ship{}
+				s.Init(unitName, planetUser.Ships[unitName], attackMissions, shipConstants[unitName])
+				o.Ships = append(o.Ships, s)
+			}
 		}
 	}
+	o.DefenceShipCarriers = military.InitAllDefenceShipCarriers(planetUser, defenceConstants)
+
 	o.HomePlanet = planetUser.HomePlanet || planetUni.Position.Id == customHomePlanetId
 
 	for _, attackMission := range attackMissions {

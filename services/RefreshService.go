@@ -19,6 +19,7 @@ type QuickRefreshService struct {
 	grapheneConstants  constants.MiningConstants
 	defenceConstants   map[string]constants.DefenceConstants
 	shipConstants      map[string]constants.ShipConstants
+	speciesConstants   map[string]constants.SpeciesConstants
 	logger             *constants.LoggingUtils
 }
 
@@ -31,6 +32,7 @@ func NewQuickRefreshService(
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,
+	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *QuickRefreshService {
 	return &QuickRefreshService{
@@ -43,6 +45,7 @@ func NewQuickRefreshService(
 		grapheneConstants:  mineConstants[constants.Graphene],
 		defenceConstants:   defenceConstants,
 		shipConstants:      shipConstants,
+		speciesConstants:   speciesConstants,
 		logger:             constants.NewLoggingUtils("REFRESH_SERVICE", logLevel),
 	}
 }
@@ -70,7 +73,8 @@ func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId strin
 			}
 			planetResponse := controllerModels.OccupiedPlanet{}
 			planetResponse.Init(*planetUni, planetUser, inputPlanetId, attackMissions, spyMissions,
-				r.upgradeConstants, r.buildingConstants, r.waterConstants, r.grapheneConstants, r.defenceConstants, r.shipConstants)
+				r.upgradeConstants, r.buildingConstants, r.waterConstants, r.grapheneConstants,
+				r.defenceConstants, r.shipConstants, r.speciesConstants[userData.Profile.Species])
 			return &planetResponse, nil
 		}
 	}
@@ -86,7 +90,7 @@ func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId s
 		if planetId == inputPlanetId {
 			response := controllerModels.UserPlanetResponse{}
 			var notifications []models.Notification
-			response.Init(planetUser, r.upgradeConstants, r.defenceConstants, r.shipConstants, notifications)
+			response.Init(planetUser, r.upgradeConstants, r.defenceConstants, r.speciesConstants[userData.Profile.Species], notifications)
 			return &response, nil
 		}
 	}
