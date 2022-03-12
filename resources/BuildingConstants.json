@@ -1,36 +1,237 @@
 {
   "POPULATION_CONTROL_CENTER": {
-    "max_level": 5,
-    "levels": {
-      "1": {
-        "max_population_generation_rate": "1",
-        "population_generation_rate_multiplier": "0.0",
-        "workers_required": "10",
-        "workers_max_limit": "25"
+    "1": {
+      "max_population_generation_rate": 1,
+      "population_generation_rate_multiplier": 0.0,
+      "workers_required": 10,
+      "workers_max_limit": 25
+    },
+    "2": {
+      "max_population_generation_rate": 2,
+      "population_generation_rate_multiplier": 0.1,
+      "workers_required": 30,
+      "workers_max_limit": 75
+    },
+    "3": {
+      "max_population_generation_rate": 4,
+      "population_generation_rate_multiplier": 0.1,
+      "workers_required": 90,
+      "workers_max_limit": 225
+    },
+    "4": {
+      "max_population_generation_rate": 8,
+      "population_generation_rate_multiplier": 0.2,
+      "workers_required": 270,
+      "workers_max_limit": 675
+    },
+    "5": {
+      "max_population_generation_rate": 15,
+      "population_generation_rate_multiplier": 0.3,
+      "workers_required": 780,
+      "workers_max_limit": 1950
+    }
+  },
+  "ATTACK_PRODUCTION_CENTER": {
+    "1": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 10,
+      "soldiers_max_limit": 10,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "armor": 0.0,
+        "resource_capacity": 0.0,
+        "worker_capacity": 0.0,
+        "attack": 0.0,
+        "range": 0.0,
+        "speed": 0.0
       },
-      "2": {
-        "max_population_generation_rate": "2",
-        "population_generation_rate_multiplier": "0.1",
-        "workers_required": "30",
-        "workers_max_limit": "75"
+      "soldiers_bonus": {
+        "hit_points": 0.0,
+        "armor": 0.2,
+        "resource_capacity": 0.0,
+        "worker_capacity": 0.0,
+        "attack": 0.2,
+        "range": 0.0,
+        "speed": 0.0
+      }
+    },
+    "2": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 10,
+      "soldiers_max_limit": 10,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "armor": 0.0,
+        "resource_capacity": 0.1,
+        "worker_capacity": 0.0,
+        "attack": 0.0,
+        "range": 0.0,
+        "speed": 0.0
       },
-      "3": {
-        "max_population_generation_rate": "4",
-        "population_generation_rate_multiplier": "0.1",
-        "workers_required": "90",
-        "workers_max_limit": "225"
+      "soldiers_bonus": {
+        "hit_points": 0.0,
+        "armor": 0.2,
+        "resource_capacity": 0.0,
+        "worker_capacity": 0.0,
+        "attack": 0.2,
+        "range": 0.0,
+        "speed": 0.0
+      }
+    },
+    "3": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 15,
+      "soldiers_max_limit": 15,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "armor": 0.0,
+        "resource_capacity": 0.1,
+        "worker_capacity": 0.1,
+        "attack": 0.0,
+        "range": 0.0,
+        "speed": 0.0
       },
-      "4": {
-        "max_population_generation_rate": "8",
-        "population_generation_rate_multiplier": "0.2",
-        "workers_required": "270",
-        "workers_max_limit": "675"
+      "soldiers_bonus": {
+        "hit_points": 0.1,
+        "armor": 0.2,
+        "resource_capacity": 0.0,
+        "worker_capacity": 0.0,
+        "attack": 0.2,
+        "range": 0.0,
+        "speed": 0.0
+      }
+    },
+    "4": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 15,
+      "soldiers_max_limit": 15,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "armor": 0.0,
+        "resource_capacity": 0.1,
+        "worker_capacity": 0.1,
+        "attack": 0.0,
+        "range": 0.0,
+        "speed": 0.0
       },
-      "5": {
-        "max_population_generation_rate": "15",
-        "population_generation_rate_multiplier": "0.3",
-        "workers_required": "780",
-        "workers_max_limit": "1950"
+      "soldiers_bonus": {
+        "hit_points": 0.1,
+        "armor": 0.2,
+        "resource_capacity": 0.0,
+        "worker_capacity": 0.0,
+        "attack": 0.2,
+        "range": 0.0,
+        "speed": 0.0
+      }
+    },
+    "5": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 25,
+      "soldiers_max_limit": 25,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "armor": 0.0,
+        "resource_capacity": 0.2,
+        "worker_capacity": 0.2,
+        "attack": 0.0,
+        "range": 0.0,
+        "speed": 0.0
+      },
+      "soldiers_bonus": {
+        "hit_points": 0.1,
+        "armor": 0.2,
+        "resource_capacity": 0.0,
+        "worker_capacity": 0.0,
+        "attack": 0.3,
+        "range": 0.0,
+        "speed": 0.0
+      }
+    }
+  },
+  "DEFENCE_PRODUCTION_CENTER": {
+    "1": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 8,
+      "soldiers_max_limit": 8,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "attack": 0.0,
+        "range": 0.0
+      },
+      "soldiers_bonus": {
+        "hit_points": 0.1,
+        "attack": 0.0,
+        "range": 0.0
+      }
+    },
+    "2": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 8,
+      "soldiers_max_limit": 8,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "attack": 0.0,
+        "range": 0.0
+      },
+      "soldiers_bonus": {
+        "hit_points": 0.1,
+        "attack": 0.1,
+        "range": 0.0
+      }
+    },
+    "3": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 15,
+      "soldiers_max_limit": 13,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "attack": 0.0,
+        "range": 0.05
+      },
+      "soldiers_bonus": {
+        "hit_points": 0.1,
+        "attack": 0.1,
+        "range": 0.0
+      }
+    },
+    "4": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 15,
+      "soldiers_max_limit": 16,
+      "workers_bonus": {
+        "hit_points": 0.0,
+        "attack": 0.0,
+        "range": 0.05
+      },
+      "soldiers_bonus": {
+        "hit_points": 0.2,
+        "attack": 0.1,
+        "range": 0.0
+      }
+    },
+    "5": {
+      "workers_required": 5,
+      "soldiers_required": 5,
+      "workers_max_limit": 25,
+      "soldiers_max_limit": 25,
+      "workers_bonus": {
+        "hit_points": 0.1,
+        "attack": 0.0,
+        "range": 0.05
+      },
+      "soldiers_bonus": {
+        "hit_points": 0.2,
+        "attack": 0.1,
+        "range": 0.0
       }
     }
   }

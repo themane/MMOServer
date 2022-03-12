@@ -11,13 +11,13 @@ import (
 type PlanetService struct {
 	userRepository    repoModels.UserRepository
 	upgradeConstants  map[string]constants.UpgradeConstants
-	buildingConstants map[string]constants.BuildingConstants
+	buildingConstants map[string]map[string]map[string]interface{}
 	logger            *constants.LoggingUtils
 }
 
 func NewPlanetService(
 	userRepository repoModels.UserRepository,
-	buildingConstants map[string]constants.BuildingConstants,
+	buildingConstants map[string]map[string]map[string]interface{},
 	logLevel string,
 ) *PlanetService {
 	return &PlanetService{
@@ -35,8 +35,8 @@ func (p *PlanetService) UpdatePopulationRate(username string, planetId string, g
 	currentDeployedWorkers := userData.OccupiedPlanets[planetId].Buildings[constants.PopulationControlCenter].Workers
 	populationControlCenterLevel := userData.OccupiedPlanets[planetId].Buildings[constants.PopulationControlCenter].BuildingLevel
 
-	populationControlCenterConstants := p.buildingConstants[constants.PopulationControlCenter].Levels[strconv.Itoa(populationControlCenterLevel)]
-	maxPopulationGenerationRate := models.GetMaxPopulationGenerationRate(populationControlCenterConstants, currentDeployedWorkers)
+	populationControlCenterConstants := p.buildingConstants[constants.PopulationControlCenter][strconv.Itoa(populationControlCenterLevel)]
+	maxPopulationGenerationRate := int(models.GetMaxPopulationGenerationRate(populationControlCenterConstants, float64(currentDeployedWorkers)))
 	if maxPopulationGenerationRate < generationRate {
 		return errors.New("rate above maximum")
 	}

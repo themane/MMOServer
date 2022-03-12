@@ -5,10 +5,6 @@ import (
 	"strings"
 )
 
-type BuildingConstants struct {
-	Levels map[string]map[string]string `json:"levels"`
-}
-
 func GetBuildingType(buildingId string) (string, error) {
 	if strings.HasPrefix(buildingId, "WMP") {
 		return WaterMiningPlant, nil
@@ -50,4 +46,11 @@ func GetAttackPointIds() []string {
 
 func GetAttackLineIds() []string {
 	return []string{"line1", "line2", "line3", "line4"}
+}
+
+func GetShipAttributes() []string {
+	return []string{"hit_points", "armor", "resource_capacity", "worker_capacity", "attack", "range", "speed"}
+}
+func GetDefenceAttributes() []string {
+	return []string{"hit_points", "armor", "attack", "range"}
 }

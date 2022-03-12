@@ -71,6 +71,7 @@ type MineUser struct {
 type Building struct {
 	BuildingLevel            int `json:"building_level" bson:"building_level"`
 	Workers                  int `json:"workers" bson:"workers"`
+	Soldiers                 int `json:"soldiers" bson:"soldiers"`
 	BuildingMinutesPerWorker int `json:"building_minutes_per_worker" bson:"building_minutes_per_worker"`
 }
 

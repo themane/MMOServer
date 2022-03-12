@@ -21,7 +21,7 @@ func NewBuildingController(
 	universeRepository models.UniverseRepository,
 	missionRepository models.MissionRepository,
 	upgradeConstants map[string]constants.UpgradeConstants,
-	buildingConstants map[string]constants.BuildingConstants,
+	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,

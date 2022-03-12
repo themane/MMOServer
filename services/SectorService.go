@@ -14,7 +14,7 @@ type SectorService struct {
 	missionRepository   repoModels.MissionRepository
 	notificationService *NotificationService
 	upgradeConstants    map[string]constants.UpgradeConstants
-	buildingConstants   map[string]constants.BuildingConstants
+	buildingConstants   map[string]map[string]map[string]interface{}
 	waterConstants      constants.MiningConstants
 	grapheneConstants   constants.MiningConstants
 	defenceConstants    map[string]constants.DefenceConstants
@@ -29,7 +29,7 @@ func NewSectorService(
 	missionRepository repoModels.MissionRepository,
 	experienceConstants map[string]constants.ExperienceConstants,
 	upgradeConstants map[string]constants.UpgradeConstants,
-	buildingConstants map[string]constants.BuildingConstants,
+	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,

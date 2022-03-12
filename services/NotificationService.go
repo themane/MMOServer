@@ -7,7 +7,7 @@ import (
 type NotificationService struct {
 	userExperienceConstants constants.ExperienceConstants
 	clanExperienceConstants constants.ExperienceConstants
-	buildingConstants       map[string]constants.BuildingConstants
+	buildingConstants       map[string]map[string]map[string]interface{}
 	waterConstants          constants.MiningConstants
 	grapheneConstants       constants.MiningConstants
 	defenceConstants        map[string]constants.DefenceConstants
@@ -17,7 +17,7 @@ type NotificationService struct {
 
 func NewNotificationService(
 	experienceConstants map[string]constants.ExperienceConstants,
-	buildingConstants map[string]constants.BuildingConstants,
+	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants,
 	shipConstants map[string]constants.ShipConstants,

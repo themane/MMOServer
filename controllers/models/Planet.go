@@ -97,6 +97,8 @@ type OccupiedPlanet struct {
 	Mines                   []buildings.Mine                   `json:"mines,omitempty"`
 	Shields                 []buildings.Shield                 `json:"shields,omitempty"`
 	PopulationControlCenter *buildings.PopulationControlCenter `json:"population_control_center,omitempty"`
+	AttackProductionCenter  *buildings.UnitProductionCenter    `json:"attack_production_center,omitempty"`
+	DefenceProductionCenter *buildings.UnitProductionCenter    `json:"defence_production_center,omitempty"`
 	Defences                []military.Defence                 `json:"defences,omitempty"`
 	DefenceShipCarriers     []military.DefenceShipCarrier      `json:"defence_ship_carriers,omitempty"`
 	Ships                   []military.Ship                    `json:"ships,omitempty"`
@@ -110,7 +112,7 @@ type OccupiedPlanet struct {
 func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoModels.PlanetUser, customHomePlanetId string,
 	attackMissions []repoModels.AttackMission, spyMissions []repoModels.SpyMission,
 	upgradeConstants map[string]constants.UpgradeConstants,
-	buildingConstants map[string]constants.BuildingConstants,
+	buildingConstants map[string]map[string]map[string]interface{},
 	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants,
 	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants,
 	speciesConstants constants.SpeciesConstants,
@@ -132,6 +134,10 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		waterConstants, grapheneConstants)
 	o.PopulationControlCenter = buildings.InitPopulationControlCenter(planetUser,
 		upgradeConstants[constants.PopulationControlCenter], buildingConstants[constants.PopulationControlCenter])
+	o.AttackProductionCenter = buildings.InitAttackProductionCenter(planetUser,
+		upgradeConstants[constants.AttackProductionCenter], buildingConstants[constants.AttackProductionCenter])
+	o.DefenceProductionCenter = buildings.InitDefenceProductionCenter(planetUser,
+		upgradeConstants[constants.DefenceProductionCenter], buildingConstants[constants.DefenceProductionCenter])
 	o.Shields = buildings.InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
 
 	for _, unitName := range speciesConstants.AvailableUnits {

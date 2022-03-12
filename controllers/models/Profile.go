@@ -9,6 +9,7 @@ import (
 type Profile struct {
 	Username   string     `json:"username" example:"devashish"`
 	Experience Experience `json:"experience"`
+	Species    string     `json:"species" example:"KLAYANS"`
 	Clan       *Clan      `json:"clan,omitempty"`
 }
 
@@ -25,6 +26,7 @@ type Experience struct {
 
 func (p *Profile) Init(userData models.UserData, clanData *models.ClanData, experienceConstants constants.ExperienceConstants) {
 	p.Username = userData.Profile.Username
+	p.Species = userData.Profile.Species
 	p.Experience.Init(userData.Profile, experienceConstants)
 	if len(userData.Profile.ClanId) > 0 && clanData != nil {
 		p.Clan = &Clan{}

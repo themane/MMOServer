@@ -136,7 +136,7 @@
         "min_attack": 10,
         "max_attack": 14,
         "range": 3,
-        "single_hit_targets": 2
+        "single_hit_targets": 1
       },
       "2": {
         "req_soldiers": 7,

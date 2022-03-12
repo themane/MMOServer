@@ -31,8 +31,8 @@ func GetUpgradeConstants() map[string]UpgradeConstants {
 	return upgradeConstants
 }
 
-func GetBuildingConstants() map[string]BuildingConstants {
-	var buildingConstants map[string]BuildingConstants
+func GetBuildingConstants() map[string]map[string]map[string]interface{} {
+	var buildingConstants map[string]map[string]map[string]interface{}
 	constantsFile, _ := os.Open("resources/BuildingConstants.json")
 	responseByteValue, _ := ioutil.ReadAll(constantsFile)
 	err := json.Unmarshal(responseByteValue, &buildingConstants)
