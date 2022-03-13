@@ -50,18 +50,18 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 	shieldIds := constants.GetShieldIds()
 	planetType := planetUni.GetPlanetType()
 	if planetType == constants.Primitive || planetType == constants.Resource {
-		for _, shieldId := range shieldIds {
+		for shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Unavailable})
 		}
 		u.PlanetType = ResourcePlanet
 	} else if planetType == constants.Base {
-		for _, shieldId := range shieldIds {
+		for shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Invulnerable})
 		}
 		u.PlanetType = BasePlanet
 		u.Invulnerable = true
 	} else if planetType == constants.Bot {
-		for _, shieldId := range shieldIds {
+		for shieldId := range shieldIds {
 			u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Broken})
 		}
 		u.PlanetType = AbandonedPlanet
@@ -71,7 +71,7 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 			u.Defences = append(u.Defences, UnoccupiedPlanetDefence{defenceType, defence.Level, defence.Quantity})
 		}
 	} else {
-		for _, shieldId := range shieldIds {
+		for shieldId := range shieldIds {
 			if planetUser.Buildings[shieldId].BuildingLevel > 0 {
 				u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Active})
 			} else {
@@ -114,7 +114,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]map[string]map[string]interface{},
 	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants,
-	defenceConstants map[string]constants.DefenceConstants, shipConstants map[string]constants.ShipConstants,
+	militaryConstants map[string]constants.MilitaryConstants,
 	speciesConstants constants.SpeciesConstants,
 ) {
 
@@ -128,7 +128,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	}
 	o.PlanetType = HomePlanet
 	o.Resources = InitResources(planetUser)
-	o.Population = InitPopulation(planetUser)
+	o.Population = InitPopulation(planetUser, militaryConstants)
 	o.Mines = buildings.InitAllMines(planetUni, planetUser,
 		upgradeConstants[constants.WaterMiningPlant], upgradeConstants[constants.GrapheneMiningPlant],
 		waterConstants, grapheneConstants)
@@ -138,29 +138,29 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		upgradeConstants[constants.AttackProductionCenter], buildingConstants[constants.AttackProductionCenter])
 	o.DefenceProductionCenter = buildings.InitDefenceProductionCenter(planetUser,
 		upgradeConstants[constants.DefenceProductionCenter], buildingConstants[constants.DefenceProductionCenter])
-	o.Shields = buildings.InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
+	o.Shields = buildings.InitAllShields(planetUser, buildingConstants[constants.Shield], upgradeConstants[constants.Shield])
 
 	for _, unitName := range speciesConstants.AvailableUnits {
-		if defenceConstant, ok := defenceConstants[unitName]; ok {
+		if defenceConstant, ok := militaryConstants[unitName]; ok {
 			if defenceConstant.Type == constants.Defender {
 				d := military.Defence{}
-				d.Init(unitName, planetUser.Defences[unitName], defenceConstant)
+				d.Init(unitName, planetUser.Defences[unitName], defenceConstant.Levels)
 				o.Defences = append(o.Defences, d)
 			}
 		}
-		if shipConstant, ok := shipConstants[unitName]; ok {
+		if shipConstant, ok := militaryConstants[unitName]; ok {
 			if shipConstant.Type == constants.Scout {
 				s := military.Ship{}
-				s.InitScout(unitName, planetUser.Ships[unitName], spyMissions, shipConstants[unitName])
+				s.InitScout(unitName, planetUser.Ships[unitName], spyMissions, shipConstant.Levels)
 				o.Scouts = append(o.Scouts, s)
 			} else {
 				s := military.Ship{}
-				s.Init(unitName, planetUser.Ships[unitName], attackMissions, shipConstants[unitName])
+				s.Init(unitName, planetUser.Ships[unitName], attackMissions, planetUser.DefenceShipCarriers, shipConstant.Levels)
 				o.Ships = append(o.Ships, s)
 			}
 		}
 	}
-	o.DefenceShipCarriers = military.InitAllDefenceShipCarriers(planetUser, defenceConstants)
+	o.DefenceShipCarriers = military.InitAllDefenceShipCarriers(planetUser, militaryConstants)
 
 	o.HomePlanet = planetUser.HomePlanet || planetUni.Position.Id == customHomePlanetId
 

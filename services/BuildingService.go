@@ -50,7 +50,7 @@ func (b *BuildingService) UpdateWorkers(username string, planetId string, buildi
 		return errors.New("workers not employed at working shield")
 	}
 	currentWorkers := userData.OccupiedPlanets[planetId].Buildings[buildingId].Workers
-	idleWorkers := userData.OccupiedPlanets[planetId].Population.Workers.Idle
+	idleWorkers := userData.OccupiedPlanets[planetId].Population.IdleWorkers
 	if currentWorkers == workers {
 		return nil
 	} else if workers > currentWorkers && idleWorkers < workers-currentWorkers {

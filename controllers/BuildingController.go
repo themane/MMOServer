@@ -12,6 +12,7 @@ import (
 type BuildingController struct {
 	buildingService *services.BuildingService
 	planetService   *services.PlanetService
+	unitService     *services.UnitService
 	refreshService  *services.QuickRefreshService
 	logger          *constants.LoggingUtils
 }
@@ -23,16 +24,16 @@ func NewBuildingController(
 	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
-	defenceConstants map[string]constants.DefenceConstants,
-	shipConstants map[string]constants.ShipConstants,
+	militaryConstants map[string]constants.MilitaryConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *BuildingController {
 	return &BuildingController{
 		buildingService: services.NewBuildingService(userRepository, upgradeConstants, logLevel),
 		planetService:   services.NewPlanetService(userRepository, buildingConstants, logLevel),
+		unitService:     services.NewUnitService(userRepository, missionRepository, militaryConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel),
+			upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel),
 		logger: constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
 	}
 }
@@ -185,6 +186,56 @@ func (b *BuildingController) EmployPopulation(c *gin.Context) {
 	b.logger.Printf("Employing population: %s, %s, workers: %s, soldiers: %s", parsedParams["username"], parsedParams["planet_id"], workers, soldiers)
 
 	err = b.planetService.EmployPopulation(parsedParams["username"], parsedParams["planet_id"], workers, soldiers)
+	if err != nil {
+		b.logger.Error("Error in updating", err)
+		c.JSON(500, err.Error())
+		return
+	}
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.JSON(200, response)
+}
+
+// KillPopulation godoc
+// @Summary Kill population to reduce
+// @Description Update API for kill population to reduce water usage and avoid famine
+// @Tags Update
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Param workers query int true "workers to be employed"
+// @Param soldiers query int true "soldiers to be employed"
+// @Success 200 {object} models.PlanetResponse
+// @Router /update/employ [put]
+func (b *BuildingController) KillPopulation(c *gin.Context) {
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id", "unemployed", "workers", "soldiers")
+	if err != nil {
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	unemployed, err := strconv.Atoi(parsedParams["unemployed"])
+	if err != nil || unemployed < 0 {
+		c.JSON(400, "invalid unemployed population count")
+	}
+	workers, err := strconv.Atoi(parsedParams["workers"])
+	if err != nil || workers < 0 {
+		c.JSON(400, "invalid workers count")
+	}
+	soldiers, err := strconv.Atoi(parsedParams["soldiers"])
+	if err != nil || soldiers < 0 {
+		c.JSON(400, "invalid soldiers count")
+	}
+	b.logger.Printf("Killing population: %s, %s, unemployed: %s, workers: %s, soldiers: %s",
+		parsedParams["username"], parsedParams["planet_id"], unemployed, workers, soldiers)
+
+	err = b.planetService.KillPopulation(parsedParams["username"], parsedParams["planet_id"], unemployed, workers, soldiers)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())

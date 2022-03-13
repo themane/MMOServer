@@ -38,8 +38,8 @@ type UserPlanetResponse struct {
 }
 
 func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
-	upgradeConstants map[string]constants.UpgradeConstants,
-	defenceConstants map[string]constants.DefenceConstants, speciesConstants constants.SpeciesConstants,
+	upgradeConstants map[string]constants.UpgradeConstants, sheildConstants map[string]map[string]interface{},
+	militaryConstants map[string]constants.MilitaryConstants, speciesConstants constants.SpeciesConstants,
 	notifications []models.Notification) {
 
 	if planetUser.BasePlanet {
@@ -47,18 +47,18 @@ func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 		return
 	}
 	p.Resources = InitResources(planetUser)
-	p.Population = InitPopulation(planetUser)
-	p.Shields = buildings.InitAllShields(planetUser, defenceConstants, upgradeConstants[constants.Shield])
+	p.Population = InitPopulation(planetUser, militaryConstants)
+	p.Shields = buildings.InitAllShields(planetUser, sheildConstants, upgradeConstants[constants.Shield])
 	for _, unitName := range speciesConstants.AvailableUnits {
-		if defenceConstant, ok := defenceConstants[unitName]; ok {
-			if defenceConstant.Type == constants.Defender {
+		if militaryConstant, ok := militaryConstants[unitName]; ok {
+			if militaryConstant.Type == constants.Defender {
 				d := military.Defence{}
-				d.Init(unitName, planetUser.Defences[unitName], defenceConstant)
+				d.Init(unitName, planetUser.Defences[unitName], militaryConstant.Levels)
 				p.Defences = append(p.Defences, d)
 			}
 		}
 	}
-	p.DefenceShipCarriers = military.InitAllDefenceShipCarriers(planetUser, defenceConstants)
+	p.DefenceShipCarriers = military.InitAllDefenceShipCarriers(planetUser, militaryConstants)
 	p.HomePlanet = planetUser.HomePlanet
 	p.Notifications = notifications
 }

@@ -17,8 +17,7 @@ type SectorService struct {
 	buildingConstants   map[string]map[string]map[string]interface{}
 	waterConstants      constants.MiningConstants
 	grapheneConstants   constants.MiningConstants
-	defenceConstants    map[string]constants.DefenceConstants
-	shipConstants       map[string]constants.ShipConstants
+	militaryConstants   map[string]constants.MilitaryConstants
 	speciesConstants    map[string]constants.SpeciesConstants
 	logger              *constants.LoggingUtils
 }
@@ -31,8 +30,7 @@ func NewSectorService(
 	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
-	defenceConstants map[string]constants.DefenceConstants,
-	shipConstants map[string]constants.ShipConstants,
+	militaryConstants map[string]constants.MilitaryConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *SectorService {
@@ -40,13 +38,12 @@ func NewSectorService(
 		userRepository:      userRepository,
 		universeRepository:  universeRepository,
 		missionRepository:   missionRepository,
-		notificationService: NewNotificationService(experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+		notificationService: NewNotificationService(experienceConstants, buildingConstants, mineConstants, militaryConstants, logLevel),
 		upgradeConstants:    upgradeConstants,
 		buildingConstants:   buildingConstants,
 		waterConstants:      mineConstants[constants.Water],
 		grapheneConstants:   mineConstants[constants.Graphene],
-		defenceConstants:    defenceConstants,
-		shipConstants:       shipConstants,
+		militaryConstants:   militaryConstants,
 		speciesConstants:    speciesConstants,
 		logger:              constants.NewLoggingUtils("SECTOR_SERVICE", logLevel),
 	}
@@ -70,7 +67,7 @@ func (s *SectorService) Visit(username string, sectorId string) (*controllerMode
 	sector, err := generateSectorData(userData.OccupiedPlanets, *sectorPosition, sectorData, "",
 		s.userRepository, s.missionRepository,
 		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants,
-		s.defenceConstants, s.shipConstants, s.speciesConstants[userData.Profile.Species],
+		s.militaryConstants, s.speciesConstants[userData.Profile.Species],
 		s.logger,
 	)
 	if err != nil {
@@ -116,7 +113,7 @@ func (s *SectorService) Teleport(username string, planetId string) (*controllerM
 	sector, err := generateSectorData(userData.OccupiedPlanets, planetPosition.SectorPosition(), sectorData, planetPosition.PlanetId(),
 		s.userRepository, s.missionRepository,
 		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants,
-		s.defenceConstants, s.shipConstants, s.speciesConstants[userData.Profile.Species],
+		s.militaryConstants, s.speciesConstants[userData.Profile.Species],
 		s.logger,
 	)
 	if err != nil {

@@ -24,8 +24,8 @@ func GetBuildingType(buildingId string) (string, error) {
 	return "", errors.New("error. invalid building id: " + buildingId)
 }
 
-func GetShieldIds() []string {
-	return []string{"SHLD01", "SHLD02", "SHLD03"}
+func GetShieldIds() map[string]struct{} {
+	return map[string]struct{}{"SHLD01": {}, "SHLD02": {}, "SHLD03": {}}
 }
 
 func GetUpgradableBuildingIds() map[string]struct{} {

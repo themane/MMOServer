@@ -22,15 +22,14 @@ func NewMissionController(userRepository models.UserRepository,
 	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
-	defenceConstants map[string]constants.DefenceConstants,
-	shipConstants map[string]constants.ShipConstants,
+	militaryConstants map[string]constants.MilitaryConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *MissionController {
 	return &MissionController{
-		missionService: services.NewMissionService(userRepository, universeRepository, missionRepository, shipConstants, logLevel),
+		missionService: services.NewMissionService(userRepository, universeRepository, missionRepository, militaryConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel),
+			upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel),
 		logger: constants.NewLoggingUtils("MISSION_CONTROLLER", logLevel),
 	}
 }
@@ -38,7 +37,7 @@ func NewMissionController(userRepository models.UserRepository,
 // Spy godoc
 // @Summary Spy API
 // @Description Endpoint to launch spy mission with available scout ships
-// @Tags Attack
+// @Tags Mission
 // @Accept json
 // @Produce json
 // @Param attacker query string true "attacker username"
@@ -76,7 +75,7 @@ func (a *MissionController) Spy(c *gin.Context) {
 // Attack godoc
 // @Summary Attack API
 // @Description Endpoint to launch attack mission on other planet
-// @Tags Attack
+// @Tags Mission
 // @Accept json
 // @Produce json
 // @Param attacker query string true "attacker username"

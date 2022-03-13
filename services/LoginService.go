@@ -19,8 +19,7 @@ type LoginService struct {
 	buildingConstants       map[string]map[string]map[string]interface{}
 	waterConstants          constants.MiningConstants
 	grapheneConstants       constants.MiningConstants
-	defenceConstants        map[string]constants.DefenceConstants
-	shipConstants           map[string]constants.ShipConstants
+	militaryConstants       map[string]constants.MilitaryConstants
 	speciesConstants        map[string]constants.SpeciesConstants
 	logger                  *constants.LoggingUtils
 }
@@ -34,8 +33,7 @@ func NewLoginService(
 	upgradeConstants map[string]constants.UpgradeConstants,
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
-	defenceConstants map[string]constants.DefenceConstants,
-	shipConstants map[string]constants.ShipConstants,
+	militaryConstants map[string]constants.MilitaryConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *LoginService {
@@ -44,15 +42,14 @@ func NewLoginService(
 		clanRepository:          clanRepository,
 		universeRepository:      universeRepository,
 		missionRepository:       missionRepository,
-		notificationService:     NewNotificationService(experienceConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, logLevel),
+		notificationService:     NewNotificationService(experienceConstants, buildingConstants, mineConstants, militaryConstants, logLevel),
 		upgradeConstants:        upgradeConstants,
 		buildingConstants:       buildingConstants,
 		userExperienceConstants: experienceConstants[constants.UserExperiences],
 		clanExperienceConstants: experienceConstants[constants.ClanExperiences],
 		waterConstants:          mineConstants[constants.Water],
 		grapheneConstants:       mineConstants[constants.Graphene],
-		defenceConstants:        defenceConstants,
-		shipConstants:           shipConstants,
+		militaryConstants:       militaryConstants,
 		speciesConstants:        speciesConstants,
 		logger:                  constants.NewLoggingUtils("LOGIN_SERVICE", logLevel),
 	}
@@ -78,7 +75,7 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 		homePlanetPosition.SectorPosition(), homeSectorData, "",
 		l.userRepository, l.missionRepository,
 		l.upgradeConstants, l.buildingConstants, l.waterConstants, l.grapheneConstants,
-		l.defenceConstants, l.shipConstants, l.speciesConstants[userData.Profile.Species],
+		l.militaryConstants, l.speciesConstants[userData.Profile.Species],
 		l.logger,
 	)
 	if err != nil {

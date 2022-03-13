@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-type BuildingState struct {
+type State struct {
 	State            string        `json:"state" example:"WORKING"`
 	MinutesRemaining int           `json:"minutes_remaining_per_worker" example:"1440"`
 	CancelReturns    CancelReturns `json:"cancel_returns"`
@@ -25,7 +25,7 @@ type NextLevelRequirements struct {
 	MinutesRequiredPerWorker int `json:"minutes_required_per_worker" example:"1440"`
 }
 
-func (b *BuildingState) Init(building models.Building, upgradeConstants constants.UpgradeConstants) {
+func (b *State) Init(building models.Building, upgradeConstants constants.UpgradeConstants) {
 	if building.BuildingMinutesPerWorker > 0 {
 		b.State = constants.UpgradingState
 		b.MinutesRemaining = building.BuildingMinutesPerWorker
@@ -47,7 +47,7 @@ func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, up
 }
 
 func (n *NextLevelRequirements) Init(currentLevel int, upgradeConstants constants.UpgradeConstants) {
-	if currentLevel+1 < upgradeConstants.MaxLevel {
+	if currentLevel < upgradeConstants.MaxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		n.GrapheneRequired = upgradeConstants.Levels[nextLevelString].GrapheneRequired
 		n.WaterRequired = upgradeConstants.Levels[nextLevelString].WaterRequired

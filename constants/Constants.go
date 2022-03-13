@@ -19,40 +19,10 @@ type MiningLevelConstant struct {
 	WorkersMaxLimit     int `json:"workers_max_limit"`
 }
 
-type DefenceConstants struct {
-	MaxLevel int                             `json:"max_level"`
-	Type     string                          `json:"type"`
-	Levels   map[string]DefenceLevelConstant `json:"levels"`
-}
-
-type DefenceLevelConstant struct {
-	RequiredSoldiers int `json:"required_soldiers"`
-	RequiredWorkers  int `json:"required_workers"`
-	HitPoints        int `json:"hit_points"`
-	Armor            int `json:"armor"`
-	MinAttack        int `json:"min_attack"`
-	MaxAttack        int `json:"max_attack"`
-	Range            int `json:"range"`
-	SingleHitTargets int `json:"single_hit_targets"`
-}
-
-type ShipConstants struct {
-	MaxLevel int                          `json:"max_level"`
-	Type     string                       `json:"type"`
-	Levels   map[string]ShipLevelConstant `json:"levels"`
-}
-
-type ShipLevelConstant struct {
-	RequiredSoldiers int `json:"required_soldiers"`
-	RequiredWorkers  int `json:"required_workers"`
-	HitPoints        int `json:"hit_points"`
-	Armor            int `json:"armor"`
-	ResourceCapacity int `json:"resource_capacity"`
-	WorkerCapacity   int `json:"worker_capacity"`
-	MinAttack        int `json:"min_attack"`
-	MaxAttack        int `json:"max_attack"`
-	Range            int `json:"range"`
-	Speed            int `json:"speed"`
+type MilitaryConstants struct {
+	MaxLevel int                               `json:"max_level"`
+	Type     string                            `json:"type"`
+	Levels   map[string]map[string]interface{} `json:"levels"`
 }
 
 type UpgradeConstants struct {

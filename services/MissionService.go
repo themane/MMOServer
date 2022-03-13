@@ -18,7 +18,7 @@ type MissionService struct {
 	userRepository     repoModels.UserRepository
 	universeRepository repoModels.UniverseRepository
 	missionRepository  repoModels.MissionRepository
-	shipConstants      map[string]constants.ShipConstants
+	militaryConstants  map[string]constants.MilitaryConstants
 	logger             *constants.LoggingUtils
 }
 
@@ -26,14 +26,14 @@ func NewMissionService(
 	userRepository repoModels.UserRepository,
 	universeRepository repoModels.UniverseRepository,
 	missionRepository repoModels.MissionRepository,
-	shipConstants map[string]constants.ShipConstants,
+	militaryConstants map[string]constants.MilitaryConstants,
 	logLevel string,
 ) *MissionService {
 	return &MissionService{
 		userRepository:     userRepository,
 		universeRepository: universeRepository,
 		missionRepository:  missionRepository,
-		shipConstants:      shipConstants,
+		militaryConstants:  militaryConstants,
 		logger:             constants.NewLoggingUtils("MISSION_SERVICE", logLevel),
 	}
 }
@@ -60,7 +60,7 @@ func (a *MissionService) Spy(spyRequest controllerModels.SpyRequest) error {
 			}
 			availableShips[formation.ShipName] -= formation.Quantity
 			currentLevel := strconv.Itoa(planetUser.Ships[formation.ShipName].Level)
-			speed := a.shipConstants[formation.ShipName].Levels[currentLevel].Speed
+			speed := a.militaryConstants[formation.ShipName].Levels[currentLevel]["speed"].(int)
 			if squadSpeed < float64(speed) {
 				squadSpeed = float64(speed)
 			}
@@ -114,7 +114,7 @@ func (a *MissionService) Attack(attackRequest controllerModels.AttackRequest) er
 					}
 					availableShips[formation.ShipName] -= formation.Quantity
 					currentLevel := strconv.Itoa(planetUser.Ships[formation.ShipName].Level)
-					speed := a.shipConstants[formation.ShipName].Levels[currentLevel].Speed
+					speed := a.militaryConstants[formation.ShipName].Levels[currentLevel]["speed"].(int)
 					if squadSpeed < float64(speed) {
 						squadSpeed = float64(speed)
 					}

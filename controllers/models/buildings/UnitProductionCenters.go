@@ -11,7 +11,7 @@ type UnitProductionCenter struct {
 	Level                 int                            `json:"level" example:"3"`
 	Workers               int                            `json:"workers" example:"12"`
 	Soldiers              int                            `json:"soldiers" example:"15"`
-	BuildingState         BuildingState                  `json:"building_state"`
+	BuildingState         State                          `json:"building_state"`
 	BuildingAttributes    UnitProductionCenterAttributes `json:"building_attributes"`
 	NextLevelRequirements NextLevelRequirements          `json:"next_level_requirements"`
 }

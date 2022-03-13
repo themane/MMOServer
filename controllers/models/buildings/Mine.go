@@ -18,7 +18,7 @@ type MiningPlant struct {
 	BuildingId            string                `json:"building_id,omitempty" example:"WMP101"`
 	Level                 int                   `json:"level" example:"3"`
 	Workers               int                   `json:"workers" example:"12"`
-	BuildingState         BuildingState         `json:"building_state"`
+	BuildingState         State                 `json:"building_state"`
 	BuildingAttributes    MiningAttributes      `json:"building_attributes"`
 	NextLevelRequirements NextLevelRequirements `json:"next_level_requirements"`
 }

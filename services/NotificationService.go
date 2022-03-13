@@ -10,8 +10,7 @@ type NotificationService struct {
 	buildingConstants       map[string]map[string]map[string]interface{}
 	waterConstants          constants.MiningConstants
 	grapheneConstants       constants.MiningConstants
-	defenceConstants        map[string]constants.DefenceConstants
-	shipConstants           map[string]constants.ShipConstants
+	militaryConstants       map[string]constants.MilitaryConstants
 	logger                  *constants.LoggingUtils
 }
 
@@ -19,8 +18,7 @@ func NewNotificationService(
 	experienceConstants map[string]constants.ExperienceConstants,
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
-	defenceConstants map[string]constants.DefenceConstants,
-	shipConstants map[string]constants.ShipConstants,
+	militaryConstants map[string]constants.MilitaryConstants,
 	logLevel string,
 ) *NotificationService {
 	return &NotificationService{
@@ -29,8 +27,7 @@ func NewNotificationService(
 		clanExperienceConstants: experienceConstants[constants.ClanExperiences],
 		waterConstants:          mineConstants[constants.Water],
 		grapheneConstants:       mineConstants[constants.Graphene],
-		defenceConstants:        defenceConstants,
-		shipConstants:           shipConstants,
+		militaryConstants:       militaryConstants,
 		logger:                  constants.NewLoggingUtils("NOTIFICATION_SERVICE", logLevel),
 	}
 }

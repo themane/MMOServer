@@ -11,7 +11,7 @@ type PopulationControlCenter struct {
 	BuildingId            string                            `json:"building_id,omitempty" example:"POPULATION_CONTROL_CENTER"`
 	Level                 int                               `json:"level" example:"3"`
 	Workers               int                               `json:"workers" example:"12"`
-	BuildingState         BuildingState                     `json:"building_state"`
+	BuildingState         State                             `json:"building_state"`
 	BuildingAttributes    PopulationControlCenterAttributes `json:"building_attributes"`
 	NextLevelRequirements NextLevelRequirements             `json:"next_level_requirements"`
 }

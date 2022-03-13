@@ -55,28 +55,16 @@ func GetMiningConstants() map[string]MiningConstants {
 	return mineConstants
 }
 
-func GetDefenceConstants() map[string]DefenceConstants {
-	var defenceConstants map[string]DefenceConstants
-	constantsFile, _ := os.Open("resources/DefenceConstants.json")
+func GetMilitaryConstants() map[string]MilitaryConstants {
+	var defenceConstants map[string]MilitaryConstants
+	constantsFile, _ := os.Open("resources/MilitaryConstants.json")
 	responseByteValue, _ := ioutil.ReadAll(constantsFile)
 	err := json.Unmarshal(responseByteValue, &defenceConstants)
 	if err != nil {
-		log.Fatal("Error in initializing defence constants: ", err)
+		log.Fatal("Error in initializing military constants: ", err)
 		return nil
 	}
 	return defenceConstants
-}
-
-func GetShipConstants() map[string]ShipConstants {
-	var shipConstants map[string]ShipConstants
-	constantsFile, _ := os.Open("resources/ShipConstants.json")
-	responseByteValue, _ := ioutil.ReadAll(constantsFile)
-	err := json.Unmarshal(responseByteValue, &shipConstants)
-	if err != nil {
-		log.Fatal("Error in initializing ship constants: ", err)
-		return nil
-	}
-	return shipConstants
 }
 
 func GetSpeciesConstants() map[string]SpeciesConstants {

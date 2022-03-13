@@ -2,7 +2,8 @@ package military
 
 import (
 	"github.com/themane/MMOServer/constants"
-	"github.com/themane/MMOServer/mongoRepository/models"
+	"github.com/themane/MMOServer/models"
+	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"strconv"
 )
 
@@ -13,40 +14,30 @@ type DeployedDefence struct {
 }
 
 type Defence struct {
-	Name             string `json:"name" example:"BOMBER"`
-	Level            int    `json:"level" example:"1"`
-	TotalUnits       int    `json:"total_units" example:"5"`
-	IdleUnits        int    `json:"idle_units" example:"5"`
-	RequiredSoldiers int    `json:"required_soldiers" example:"40"`
-	RequiredWorkers  int    `json:"required_workers" example:"20"`
-	HitPoints        int    `json:"hit_points" example:"400"`
-	Armor            int    `json:"armor" example:"2"`
-	MinAttack        int    `json:"min_attack" example:"10"`
-	MaxAttack        int    `json:"max_attack" example:"12"`
-	Range            int    `json:"range" example:"2"`
-	SingleHitTargets int    `json:"single_hit_targets" example:"1"`
+	Name                 string                   `json:"name" example:"BOMBER"`
+	Level                int                      `json:"level" example:"1"`
+	TotalUnits           int                      `json:"total_units" example:"5"`
+	IdleUnits            int                      `json:"idle_units" example:"5"`
+	DefenceAttributes    models.DefenceAttributes `json:"defence_attributes"`
+	CreationRequirements models.Requirements      `json:"creation_requirements"`
+	DestructionReturns   models.Returns           `json:"destruction_returns"`
+	UnderConstruction    *UnderConstruction       `json:"under_construction,omitempty"`
 }
 
-func (d *Defence) Init(unitName string, defenceUser models.Defence, defenceConstants constants.DefenceConstants) {
+func (d *Defence) Init(unitName string, defenceUser repoModels.Defence, defenceConstants map[string]map[string]interface{}) {
 	d.Name = unitName
 	d.Level = defenceUser.Level
 	d.TotalUnits = defenceUser.Quantity
 
-	deployedUnits := 0
-	for _, quantity := range defenceUser.GuardingShield {
-		deployedUnits += quantity
-	}
-	d.IdleUnits = d.TotalUnits - deployedUnits
+	d.IdleUnits = repoModels.GetIdleDefences(defenceUser.GuardingShield, defenceUser.Quantity)
 
-	currentLevelString := strconv.Itoa(defenceUser.Level)
-	d.RequiredSoldiers = defenceConstants.Levels[currentLevelString].RequiredSoldiers
-	d.RequiredWorkers = defenceConstants.Levels[currentLevelString].RequiredWorkers
-	d.HitPoints = defenceConstants.Levels[currentLevelString].HitPoints
-	d.Armor = defenceConstants.Levels[currentLevelString].Armor
-	d.MinAttack = defenceConstants.Levels[currentLevelString].MinAttack
-	d.MaxAttack = defenceConstants.Levels[currentLevelString].MaxAttack
-	d.Range = defenceConstants.Levels[currentLevelString].Range
-	d.SingleHitTargets = defenceConstants.Levels[currentLevelString].SingleHitTargets
+	if defenceUser.Level > 0 {
+		currentLevelString := strconv.Itoa(defenceUser.Level)
+		d.DefenceAttributes.Init(defenceConstants[currentLevelString])
+		d.CreationRequirements.Init(defenceConstants[currentLevelString])
+		d.DestructionReturns.InitDestructionReturns(defenceConstants[currentLevelString])
+		d.UnderConstruction = InitUnderConstruction(defenceUser.UnderConstruction, defenceConstants[currentLevelString])
+	}
 }
 
 type DeployedDefenceShipCarrier struct {
@@ -57,40 +48,53 @@ type DeployedDefenceShipCarrier struct {
 }
 
 type DefenceShipCarrier struct {
-	Id               string         `json:"_id" example:"DSC001"`
-	Name             string         `json:"name" example:"VIKRAM"`
-	Level            int            `json:"level" example:"1"`
-	RequiredSoldiers int            `json:"required_soldiers" example:"40"`
-	RequiredWorkers  int            `json:"required_workers" example:"20"`
-	HitPoints        int            `json:"hit_points" example:"400"`
-	Armor            int            `json:"armor" example:"5"`
-	DeployedShips    []DeployedShip `json:"deployed_ships"`
-	Idle             bool           `json:"idle" example:"true"`
+	Name                 string                   `json:"name" example:"VIKRAM"`
+	CreationRequirements models.Requirements      `json:"creation_requirements"`
+	Units                []DefenceShipCarrierUnit `json:"units"`
 }
 
-func InitAllDefenceShipCarriers(planetUser models.PlanetUser,
-	defenceConstants map[string]constants.DefenceConstants) []DefenceShipCarrier {
+type DefenceShipCarrierUnit struct {
+	Id                    string                   `json:"_id" example:"DSC001"`
+	Level                 int                      `json:"level" example:"1"`
+	DeployedShips         []DeployedShip           `json:"deployed_ships"`
+	Idle                  bool                     `json:"idle" example:"true"`
+	DefenceAttributes     models.DefenceAttributes `json:"defence_attributes"`
+	NextLevelRequirements models.Requirements      `json:"next_level_requirements"`
+	DestructionReturns    models.Returns           `json:"destruction_returns"`
+	UnderConstruction     *UnderConstruction       `json:"under_construction,omitempty"`
+}
+
+func InitAllDefenceShipCarriers(planetUser repoModels.PlanetUser,
+	defenceConstants map[string]constants.MilitaryConstants) []DefenceShipCarrier {
 
 	var defenceShipCarriers []DefenceShipCarrier
-	for id, defenceShipCarrierUser := range planetUser.DefenceShipCarriers {
-		currentLevelString := strconv.Itoa(defenceShipCarrierUser.Level)
-		d := DefenceShipCarrier{
-			Id:               id,
-			Name:             defenceShipCarrierUser.Name,
-			Level:            defenceShipCarrierUser.Level,
-			RequiredSoldiers: defenceConstants[defenceShipCarrierUser.Name].Levels[currentLevelString].RequiredSoldiers,
-			RequiredWorkers:  defenceConstants[defenceShipCarrierUser.Name].Levels[currentLevelString].RequiredWorkers,
-			HitPoints:        defenceConstants[defenceShipCarrierUser.Name].Levels[currentLevelString].HitPoints,
-			Armor:            defenceConstants[defenceShipCarrierUser.Name].Levels[currentLevelString].Armor,
-			DeployedShips:    GetDeployedShips(planetUser.Ships, defenceShipCarrierUser.HostingShips),
-			Idle:             defenceShipCarrierUser.GuardingShield != "",
+	for unitName, defenceConstant := range defenceConstants {
+		if defenceConstant.Type == constants.DefenceShipCarrier {
+			d := DefenceShipCarrier{Name: unitName}
+			d.CreationRequirements.Init(defenceConstants[unitName].Levels["1"])
+			for id, defenceShipCarrierUser := range planetUser.DefenceShipCarriers {
+				if defenceShipCarrierUser.Name == unitName {
+					currentLevelString := strconv.Itoa(defenceShipCarrierUser.Level)
+					u := DefenceShipCarrierUnit{
+						Id:            id,
+						Level:         defenceShipCarrierUser.Level,
+						DeployedShips: GetDeployedShips(planetUser.Ships, defenceShipCarrierUser.HostingShips),
+						Idle:          defenceShipCarrierUser.GuardingShield == "",
+					}
+					u.DefenceAttributes.Init(defenceConstants[unitName].Levels[currentLevelString])
+					u.NextLevelRequirements.InitNextLevelRequirements(defenceShipCarrierUser.Level, defenceConstants[unitName])
+					u.DestructionReturns.InitDestructionReturns(defenceConstants[unitName].Levels[currentLevelString])
+					u.UnderConstruction = InitUnderUpGradation(defenceShipCarrierUser.UnderConstruction, defenceConstants[unitName].Levels[currentLevelString])
+					d.Units = append(d.Units, u)
+				}
+			}
+			defenceShipCarriers = append(defenceShipCarriers, d)
 		}
-		defenceShipCarriers = append(defenceShipCarriers, d)
 	}
 	return defenceShipCarriers
 }
 
-func GetDeployedShips(ships map[string]models.Ship, hostingShips map[string]int) []DeployedShip {
+func GetDeployedShips(ships map[string]repoModels.Ship, hostingShips map[string]int) []DeployedShip {
 	var deployedShips []DeployedShip
 	for unitName, units := range hostingShips {
 		s := DeployedShip{

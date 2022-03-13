@@ -46,7 +46,7 @@ func main() {
 	url := ginSwagger.URL(baseURL + "/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	loginController, buildingController, missionController := getHandlers()
+	loginController, buildingController, missionController, unitsController := getHandlers()
 	//scheduledJobManager.SchedulePlanetUpdates()
 
 	r.GET("/ping", controllers.Ping)
@@ -58,7 +58,19 @@ func main() {
 	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
 	r.PUT("/update/workers", buildingController.UpdateWorkers)
 	r.PUT("/update/population-growth", buildingController.UpdatePopulationRate)
-	r.PUT("/update/recruit", buildingController.EmployPopulation)
+	r.PUT("/population/recruit", buildingController.EmployPopulation)
+	r.PUT("/population/kill", buildingController.KillPopulation)
+
+	r.PUT("/unit/construct", unitsController.ConstructUnits)
+	r.PUT("/unit/cancel", unitsController.CancelUnitsConstruction)
+	r.PUT("/unit/destruct", unitsController.DestructUnits)
+	r.PUT("/defence_ship_carrier/upgrade", unitsController.UpgradeDefenceShipCarrier)
+	r.PUT("/defence_ship_carrier/cancel", unitsController.CancelDefenceShipCarrierUpGradation)
+	r.PUT("/defence_ship_carrier/destruct", unitsController.DestructDefenceShipCarrier)
+
+	r.POST("/deploy/defence_ship_carrier/ships", unitsController.DeployShipsOnDefenceShipCarrier)
+	r.POST("/deploy/shield/defences", unitsController.DeployDefencesOnShield)
+	r.PUT("/deploy/shield/defence_ship_carrier", unitsController.DeployDefenceShipCarrierOnShield)
 
 	r.POST("/spy", missionController.Spy)
 	r.POST("/attack", missionController.Attack)
@@ -73,7 +85,7 @@ func main() {
 	}
 }
 
-func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.MissionController) {
+func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.MissionController, *controllers.UnitsController) {
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion()
 
@@ -81,8 +93,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	buildingConstants := constants.GetBuildingConstants()
 	experienceConstants := constants.GetExperienceConstants()
 	mineConstants := constants.GetMiningConstants()
-	defenceConstants := constants.GetDefenceConstants()
-	shipConstants := constants.GetShipConstants()
+	militaryConstants := constants.GetMilitaryConstants()
 	speciesConstants := constants.GetSpeciesConstants()
 
 	var userRepository models.UserRepository
@@ -94,14 +105,16 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB, logLevel)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository,
-		experienceConstants, upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel)
-	missionController := controllers.NewMissionController(userRepository, universeRepository, missionRepository,
-		upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel)
+		experienceConstants, upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel)
 	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository,
-		upgradeConstants, buildingConstants, mineConstants, defenceConstants, shipConstants, speciesConstants, logLevel)
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel)
+	missionController := controllers.NewMissionController(userRepository, universeRepository, missionRepository,
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel)
+	unitsController := controllers.NewUnitsController(userRepository, universeRepository, missionRepository,
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel)
 
 	log.Println("Initialized all handlers")
-	return loginController, buildingController, missionController
+	return loginController, buildingController, missionController, unitsController
 }
 
 func initialize() {

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
@@ -13,12 +14,19 @@ type Population struct {
 	Soldiers       models.EmployedPopulation `json:"soldiers"`
 }
 
-func InitPopulation(planetUser repoModels.PlanetUser) *Population {
+func InitPopulation(planetUser repoModels.PlanetUser, militaryConstants map[string]constants.MilitaryConstants) *Population {
 	p := new(Population)
-	p.Total = planetUser.Population.Unemployed + planetUser.Population.Workers.Total + planetUser.Population.Soldiers.Total
+	totalEmployedWorkers, totalEmployedSoldiers := repoModels.GetEmployedPopulation(planetUser, militaryConstants)
+	p.Workers = models.EmployedPopulation{
+		Idle:  planetUser.Population.IdleWorkers,
+		Total: totalEmployedWorkers + planetUser.Population.IdleWorkers,
+	}
+	p.Soldiers = models.EmployedPopulation{
+		Idle:  planetUser.Population.IdleSoldiers,
+		Total: totalEmployedSoldiers + planetUser.Population.IdleSoldiers,
+	}
+	p.Total = planetUser.Population.Unemployed + p.Workers.Total + p.Soldiers.Total
 	p.GenerationRate = planetUser.Population.GenerationRate
 	p.Unemployed = planetUser.Population.Unemployed
-	p.Workers = planetUser.Population.Workers
-	p.Soldiers = planetUser.Population.Soldiers
 	return p
 }
