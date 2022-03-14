@@ -18,6 +18,7 @@ type SectorService struct {
 	waterConstants      constants.MiningConstants
 	grapheneConstants   constants.MiningConstants
 	militaryConstants   map[string]constants.MilitaryConstants
+	researchConstants   map[string]constants.ResearchConstants
 	speciesConstants    map[string]constants.SpeciesConstants
 	logger              *constants.LoggingUtils
 }
@@ -31,6 +32,7 @@ func NewSectorService(
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
 	militaryConstants map[string]constants.MilitaryConstants,
+	researchConstants map[string]constants.ResearchConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *SectorService {
@@ -44,6 +46,7 @@ func NewSectorService(
 		waterConstants:      mineConstants[constants.Water],
 		grapheneConstants:   mineConstants[constants.Graphene],
 		militaryConstants:   militaryConstants,
+		researchConstants:   researchConstants,
 		speciesConstants:    speciesConstants,
 		logger:              constants.NewLoggingUtils("SECTOR_SERVICE", logLevel),
 	}
@@ -67,7 +70,7 @@ func (s *SectorService) Visit(username string, sectorId string) (*controllerMode
 	sector, err := generateSectorData(userData.OccupiedPlanets, *sectorPosition, sectorData, "",
 		s.userRepository, s.missionRepository,
 		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants,
-		s.militaryConstants, s.speciesConstants[userData.Profile.Species],
+		s.militaryConstants, s.researchConstants, s.speciesConstants[userData.Profile.Species],
 		s.logger,
 	)
 	if err != nil {
@@ -113,7 +116,7 @@ func (s *SectorService) Teleport(username string, planetId string) (*controllerM
 	sector, err := generateSectorData(userData.OccupiedPlanets, planetPosition.SectorPosition(), sectorData, planetPosition.PlanetId(),
 		s.userRepository, s.missionRepository,
 		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants,
-		s.militaryConstants, s.speciesConstants[userData.Profile.Species],
+		s.militaryConstants, s.researchConstants, s.speciesConstants[userData.Profile.Species],
 		s.logger,
 	)
 	if err != nil {

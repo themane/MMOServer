@@ -8,7 +8,7 @@ import (
 )
 
 type PopulationControlCenter struct {
-	BuildingId            string                            `json:"building_id,omitempty" example:"POPULATION_CONTROL_CENTER"`
+	BuildingId            string                            `json:"building_id" example:"POPULATION_CONTROL_CENTER"`
 	Level                 int                               `json:"level" example:"3"`
 	Workers               int                               `json:"workers" example:"12"`
 	BuildingState         State                             `json:"building_state"`

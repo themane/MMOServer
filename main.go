@@ -77,6 +77,9 @@ func main() {
 	r.POST("/deploy/shield/defences", unitsController.DeployDefencesOnShield)
 	r.PUT("/deploy/shield/defence_ship_carrier", unitsController.DeployDefenceShipCarrierOnShield)
 
+	r.PUT("/research", buildingController.Research)
+	r.PUT("/research/cancel", buildingController.CancelResearch)
+
 	r.POST("/spy", missionController.Spy)
 	r.POST("/attack", missionController.Attack)
 
@@ -99,6 +102,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	experienceConstants := constants.GetExperienceConstants()
 	mineConstants := constants.GetMiningConstants()
 	militaryConstants := constants.GetMilitaryConstants()
+	researchConstants := constants.GetResearchConstants()
 	speciesConstants := constants.GetSpeciesConstants()
 
 	var userRepository models.UserRepository
@@ -110,13 +114,13 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB, logLevel)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository,
-		experienceConstants, upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel)
+		experienceConstants, upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel)
 	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository,
-		upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel)
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel)
 	missionController := controllers.NewMissionController(userRepository, universeRepository, missionRepository,
-		upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel)
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel)
 	unitsController := controllers.NewUnitsController(userRepository, universeRepository, missionRepository,
-		upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel)
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel)
 
 	log.Println("Initialized all handlers")
 	return loginController, buildingController, missionController, unitsController

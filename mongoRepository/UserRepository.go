@@ -190,6 +190,64 @@ func (u *UserRepositoryImpl) ExtractReservedResources(id string, planetId string
 	return nil
 }
 
+func (u *UserRepositoryImpl) Research(id string, planetId string, researchName string,
+	grapheneRequired float64, waterRequired float64, shelioRequired float64, minutesRequired float64) error {
+
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{
+		"occupied_planets." + planetId + ".researches." + researchName + ".level":                       1,
+		"occupied_planets." + planetId + ".researches." + researchName + ".research_minutes_per_worker": minutesRequired,
+		"occupied_planets." + planetId + ".water.amount":                                                -waterRequired,
+		"occupied_planets." + planetId + ".graphene.amount":                                             -grapheneRequired,
+		"occupied_planets." + planetId + ".shelio":                                                      -shelioRequired,
+	}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Initiated research: %s, planetId: %s, researchName: %s\n", id, planetId, researchName)
+	return nil
+}
+
+func (u *UserRepositoryImpl) ResearchUpgrade(id string, planetId string, researchName string,
+	grapheneRequired float64, waterRequired float64, shelioRequired float64, minutesRequired float64) error {
+
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{
+		"occupied_planets." + planetId + ".researches." + researchName + ".level":                       1,
+		"occupied_planets." + planetId + ".researches." + researchName + ".research_minutes_per_worker": minutesRequired,
+		"occupied_planets." + planetId + ".water.amount":                                                -waterRequired,
+		"occupied_planets." + planetId + ".graphene.amount":                                             -grapheneRequired,
+		"occupied_planets." + planetId + ".shelio":                                                      -shelioRequired,
+	}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Initiated research: %s, planetId: %s, researchName: %s\n", id, planetId, researchName)
+	return nil
+}
+
+func (u *UserRepositoryImpl) CancelResearch(id string, planetId string, researchName string,
+	grapheneReturned int, waterReturned int, shelioReturned int) error {
+
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{
+		"$set": bson.M{
+			"occupied_planets." + planetId + ".researches." + researchName + ".research_minutes_per_worker": 0,
+		},
+		"$inc": bson.M{
+			"occupied_planets." + planetId + ".researches." + researchName + ".level": -1,
+			"occupied_planets." + planetId + ".water.amount":                          waterReturned,
+			"occupied_planets." + planetId + ".graphene.amount":                       grapheneReturned,
+			"occupied_planets." + planetId + ".shelio":                                shelioReturned,
+		},
+	}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Canceled research: %s, planetId: %s, researchName: %s\n", id, planetId, researchName)
+	return nil
+}
+
 func (u *UserRepositoryImpl) ConstructShips(id string, planetId string, unitName string, quantity float64,
 	constructionRequirements models.Requirements) error {
 

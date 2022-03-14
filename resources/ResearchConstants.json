@@ -1,0 +1,150 @@
+{
+  "RADIATION_SHIELD": {
+    "max_level": 3,
+    "description": "upgrades hit-points of carriers",
+    "bonus": {
+      "1": {
+        "ANUJ": {
+          "hitpoint": 20
+        }
+      },
+      "2": {
+        "ANUJ": {
+          "hitpoint": 20
+        },
+        "AGRAJA": {
+          "hitpoint": 40
+        }
+      },
+      "3": {
+        "ANUJ": {
+          "hitpoint": 40
+        },
+        "AGRAJA": {
+          "hitpoint": 40
+        },
+        "YATA": {
+          "hitpoint": 40
+        }
+      }
+    },
+    "requirements": {
+      "1": {
+        "water_required": 1100,
+        "graphene_required": 1100,
+        "shelio_required": 0,
+        "minutes_required": 1440,
+        "ANUJ": {
+          "description": "Ship ANUJ required at level: 2",
+          "level_required": 2
+        }
+      },
+      "2": {
+        "water_required": 2200,
+        "graphene_required": 2200,
+        "shelio_required": 0,
+        "minutes_required": 2880,
+        "ANUJ": {
+          "description": "Ship ANUJ required at level: 3",
+          "level_required": 3
+        },
+        "AGRAJA": {
+          "description": "Ship AGRAJA required at level: 3",
+          "level_required": 3
+        }
+      },
+      "3": {
+        "water_required": 5000,
+        "graphene_required": 5000,
+        "shelio_required": 0,
+        "minutes_required": 20160,
+        "ANUJ": {
+          "description": "Ship ANUJ required at level: 4",
+          "level_required": 4
+        },
+        "AGRAJA": {
+          "description": "Ship AGRAJA required at level: 4",
+          "level_required": 4
+        },
+        "YATA": {
+          "description": "Ship YATA required at level: 4",
+          "level_required": 4
+        }
+      }
+    }
+  },
+  "FLASH": {
+    "max_level": 4,
+    "description": "upgrades speed for quick attacks",
+    "bonus": {
+      "1": {
+        "YAVASA": {
+          "speed": -20
+        }
+      },
+      "2": {
+        "ANUJ": {
+          "speed": -20
+        },
+        "YAVASA": {
+          "speed": -40
+        }
+      },
+      "3": {
+        "ANUJ": {
+          "speed": -20
+        },
+        "YAVASA": {
+          "speed": -40
+        },
+        "WAHED": {
+          "speed": -40
+        }
+      }
+    },
+    "requirements": {
+      "1": {
+        "water_required": 5000,
+        "graphene_required": 5000,
+        "shelio_required": 0,
+        "minutes_required": 20160,
+        "YAVASA": {
+          "description": "Ship YAVASA required at level: 2",
+          "level_required": 2
+        }
+      },
+      "2": {
+        "water_required": 5000,
+        "graphene_required": 5000,
+        "shelio_required": 0,
+        "minutes_required": 20160,
+        "YAVASA": {
+          "description": "Ship YAVASA required at level: 3",
+          "level_required": 3
+        },
+        "ANUJ": {
+          "description": "Ship ANUJ required at level: 3",
+          "level_required": 3
+        }
+      },
+      "3": {
+        "water_required": 5000,
+        "graphene_required": 5000,
+        "shelio_required": 0,
+        "minutes_required": 20160,
+        "YAVASA": {
+          "description": "Ship YAVASA required at level: 4",
+          "level_required": 4
+        },
+        "ANUJ": {
+          "description": "Ship ANUJ required at level: 4",
+          "level_required": 4
+        },
+        "WAHED": {
+          "description": "Ship WAHED required at level: 4",
+          "level_required": 4
+        }
+      }
+    }
+  }
+}

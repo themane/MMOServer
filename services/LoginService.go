@@ -20,6 +20,7 @@ type LoginService struct {
 	waterConstants          constants.MiningConstants
 	grapheneConstants       constants.MiningConstants
 	militaryConstants       map[string]constants.MilitaryConstants
+	researchConstants       map[string]constants.ResearchConstants
 	speciesConstants        map[string]constants.SpeciesConstants
 	logger                  *constants.LoggingUtils
 }
@@ -34,6 +35,7 @@ func NewLoginService(
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
 	militaryConstants map[string]constants.MilitaryConstants,
+	researchConstants map[string]constants.ResearchConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *LoginService {
@@ -50,6 +52,7 @@ func NewLoginService(
 		waterConstants:          mineConstants[constants.Water],
 		grapheneConstants:       mineConstants[constants.Graphene],
 		militaryConstants:       militaryConstants,
+		researchConstants:       researchConstants,
 		speciesConstants:        speciesConstants,
 		logger:                  constants.NewLoggingUtils("LOGIN_SERVICE", logLevel),
 	}
@@ -75,7 +78,7 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 		homePlanetPosition.SectorPosition(), homeSectorData, "",
 		l.userRepository, l.missionRepository,
 		l.upgradeConstants, l.buildingConstants, l.waterConstants, l.grapheneConstants,
-		l.militaryConstants, l.speciesConstants[userData.Profile.Species],
+		l.militaryConstants, l.researchConstants, l.speciesConstants[userData.Profile.Species],
 		l.logger,
 	)
 	if err != nil {

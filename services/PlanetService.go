@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"github.com/themane/MMOServer/constants"
+	"github.com/themane/MMOServer/controllers/models/researches"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"strconv"
@@ -12,17 +13,20 @@ type PlanetService struct {
 	userRepository    repoModels.UserRepository
 	upgradeConstants  map[string]constants.UpgradeConstants
 	buildingConstants map[string]map[string]map[string]interface{}
+	researchConstants map[string]constants.ResearchConstants
 	logger            *constants.LoggingUtils
 }
 
 func NewPlanetService(
 	userRepository repoModels.UserRepository,
 	buildingConstants map[string]map[string]map[string]interface{},
+	researchConstants map[string]constants.ResearchConstants,
 	logLevel string,
 ) *PlanetService {
 	return &PlanetService{
 		userRepository:    userRepository,
 		buildingConstants: buildingConstants,
+		researchConstants: researchConstants,
 		logger:            constants.NewLoggingUtils("PLANET_SERVICE", logLevel),
 	}
 }
@@ -144,6 +148,75 @@ func (p *PlanetService) ExtractReservedResources(username string, planetId strin
 		}
 
 		err = p.userRepository.ExtractReservedResources(userData.Id, planetId, water, graphene)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return errors.New("planet not occupied")
+}
+
+func (p *PlanetService) Research(username string, planetId string, researchName string) error {
+	userData, err := p.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
+		requirements, err1 := p.validateAndGetRequirements(planetUser, researchName)
+		if err1 != nil {
+			return err1
+		}
+		if planetUser.Researches[researchName].Level == 0 {
+			err = p.userRepository.Research(userData.Id, planetId, researchName,
+				requirements.GrapheneRequired, requirements.WaterRequired, requirements.ShelioRequired, requirements.MinutesRequiredPerWorker)
+			if err != nil {
+				return err
+			}
+		} else {
+			err = p.userRepository.ResearchUpgrade(userData.Id, planetId, researchName,
+				requirements.GrapheneRequired, requirements.WaterRequired, requirements.ShelioRequired, requirements.MinutesRequiredPerWorker)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return errors.New("planet not occupied")
+}
+
+func (p *PlanetService) validateAndGetRequirements(planetUser repoModels.PlanetUser, researchName string) (*researches.NextLevelRequirements, error) {
+	if planetUser.Researches[researchName].ResearchMinutesPerWorker != 0 {
+		return nil, errors.New("already under progress")
+	}
+	nextLevelRequirements := researches.NextLevelRequirements{}
+	nextLevelRequirements.Init(planetUser.Researches[researchName].Level, p.researchConstants[researchName])
+	if int(nextLevelRequirements.WaterRequired) > planetUser.Water.Amount ||
+		int(nextLevelRequirements.GrapheneRequired) > planetUser.Graphene.Amount ||
+		int(nextLevelRequirements.ShelioRequired) > planetUser.Shelio {
+		return nil, errors.New("not enough resources to research")
+	}
+	for _, r := range nextLevelRequirements.SpecialRequirements {
+		if !r.Fulfilled {
+			return nil, errors.New("requirements not fulfilled")
+		}
+	}
+	return &nextLevelRequirements, nil
+}
+
+func (p *PlanetService) CancelResearch(username string, planetId string, researchName string) error {
+	userData, err := p.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
+		researchUser := planetUser.Researches[researchName]
+		if researchUser.ResearchMinutesPerWorker < 0 {
+			return errors.New("nothing to cancel")
+		}
+		cancelReturns := researches.CancelReturns{}
+		cancelReturns.Init(researchUser.ResearchMinutesPerWorker, researchUser.Level, p.researchConstants[researchName])
+		err = p.userRepository.CancelResearch(userData.Id, planetId, researchName,
+			cancelReturns.GrapheneReturned, cancelReturns.WaterReturned, cancelReturns.ShelioReturned)
 		if err != nil {
 			return err
 		}

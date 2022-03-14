@@ -30,6 +30,7 @@ type PlanetUser struct {
 	Defences            map[string]Defence            `json:"defences" bson:"defences"`
 	DefenceShipCarriers map[string]DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
 	Buildings           map[string]Building           `json:"buildings" bson:"buildings"`
+	Researches          map[string]ResearchUser       `json:"researches" bson:"researches"`
 	HomePlanet          bool                          `json:"home_planet" bson:"home_planet"`
 	BasePlanet          bool                          `json:"base_planet" bson:"base_planet"`
 }
@@ -58,6 +59,11 @@ type Resource struct {
 	Amount    int `json:"amount" bson:"amount"`
 	Reserved  int `json:"reserved" bson:"reserved"`
 	Reserving int `json:"reserving" bson:"reserving"`
+}
+
+type ResearchUser struct {
+	Level                    int `json:"level" bson:"level"`
+	ResearchMinutesPerWorker int `json:"research_minutes_per_worker" bson:"research_minutes_per_worker"`
 }
 
 type Population struct {
@@ -180,6 +186,12 @@ type UserRepository interface {
 
 	ReserveResources(id string, planetId string, water int, graphene int) error
 	ExtractReservedResources(id string, planetId string, water int, graphene int) error
+
+	Research(id string, planetId string, researchName string,
+		grapheneRequired float64, waterRequired float64, shelioRequired float64, minutesRequired float64) error
+	ResearchUpgrade(id string, planetId string, researchName string,
+		grapheneRequired float64, waterRequired float64, shelioRequired float64, minutesRequired float64) error
+	CancelResearch(id string, planetId string, researchName string, grapheneReturned int, waterReturned int, shelioReturned int) error
 
 	ConstructShips(id string, planetId string, unitName string, quantity float64, constructionRequirements models.Requirements) error
 	CancelShipsConstruction(id string, planetId string, unitName string, cancelReturns models.Returns) error

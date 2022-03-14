@@ -27,6 +27,7 @@ func NewUnitsController(
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
 	militaryConstants map[string]constants.MilitaryConstants,
+	researchConstants map[string]constants.ResearchConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *UnitsController {
@@ -34,7 +35,7 @@ func NewUnitsController(
 		unitService:            services.NewUnitService(userRepository, missionRepository, militaryConstants, logLevel),
 		unitsDeploymentService: services.NewUnitsDeploymentService(userRepository, missionRepository, militaryConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
-			upgradeConstants, buildingConstants, mineConstants, militaryConstants, speciesConstants, logLevel),
+			upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel),
 		logger: constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
 	}
 }

@@ -43,6 +43,18 @@ func GetBuildingConstants() map[string]map[string]map[string]interface{} {
 	return buildingConstants
 }
 
+func GetResearchConstants() map[string]ResearchConstants {
+	var researchConstants map[string]ResearchConstants
+	constantsFile, _ := os.Open("resources/ResearchConstants.json")
+	responseByteValue, _ := ioutil.ReadAll(constantsFile)
+	err := json.Unmarshal(responseByteValue, &researchConstants)
+	if err != nil {
+		log.Fatal("Error in initializing research constants: ", err)
+		return nil
+	}
+	return researchConstants
+}
+
 func GetMiningConstants() map[string]MiningConstants {
 	var mineConstants map[string]MiningConstants
 	constantsFile, _ := os.Open("resources/MiningConstants.json")

@@ -14,21 +14,6 @@
     },
     "5": {
       "hit_points": 1000
-    },
-    "6": {
-      "hit_points": 1500
-    },
-    "7": {
-      "hit_points": 2250
-    },
-    "8": {
-      "hit_points": 3375
-    },
-    "9": {
-      "hit_points": 5000
-    },
-    "10": {
-      "hit_points": 10000
     }
   },
   "POPULATION_CONTROL_CENTER": {

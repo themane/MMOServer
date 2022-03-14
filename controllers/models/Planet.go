@@ -4,6 +4,7 @@ import (
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/controllers/models/buildings"
 	"github.com/themane/MMOServer/controllers/models/military"
+	"github.com/themane/MMOServer/controllers/models/researches"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
@@ -96,11 +97,13 @@ type OccupiedPlanet struct {
 	Population              *Population                        `json:"population,omitempty"`
 	Mines                   []buildings.Mine                   `json:"mines,omitempty"`
 	Shields                 []buildings.Shield                 `json:"shields,omitempty"`
+	Researches              []researches.Research              `json:"researches,omitempty"`
 	PopulationControlCenter *buildings.PopulationControlCenter `json:"population_control_center,omitempty"`
 	AttackProductionCenter  *buildings.UnitProductionCenter    `json:"attack_production_center,omitempty"`
 	DefenceProductionCenter *buildings.UnitProductionCenter    `json:"defence_production_center,omitempty"`
 	DiamondStorage          *buildings.ResourceStorage         `json:"diamond_storage,omitempty"`
 	WaterPressureTank       *buildings.ResourceStorage         `json:"water_pressure_tank,omitempty"`
+	ResearchLab             *buildings.ResearchLab             `json:"research_lab,omitempty"`
 	Defences                []military.Defence                 `json:"defences,omitempty"`
 	DefenceShipCarriers     []military.DefenceShipCarrier      `json:"defence_ship_carriers,omitempty"`
 	Ships                   []military.Ship                    `json:"ships,omitempty"`
@@ -117,6 +120,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	buildingConstants map[string]map[string]map[string]interface{},
 	waterConstants constants.MiningConstants, grapheneConstants constants.MiningConstants,
 	militaryConstants map[string]constants.MilitaryConstants,
+	researchConstants map[string]constants.ResearchConstants,
 	speciesConstants constants.SpeciesConstants,
 ) {
 
@@ -145,6 +149,8 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.WaterPressureTank = buildings.InitWaterPressureTank(planetUser,
 		upgradeConstants[constants.WaterPressureTank], buildingConstants[constants.WaterPressureTank])
 	o.Shields = buildings.InitAllShields(planetUser, buildingConstants[constants.Shield], upgradeConstants[constants.Shield])
+	o.Researches = researches.InitAllResearches(planetUser, researchConstants)
+	o.ResearchLab = buildings.InitResearchLab(planetUser, upgradeConstants[constants.ResearchLab])
 
 	for _, unitName := range speciesConstants.AvailableUnits {
 		if defenceConstant, ok := militaryConstants[unitName]; ok {

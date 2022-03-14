@@ -18,6 +18,7 @@ type QuickRefreshService struct {
 	waterConstants     constants.MiningConstants
 	grapheneConstants  constants.MiningConstants
 	militaryConstants  map[string]constants.MilitaryConstants
+	researchConstants  map[string]constants.ResearchConstants
 	speciesConstants   map[string]constants.SpeciesConstants
 	logger             *constants.LoggingUtils
 }
@@ -30,6 +31,7 @@ func NewQuickRefreshService(
 	buildingConstants map[string]map[string]map[string]interface{},
 	mineConstants map[string]constants.MiningConstants,
 	militaryConstants map[string]constants.MilitaryConstants,
+	researchConstants map[string]constants.ResearchConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
 	logLevel string,
 ) *QuickRefreshService {
@@ -42,6 +44,7 @@ func NewQuickRefreshService(
 		waterConstants:     mineConstants[constants.Water],
 		grapheneConstants:  mineConstants[constants.Graphene],
 		militaryConstants:  militaryConstants,
+		researchConstants:  researchConstants,
 		speciesConstants:   speciesConstants,
 		logger:             constants.NewLoggingUtils("REFRESH_SERVICE", logLevel),
 	}
@@ -71,7 +74,7 @@ func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId strin
 			planetResponse := controllerModels.OccupiedPlanet{}
 			planetResponse.Init(*planetUni, planetUser, inputPlanetId, attackMissions, spyMissions,
 				r.upgradeConstants, r.buildingConstants, r.waterConstants, r.grapheneConstants,
-				r.militaryConstants, r.speciesConstants[userData.Profile.Species])
+				r.militaryConstants, r.researchConstants, r.speciesConstants[userData.Profile.Species])
 			return &planetResponse, nil
 		}
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 type ResourceStorage struct {
-	BuildingId            string                    `json:"building_id,omitempty" example:"WATER_PRESSURE_TANK"`
+	BuildingId            string                    `json:"building_id" example:"WATER_PRESSURE_TANK"`
 	Level                 int                       `json:"level" example:"3"`
 	Workers               int                       `json:"workers" example:"12"`
 	Soldiers              int                       `json:"soldiers" example:"15"`

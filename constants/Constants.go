@@ -30,6 +30,13 @@ type UpgradeConstants struct {
 	Levels   map[string]UpgradeLevelConstant `json:"levels"`
 }
 
+type ResearchConstants struct {
+	MaxLevel     int                               `json:"max_level"`
+	Description  string                            `json:"description"`
+	Bonus        map[string]map[string]interface{} `json:"bonus"`
+	Requirements map[string]map[string]interface{} `json:"requirements"`
+}
+
 type UpgradeLevelConstant struct {
 	WaterRequired    int `json:"water_required"`
 	GrapheneRequired int `json:"graphene_required"`

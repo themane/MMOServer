@@ -338,5 +338,40 @@
         "minutes_required": 780
       }
     }
+  },
+  "RESEARCH_LAB": {
+    "max_level": 5,
+    "levels": {
+      "1": {
+        "water_required": 11,
+        "graphene_required": 11,
+        "shelio_required": 0,
+        "minutes_required": 10
+      },
+      "2": {
+        "water_required": 22,
+        "graphene_required": 22,
+        "shelio_required": 0,
+        "minutes_required": 30
+      },
+      "3": {
+        "water_required": 44,
+        "graphene_required": 44,
+        "shelio_required": 0,
+        "minutes_required": 90
+      },
+      "4": {
+        "water_required": 101,
+        "graphene_required": 101,
+        "shelio_required": 0,
+        "minutes_required": 270
+      },
+      "5": {
+        "water_required": 202,
+        "graphene_required": 202,
+        "shelio_required": 0,
+        "minutes_required": 780
+      }
+    }
   }
 }
