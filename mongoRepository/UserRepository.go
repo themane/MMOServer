@@ -160,6 +160,36 @@ func (u *UserRepositoryImpl) KillPopulation(id string, planetId string, unemploy
 	return nil
 }
 
+func (u *UserRepositoryImpl) ReserveResources(id string, planetId string, water int, graphene int) error {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{
+		"occupied_planets." + planetId + ".water.reserving":    water,
+		"occupied_planets." + planetId + ".water.amount":       -water,
+		"occupied_planets." + planetId + ".graphene.reserving": graphene,
+		"occupied_planets." + planetId + ".graphene.amount":    -graphene,
+	}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Marked for reserving resources: %s, planetId: %s, water: %s, graphene: %s\n", id, planetId, water, graphene)
+	return nil
+}
+
+func (u *UserRepositoryImpl) ExtractReservedResources(id string, planetId string, water int, graphene int) error {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{
+		"occupied_planets." + planetId + ".water.reserved":    -water,
+		"occupied_planets." + planetId + ".water.amount":      water,
+		"occupied_planets." + planetId + ".graphene.reserved": -graphene,
+		"occupied_planets." + planetId + ".graphene.amount":   graphene,
+	}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Extracted reserved resources: %s, planetId: %s, water: %s, graphene: %s\n", id, planetId, water, graphene)
+	return nil
+}
+
 func (u *UserRepositoryImpl) ConstructShips(id string, planetId string, unitName string, quantity float64,
 	constructionRequirements models.Requirements) error {
 

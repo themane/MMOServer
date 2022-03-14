@@ -19,7 +19,7 @@ type PopulationControlCenterAttributes struct {
 	MaxPopulationGenerationRate        FloatBuildingAttributes `json:"max_population_generation_rate"`
 	PopulationGenerationRateMultiplier FloatBuildingAttributes `json:"population_generation_rate_multiplier"`
 	MinimumWorkersRequired             FloatBuildingAttributes `json:"minimum_workers_required"`
-	WorkersMaxLimit                    FloatBuildingAttributes `json:"workers_max_limit" `
+	WorkersMaxLimit                    FloatBuildingAttributes `json:"workers_max_limit"`
 }
 
 func InitPopulationControlCenter(planetUser repoModels.PlanetUser,
@@ -39,19 +39,20 @@ func InitPopulationControlCenter(planetUser repoModels.PlanetUser,
 
 func (p *PopulationControlCenterAttributes) Init(currentLevel int, maxLevel int,
 	populationControlCenterBuildingConstants map[string]map[string]interface{}) {
-	currentLevelString := strconv.Itoa(currentLevel)
+
+	if currentLevel > 0 {
+		currentLevelString := strconv.Itoa(currentLevel)
+		p.MaxPopulationGenerationRate.Current = populationControlCenterBuildingConstants[currentLevelString]["max_population_generation_rate"].(float64)
+		p.PopulationGenerationRateMultiplier.Current = populationControlCenterBuildingConstants[currentLevelString]["population_generation_rate_multiplier"].(float64)
+		p.MinimumWorkersRequired.Current = populationControlCenterBuildingConstants[currentLevelString]["workers_required"].(float64)
+		p.WorkersMaxLimit.Current = populationControlCenterBuildingConstants[currentLevelString]["workers_max_limit"].(float64)
+	}
 	maxLevelString := strconv.Itoa(maxLevel)
-
-	p.MaxPopulationGenerationRate.Current = populationControlCenterBuildingConstants[currentLevelString]["max_population_generation_rate"].(float64)
-	p.PopulationGenerationRateMultiplier.Current = populationControlCenterBuildingConstants[currentLevelString]["population_generation_rate_multiplier"].(float64)
-	p.MinimumWorkersRequired.Current = populationControlCenterBuildingConstants[currentLevelString]["workers_required"].(float64)
-	p.WorkersMaxLimit.Current = populationControlCenterBuildingConstants[currentLevelString]["workers_max_limit"].(float64)
-
 	workersMaxLimit := populationControlCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
 	p.MaxPopulationGenerationRate.Max = models.GetMaxPopulationGenerationRate(populationControlCenterBuildingConstants[maxLevelString], workersMaxLimit)
 	p.WorkersMaxLimit.Max = populationControlCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
 
-	if currentLevel+1 < maxLevel {
+	if currentLevel < maxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		p.MaxPopulationGenerationRate.Next = populationControlCenterBuildingConstants[nextLevelString]["max_population_generation_rate"].(float64)
 		p.PopulationGenerationRateMultiplier.Next = populationControlCenterBuildingConstants[nextLevelString]["population_generation_rate_multiplier"].(float64)

@@ -99,6 +99,8 @@ type OccupiedPlanet struct {
 	PopulationControlCenter *buildings.PopulationControlCenter `json:"population_control_center,omitempty"`
 	AttackProductionCenter  *buildings.UnitProductionCenter    `json:"attack_production_center,omitempty"`
 	DefenceProductionCenter *buildings.UnitProductionCenter    `json:"defence_production_center,omitempty"`
+	DiamondStorage          *buildings.ResourceStorage         `json:"diamond_storage,omitempty"`
+	WaterPressureTank       *buildings.ResourceStorage         `json:"water_pressure_tank,omitempty"`
 	Defences                []military.Defence                 `json:"defences,omitempty"`
 	DefenceShipCarriers     []military.DefenceShipCarrier      `json:"defence_ship_carriers,omitempty"`
 	Ships                   []military.Ship                    `json:"ships,omitempty"`
@@ -138,6 +140,10 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		upgradeConstants[constants.AttackProductionCenter], buildingConstants[constants.AttackProductionCenter])
 	o.DefenceProductionCenter = buildings.InitDefenceProductionCenter(planetUser,
 		upgradeConstants[constants.DefenceProductionCenter], buildingConstants[constants.DefenceProductionCenter])
+	o.DiamondStorage = buildings.InitDiamondStorage(planetUser,
+		upgradeConstants[constants.DiamondStorage], buildingConstants[constants.DiamondStorage])
+	o.WaterPressureTank = buildings.InitWaterPressureTank(planetUser,
+		upgradeConstants[constants.WaterPressureTank], buildingConstants[constants.WaterPressureTank])
 	o.Shields = buildings.InitAllShields(planetUser, buildingConstants[constants.Shield], upgradeConstants[constants.Shield])
 
 	for _, unitName := range speciesConstants.AvailableUnits {

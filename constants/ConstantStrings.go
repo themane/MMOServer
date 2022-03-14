@@ -49,7 +49,6 @@ const (
 	WaterMiningPlant        string = "WATER_MINING_PLANT"
 	GrapheneMiningPlant     string = "GRAPHENE_MINING_PLANT"
 	Shield                  string = "SHIELD"
-	Vikram                  string = "VIKRAM"
 	PopulationControlCenter string = "POPULATION_CONTROL_CENTER"
 	AttackProductionCenter  string = "ATTACK_PRODUCTION_CENTER"
 	DefenceProductionCenter string = "DEFENCE_PRODUCTION_CENTER"

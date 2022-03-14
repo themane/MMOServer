@@ -55,8 +55,9 @@ func (p *PlanetUser) GetAvailableShips() map[string]int {
 }
 
 type Resource struct {
-	Amount   int `json:"amount" bson:"amount"`
-	Reserved int `json:"reserved" bson:"reserved"`
+	Amount    int `json:"amount" bson:"amount"`
+	Reserved  int `json:"reserved" bson:"reserved"`
+	Reserving int `json:"reserving" bson:"reserving"`
 }
 
 type Population struct {
@@ -173,8 +174,12 @@ type UserRepository interface {
 	UpgradeBuildingLevel(id string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int, minutesRequired int) error
 	UpdateWorkers(id string, planetId string, buildingId string, workers int) error
 	UpdatePopulationRate(id string, planetId string, generationRate int) error
+
 	Recruit(id string, planetId string, worker int, soldiers int) error
 	KillPopulation(id string, planetId string, unemployed int, workers int, soldiers int) error
+
+	ReserveResources(id string, planetId string, water int, graphene int) error
+	ExtractReservedResources(id string, planetId string, water int, graphene int) error
 
 	ConstructShips(id string, planetId string, unitName string, quantity float64, constructionRequirements models.Requirements) error
 	CancelShipsConstruction(id string, planetId string, unitName string, cancelReturns models.Returns) error

@@ -58,8 +58,13 @@ func main() {
 	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
 	r.PUT("/update/workers", buildingController.UpdateWorkers)
 	r.PUT("/update/population-growth", buildingController.UpdatePopulationRate)
+
 	r.PUT("/population/recruit", buildingController.EmployPopulation)
 	r.PUT("/population/kill", buildingController.KillPopulation)
+
+	r.PUT("/resource/reserve", buildingController.ReserveResources)
+	r.PUT("/resource/reserve/cancel", buildingController.CancelReserveResources)
+	r.PUT("/resource/reserve/extract", buildingController.ExtractReservedResources)
 
 	r.PUT("/unit/construct", unitsController.ConstructUnits)
 	r.PUT("/unit/cancel", unitsController.CancelUnitsConstruction)

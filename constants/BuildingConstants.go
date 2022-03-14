@@ -15,9 +15,6 @@ func GetBuildingType(buildingId string) (string, error) {
 	if strings.HasPrefix(buildingId, "SHLD") {
 		return Shield, nil
 	}
-	if strings.HasPrefix(buildingId, "DSC") {
-		return Vikram, nil
-	}
 	if _, ok := GetUpgradableBuildingIds()[buildingId]; ok {
 		return buildingId, nil
 	}

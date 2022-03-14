@@ -266,5 +266,89 @@
         "range": 0.0
       }
     }
+  },
+  "DIAMOND_STORAGE": {
+    "1": {
+      "storage_rate_per_worker": 0.02,
+      "max_storage_per_soldier": 10,
+      "workers_required": 10,
+      "soldiers_required": 10,
+      "workers_max_limit": 25,
+      "soldiers_max_limit": 25
+    },
+    "2": {
+      "storage_rate_per_worker": 0.02,
+      "max_storage_per_soldier": 15,
+      "workers_required": 20,
+      "soldiers_required": 20,
+      "workers_max_limit": 50,
+      "soldiers_max_limit": 50
+    },
+    "3": {
+      "storage_rate_per_worker": 0.04,
+      "max_storage_per_soldier": 22,
+      "workers_required": 40,
+      "soldiers_required": 40,
+      "workers_max_limit": 100,
+      "soldiers_max_limit": 100
+    },
+    "4": {
+      "storage_rate_per_worker": 0.04,
+      "max_storage_per_soldier": 33,
+      "workers_required": 80,
+      "soldiers_required": 80,
+      "workers_max_limit": 200,
+      "soldiers_max_limit": 200
+    },
+    "5": {
+      "storage_rate_per_worker": 1,
+      "max_storage_per_soldier": 50,
+      "workers_required": 200,
+      "soldiers_required": 200,
+      "workers_max_limit": 500,
+      "soldiers_max_limit": 500
+    }
+  },
+  "WATER_PRESSURE_TANK": {
+    "1": {
+      "storage_rate_per_worker": 0.02,
+      "max_storage_per_soldier": 10,
+      "workers_required": 10,
+      "soldiers_required": 10,
+      "workers_max_limit": 25,
+      "soldiers_max_limit": 25
+    },
+    "2": {
+      "storage_rate_per_worker": 0.02,
+      "max_storage_per_soldier": 15,
+      "workers_required": 20,
+      "soldiers_required": 20,
+      "workers_max_limit": 50,
+      "soldiers_max_limit": 50
+    },
+    "3": {
+      "storage_rate_per_worker": 0.04,
+      "max_storage_per_soldier": 22,
+      "workers_required": 40,
+      "soldiers_required": 40,
+      "workers_max_limit": 100,
+      "soldiers_max_limit": 100
+    },
+    "4": {
+      "storage_rate_per_worker": 0.04,
+      "max_storage_per_soldier": 33,
+      "workers_required": 80,
+      "soldiers_required": 80,
+      "workers_max_limit": 200,
+      "soldiers_max_limit": 200
+    },
+    "5": {
+      "storage_rate_per_worker": 1,
+      "max_storage_per_soldier": 50,
+      "workers_required": 200,
+      "soldiers_required": 200,
+      "workers_max_limit": 500,
+      "soldiers_max_limit": 500
+    }
   }
 }

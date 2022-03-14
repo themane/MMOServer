@@ -71,13 +71,15 @@ func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string,
 }
 
 func (n *MiningAttributes) Init(currentLevel int, miningConstants constants.MiningConstants) {
-	currentLevelString := strconv.Itoa(currentLevel)
+	if currentLevel > 0 {
+		currentLevelString := strconv.Itoa(currentLevel)
+		n.WorkersMaxLimit.Current = miningConstants.Levels[currentLevelString].WorkersMaxLimit
+		n.MiningRatePerWorker.Current = miningConstants.Levels[currentLevelString].MiningRatePerWorker
+	}
 	maxLevelString := strconv.Itoa(miningConstants.MaxLevel)
-	n.WorkersMaxLimit.Current = miningConstants.Levels[currentLevelString].WorkersMaxLimit
-	n.MiningRatePerWorker.Current = miningConstants.Levels[currentLevelString].MiningRatePerWorker
 	n.MiningRatePerWorker.Max = miningConstants.Levels[maxLevelString].MiningRatePerWorker
 	n.WorkersMaxLimit.Max = miningConstants.Levels[maxLevelString].WorkersMaxLimit
-	if currentLevel+1 < miningConstants.MaxLevel {
+	if currentLevel < miningConstants.MaxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		n.WorkersMaxLimit.Next = miningConstants.Levels[nextLevelString].WorkersMaxLimit
 		n.MiningRatePerWorker.Next = miningConstants.Levels[nextLevelString].MiningRatePerWorker

@@ -91,3 +91,63 @@ func (p *PlanetService) KillPopulation(username string, planetId string, unemplo
 	}
 	return errors.New("planet not occupied")
 }
+
+func (p *PlanetService) ReserveResources(username string, planetId string, water int, graphene int) error {
+	userData, err := p.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
+		if water > planetUser.Water.Amount ||
+			graphene > planetUser.Graphene.Amount {
+			return errors.New("not enough resources to reserve")
+		}
+
+		err = p.userRepository.ReserveResources(userData.Id, planetId, water, graphene)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return errors.New("planet not occupied")
+}
+
+func (p *PlanetService) CancelReserveResources(username string, planetId string) error {
+	userData, err := p.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
+		if planetUser.Water.Reserving == 0 &&
+			planetUser.Graphene.Reserving == 0 {
+			return errors.New("nothing to cancel")
+		}
+
+		err = p.userRepository.ReserveResources(userData.Id, planetId, -planetUser.Water.Reserving, -planetUser.Graphene.Reserving)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return errors.New("planet not occupied")
+}
+
+func (p *PlanetService) ExtractReservedResources(username string, planetId string, water int, graphene int) error {
+	userData, err := p.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
+		if water > planetUser.Water.Reserved ||
+			graphene > planetUser.Graphene.Reserved {
+			return errors.New("not enough resources to extract")
+		}
+
+		err = p.userRepository.ExtractReservedResources(userData.Id, planetId, water, graphene)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return errors.New("planet not occupied")
+}

@@ -68,7 +68,7 @@ func (n *ShieldAttributes) Init(currentLevel int, maxLevel int, shieldConstants 
 		n.HitPoints.Current = shieldConstants[currentLevelString]["hit_points"].(float64)
 	}
 	n.HitPoints.Max = shieldConstants[maxLevelString]["hit_points"].(float64)
-	if currentLevel+1 < maxLevel {
+	if currentLevel < maxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		n.HitPoints.Next = shieldConstants[nextLevelString]["hit_points"].(float64)
 	}

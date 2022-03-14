@@ -166,7 +166,7 @@ func (b *BuildingController) UpdatePopulationRate(c *gin.Context) {
 // @Param workers query int true "workers to be employed"
 // @Param soldiers query int true "soldiers to be employed"
 // @Success 200 {object} models.PlanetResponse
-// @Router /update/employ [put]
+// @Router /population/recruit [put]
 func (b *BuildingController) EmployPopulation(c *gin.Context) {
 	values := c.Request.URL.Query()
 	parsedParams, err := parseStrings(values, "username", "planet_id", "workers", "soldiers")
@@ -208,10 +208,11 @@ func (b *BuildingController) EmployPopulation(c *gin.Context) {
 // @Produce json
 // @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
-// @Param workers query int true "workers to be employed"
-// @Param soldiers query int true "soldiers to be employed"
+// @Param workers query int true "unemployed population to be killed"
+// @Param workers query int true "workers to be killed"
+// @Param soldiers query int true "soldiers to be killed"
 // @Success 200 {object} models.PlanetResponse
-// @Router /update/employ [put]
+// @Router /population/kill [put]
 func (b *BuildingController) KillPopulation(c *gin.Context) {
 	values := c.Request.URL.Query()
 	parsedParams, err := parseStrings(values, "username", "planet_id", "unemployed", "workers", "soldiers")
@@ -236,6 +237,134 @@ func (b *BuildingController) KillPopulation(c *gin.Context) {
 		parsedParams["username"], parsedParams["planet_id"], unemployed, workers, soldiers)
 
 	err = b.planetService.KillPopulation(parsedParams["username"], parsedParams["planet_id"], unemployed, workers, soldiers)
+	if err != nil {
+		b.logger.Error("Error in updating", err)
+		c.JSON(500, err.Error())
+		return
+	}
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.JSON(200, response)
+}
+
+// ReserveResources godoc
+// @Summary Reserve resources
+// @Description Update API for start reserving of resources to avoid loot
+// @Tags Update
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Param water query int true "water to be reserved"
+// @Param graphene query int true "graphene to be reserved"
+// @Success 200 {object} models.PlanetResponse
+// @Router /resource/reserve [put]
+func (b *BuildingController) ReserveResources(c *gin.Context) {
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id", "water", "graphene")
+	if err != nil {
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	water, err := strconv.Atoi(parsedParams["water"])
+	if err != nil || water < 0 {
+		c.JSON(400, "invalid water amount")
+	}
+	graphene, err := strconv.Atoi(parsedParams["graphene"])
+	if err != nil || graphene < 0 {
+		c.JSON(400, "invalid graphene amount")
+	}
+	b.logger.Printf("Reserving resources: %s, %s, water: %s, graphene: %s",
+		parsedParams["username"], parsedParams["planet_id"], water, graphene)
+
+	err = b.planetService.ReserveResources(parsedParams["username"], parsedParams["planet_id"], water, graphene)
+	if err != nil {
+		b.logger.Error("Error in updating", err)
+		c.JSON(500, err.Error())
+		return
+	}
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.JSON(200, response)
+}
+
+// CancelReserveResources godoc
+// @Summary Cancel reserving of resources
+// @Description Update API for canceling ongoing reserving of resources
+// @Tags Update
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Success 200 {object} models.PlanetResponse
+// @Router /resource/reserve/cancel [put]
+func (b *BuildingController) CancelReserveResources(c *gin.Context) {
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id")
+	if err != nil {
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	b.logger.Printf("Canceling ongoing reserving of resources: %s, %s",
+		parsedParams["username"], parsedParams["planet_id"])
+
+	err = b.planetService.CancelReserveResources(parsedParams["username"], parsedParams["planet_id"])
+	if err != nil {
+		b.logger.Error("Error in updating", err)
+		c.JSON(500, err.Error())
+		return
+	}
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.JSON(200, response)
+}
+
+// ExtractReservedResources godoc
+// @Summary Extract reserved resources
+// @Description Update API for extracting reserved resources for use
+// @Tags Update
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Param water query int true "water to be extracted"
+// @Param graphene query int true "graphene to be extracted"
+// @Success 200 {object} models.PlanetResponse
+// @Router /resource/reserve/extract [put]
+func (b *BuildingController) ExtractReservedResources(c *gin.Context) {
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id", "water", "graphene")
+	if err != nil {
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	water, err := strconv.Atoi(parsedParams["water"])
+	if err != nil || water < 0 {
+		c.JSON(400, "invalid water amount")
+	}
+	graphene, err := strconv.Atoi(parsedParams["graphene"])
+	if err != nil || graphene < 0 {
+		c.JSON(400, "invalid graphene amount")
+	}
+	b.logger.Printf("Extracting reserved resources: %s, %s, water: %s, graphene: %s",
+		parsedParams["username"], parsedParams["planet_id"], water, graphene)
+
+	err = b.planetService.ExtractReservedResources(parsedParams["username"], parsedParams["planet_id"], water, graphene)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())

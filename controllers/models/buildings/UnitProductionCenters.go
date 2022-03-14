@@ -57,34 +57,37 @@ func InitDefenceProductionCenter(planetUser repoModels.PlanetUser,
 }
 
 func (a *UnitProductionCenterAttributes) Init(currentLevel int, maxLevel int,
-	unitProductionCenterBuildingConstants map[string]map[string]interface{}, bonusAttrs []string) {
-	currentLevelString := strconv.Itoa(currentLevel)
+	buildingConstants map[string]map[string]interface{}, bonusAttrs []string) {
+
+	var currentWorkerBonus map[string]interface{}
+	var currentSoldierBonus map[string]interface{}
+	if currentLevel > 0 {
+		currentLevelString := strconv.Itoa(currentLevel)
+		currentWorkerBonus = buildingConstants[currentLevelString]["workers_bonus"].(map[string]interface{})
+		currentSoldierBonus = buildingConstants[currentLevelString]["soldiers_bonus"].(map[string]interface{})
+		a.MinimumWorkersRequired.Current = buildingConstants[currentLevelString]["workers_required"].(float64)
+		a.MinimumSoldiersRequired.Current = buildingConstants[currentLevelString]["soldiers_required"].(float64)
+		a.WorkersMaxLimit.Current = buildingConstants[currentLevelString]["workers_max_limit"].(float64)
+		a.SoldiersMaxLimit.Current = buildingConstants[currentLevelString]["soldiers_max_limit"].(float64)
+	}
 	maxLevelString := strconv.Itoa(maxLevel)
-
-	currentWorkerBonus := unitProductionCenterBuildingConstants[currentLevelString]["workers_bonus"].(map[string]interface{})
-	currentSoldierBonus := unitProductionCenterBuildingConstants[currentLevelString]["soldiers_bonus"].(map[string]interface{})
-	a.MinimumWorkersRequired.Current = unitProductionCenterBuildingConstants[currentLevelString]["workers_required"].(float64)
-	a.MinimumSoldiersRequired.Current = unitProductionCenterBuildingConstants[currentLevelString]["soldiers_required"].(float64)
-	a.WorkersMaxLimit.Current = unitProductionCenterBuildingConstants[currentLevelString]["workers_max_limit"].(float64)
-	a.SoldiersMaxLimit.Current = unitProductionCenterBuildingConstants[currentLevelString]["soldiers_max_limit"].(float64)
-
-	maxWorkerBonus := unitProductionCenterBuildingConstants[maxLevelString]["workers_bonus"].(map[string]interface{})
-	maxSoldierBonus := unitProductionCenterBuildingConstants[maxLevelString]["soldiers_bonus"].(map[string]interface{})
-	a.MinimumWorkersRequired.Max = unitProductionCenterBuildingConstants[maxLevelString]["workers_required"].(float64)
-	a.MinimumSoldiersRequired.Max = unitProductionCenterBuildingConstants[maxLevelString]["soldiers_required"].(float64)
-	a.WorkersMaxLimit.Max = unitProductionCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
-	a.SoldiersMaxLimit.Max = unitProductionCenterBuildingConstants[maxLevelString]["soldiers_max_limit"].(float64)
+	maxWorkerBonus := buildingConstants[maxLevelString]["workers_bonus"].(map[string]interface{})
+	maxSoldierBonus := buildingConstants[maxLevelString]["soldiers_bonus"].(map[string]interface{})
+	a.MinimumWorkersRequired.Max = buildingConstants[maxLevelString]["workers_required"].(float64)
+	a.MinimumSoldiersRequired.Max = buildingConstants[maxLevelString]["soldiers_required"].(float64)
+	a.WorkersMaxLimit.Max = buildingConstants[maxLevelString]["workers_max_limit"].(float64)
+	a.SoldiersMaxLimit.Max = buildingConstants[maxLevelString]["soldiers_max_limit"].(float64)
 
 	var nextWorkerBonus map[string]interface{}
 	var nextSoldierBonus map[string]interface{}
-	if currentLevel+1 < maxLevel {
+	if currentLevel < maxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
-		nextWorkerBonus = unitProductionCenterBuildingConstants[nextLevelString]["workers_bonus"].(map[string]interface{})
-		nextSoldierBonus = unitProductionCenterBuildingConstants[nextLevelString]["soldiers_bonus"].(map[string]interface{})
-		a.MinimumWorkersRequired.Next = unitProductionCenterBuildingConstants[nextLevelString]["workers_required"].(float64)
-		a.MinimumSoldiersRequired.Next = unitProductionCenterBuildingConstants[nextLevelString]["soldiers_required"].(float64)
-		a.WorkersMaxLimit.Next = unitProductionCenterBuildingConstants[nextLevelString]["workers_max_limit"].(float64)
-		a.SoldiersMaxLimit.Next = unitProductionCenterBuildingConstants[nextLevelString]["soldiers_max_limit"].(float64)
+		nextWorkerBonus = buildingConstants[nextLevelString]["workers_bonus"].(map[string]interface{})
+		nextSoldierBonus = buildingConstants[nextLevelString]["soldiers_bonus"].(map[string]interface{})
+		a.MinimumWorkersRequired.Next = buildingConstants[nextLevelString]["workers_required"].(float64)
+		a.MinimumSoldiersRequired.Next = buildingConstants[nextLevelString]["soldiers_required"].(float64)
+		a.WorkersMaxLimit.Next = buildingConstants[nextLevelString]["workers_max_limit"].(float64)
+		a.SoldiersMaxLimit.Next = buildingConstants[nextLevelString]["soldiers_max_limit"].(float64)
 	}
 	a.WorkerBonus = map[string]FloatBuildingAttributes{}
 	a.initBonus(a.WorkerBonus, currentWorkerBonus, nextWorkerBonus, maxWorkerBonus, bonusAttrs)
