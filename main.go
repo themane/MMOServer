@@ -57,6 +57,7 @@ func main() {
 
 	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
 	r.PUT("/update/workers", buildingController.UpdateWorkers)
+	r.PUT("/update/soldiers", buildingController.UpdateSoldiers)
 	r.PUT("/update/population-growth", buildingController.UpdatePopulationRate)
 
 	r.PUT("/population/recruit", buildingController.EmployPopulation)

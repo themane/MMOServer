@@ -150,7 +150,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 		upgradeConstants[constants.WaterPressureTank], buildingConstants[constants.WaterPressureTank])
 	o.Shields = buildings.InitAllShields(planetUser, buildingConstants[constants.Shield], upgradeConstants[constants.Shield])
 	o.Researches = researches.InitAllResearches(planetUser, researchConstants)
-	o.ResearchLab = buildings.InitResearchLab(planetUser, upgradeConstants[constants.ResearchLab])
+	o.ResearchLab = buildings.InitResearchLab(planetUser, upgradeConstants[constants.ResearchLab], buildingConstants[constants.ResearchLab])
 
 	for _, unitName := range speciesConstants.AvailableUnits {
 		if defenceConstant, ok := militaryConstants[unitName]; ok {

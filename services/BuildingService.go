@@ -59,6 +59,24 @@ func (b *BuildingService) UpdateWorkers(username string, planetId string, buildi
 	return b.userRepository.UpdateWorkers(userData.Id, planetId, buildingId, workers-currentWorkers)
 }
 
+func (b *BuildingService) UpdateSoldiers(username string, planetId string, buildingId string, soldiers int) error {
+	userData, err := b.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	if _, ok := constants.GetSoldiersSupportedBuildingIds()[buildingId]; !ok {
+		return errors.New("soldiers not employed at " + buildingId)
+	}
+	currentSoldiers := userData.OccupiedPlanets[planetId].Buildings[buildingId].Soldiers
+	idleSoldiers := userData.OccupiedPlanets[planetId].Population.IdleSoldiers
+	if currentSoldiers == soldiers {
+		return nil
+	} else if soldiers > currentSoldiers && idleSoldiers < soldiers-currentSoldiers {
+		return errors.New("not enough soldiers")
+	}
+	return b.userRepository.UpdateSoldiers(userData.Id, planetId, buildingId, soldiers-currentSoldiers)
+}
+
 func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.UserData,
 	planetId string, buildingId string) (int, int, int, int, error) {
 

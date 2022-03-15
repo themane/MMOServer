@@ -116,6 +116,47 @@ func (b *BuildingController) UpdateWorkers(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// UpdateSoldiers godoc
+// @Summary Update soldiers for a building
+// @Description Update API for updating soldiers employed on a building
+// @Tags Update
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Param building_id query string true "building identifier"
+// @Param soldiers query int true "updated soldiers count"
+// @Success 200 {object} models.PlanetResponse
+// @Router /update/workers [put]
+func (b *BuildingController) UpdateSoldiers(c *gin.Context) {
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id", "building_id", "soldiers")
+	if err != nil {
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	soldiers, err := strconv.Atoi(parsedParams["soldiers"])
+	if err != nil || soldiers < 0 {
+		c.JSON(400, "invalid soldier count")
+	}
+	b.logger.Printf("Updating soldiers: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], soldiers)
+
+	err = b.buildingService.UpdateSoldiers(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], soldiers)
+	if err != nil {
+		b.logger.Error("Error in updating", err)
+		c.JSON(500, err.Error())
+		return
+	}
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.JSON(200, response)
+}
+
 // UpdatePopulationRate godoc
 // @Summary Update population generation rate for the planet
 // @Description Update API for population generation rate for the planet

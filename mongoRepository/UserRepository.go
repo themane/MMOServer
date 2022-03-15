@@ -120,6 +120,19 @@ func (u *UserRepositoryImpl) UpdateWorkers(id string, planetId string, buildingI
 	return nil
 }
 
+func (u *UserRepositoryImpl) UpdateSoldiers(id string, planetId string, buildingId string, soldiers int) error {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{
+		"occupied_planets." + planetId + ".buildings." + buildingId + ".soldiers": soldiers,
+		"occupied_planets." + planetId + ".population.soldiers":                   -soldiers,
+	}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Employed soldiers updated id: %s, planetId: %s, buildingId: %s, soldiers: %s\n", id, planetId, buildingId, soldiers)
+	return nil
+}
+
 func (u *UserRepositoryImpl) UpdatePopulationRate(id string, planetId string, generationRate int) error {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)

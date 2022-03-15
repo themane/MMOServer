@@ -179,6 +179,7 @@ type UserRepository interface {
 
 	UpgradeBuildingLevel(id string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int, minutesRequired int) error
 	UpdateWorkers(id string, planetId string, buildingId string, workers int) error
+	UpdateSoldiers(id string, planetId string, buildingId string, soldiers int) error
 	UpdatePopulationRate(id string, planetId string, generationRate int) error
 
 	Recruit(id string, planetId string, worker int, soldiers int) error

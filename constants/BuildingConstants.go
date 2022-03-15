@@ -30,7 +30,15 @@ func GetUpgradableBuildingIds() map[string]struct{} {
 		PopulationControlCenter: {},
 		AttackProductionCenter:  {}, DefenceProductionCenter: {},
 		DiamondStorage: {}, WaterPressureTank: {},
-		ResearchLab: {}}
+		ResearchLab: {},
+	}
+}
+
+func GetSoldiersSupportedBuildingIds() map[string]struct{} {
+	return map[string]struct{}{
+		AttackProductionCenter: {}, DefenceProductionCenter: {},
+		DiamondStorage: {}, WaterPressureTank: {},
+	}
 }
 
 func IsShieldId(id string) bool {
