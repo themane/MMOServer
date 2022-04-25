@@ -31,13 +31,11 @@ func (d *Defence) Init(unitName string, defenceUser repoModels.Defence, defenceC
 
 	d.IdleUnits = repoModels.GetIdleDefences(defenceUser.GuardingShield, defenceUser.Quantity)
 
-	if defenceUser.Level > 0 {
-		currentLevelString := strconv.Itoa(defenceUser.Level)
-		d.DefenceAttributes.Init(defenceConstants[currentLevelString])
-		d.CreationRequirements.Init(defenceConstants[currentLevelString])
-		d.DestructionReturns.InitDestructionReturns(defenceConstants[currentLevelString])
-		d.UnderConstruction = InitUnderConstruction(defenceUser.UnderConstruction, defenceConstants[currentLevelString])
-	}
+	currentLevelString := strconv.Itoa(defenceUser.Level)
+	d.DefenceAttributes.Init(defenceConstants[currentLevelString])
+	d.CreationRequirements.Init(defenceConstants[currentLevelString])
+	d.DestructionReturns.InitDestructionReturns(defenceConstants[currentLevelString])
+	d.UnderConstruction = InitUnderConstruction(defenceUser.UnderConstruction, defenceConstants[currentLevelString])
 }
 
 type DeployedDefenceShipCarrier struct {

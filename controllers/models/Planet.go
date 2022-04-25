@@ -153,11 +153,13 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	o.ResearchLab = buildings.InitResearchLab(planetUser, upgradeConstants[constants.ResearchLab], buildingConstants[constants.ResearchLab])
 
 	for _, unitName := range speciesConstants.AvailableUnits {
-		if defenceConstant, ok := militaryConstants[unitName]; ok {
-			if defenceConstant.Type == constants.Defender {
-				d := military.Defence{}
-				d.Init(unitName, planetUser.Defences[unitName], defenceConstant.Levels)
-				o.Defences = append(o.Defences, d)
+		if planetUser.Defences[unitName].Level > 0 {
+			if defenceConstant, ok := militaryConstants[unitName]; ok {
+				if defenceConstant.Type == constants.Defender {
+					d := military.Defence{}
+					d.Init(unitName, planetUser.Defences[unitName], defenceConstant.Levels)
+					o.Defences = append(o.Defences, d)
+				}
 			}
 		}
 		if planetUser.Ships[unitName].Level > 0 {

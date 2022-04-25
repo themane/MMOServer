@@ -39,6 +39,9 @@ func (u *UnitService) ConstructUnits(username string, planetId string, unitName 
 	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
 		if unitMilitaryConstants, ok := u.militaryConstants[unitName]; ok {
 			if unitMilitaryConstants.Type == constants.Defender {
+				if planetUser.Defences[unitName].Level <= 0 {
+					return errors.New("unit not available for construction")
+				}
 				unitLevelString := strconv.Itoa(planetUser.Defences[unitName].Level)
 				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
 				requirements, err := u.validateAndGetRequirements(quantity, planetUser, unitLevelConstants)
@@ -67,6 +70,9 @@ func (u *UnitService) ConstructUnits(username string, planetId string, unitName 
 					return err
 				}
 			} else {
+				if planetUser.Defences[unitName].Level <= 0 {
+					return errors.New("unit not available for construction")
+				}
 				unitLevelString := strconv.Itoa(planetUser.Ships[unitName].Level)
 				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
 				requirements, err := u.validateAndGetRequirements(quantity, planetUser, unitLevelConstants)
