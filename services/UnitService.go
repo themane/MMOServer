@@ -70,7 +70,7 @@ func (u *UnitService) ConstructUnits(username string, planetId string, unitName 
 					return err
 				}
 			} else {
-				if planetUser.Defences[unitName].Level <= 0 {
+				if planetUser.Ships[unitName].Level <= 0 {
 					return errors.New("unit not available for construction")
 				}
 				unitLevelString := strconv.Itoa(planetUser.Ships[unitName].Level)
