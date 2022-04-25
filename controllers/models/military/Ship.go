@@ -24,35 +24,35 @@ type Ship struct {
 	UnderConstruction    *UnderConstruction    `json:"under_construction,omitempty"`
 }
 
-func (s *Ship) Init(unitName string, shipUser repoModels.Ship,
+func (s *Ship) Init(unitName string, unitType string, shipUser repoModels.Ship,
 	attackMissions []repoModels.AttackMission, defenceShipCarriers map[string]repoModels.DefenceShipCarrier,
 	shipConstants map[string]map[string]interface{}) {
 
 	s.Name = unitName
+	s.Type = unitType
 	s.Level = shipUser.Level
 	s.TotalUnits = shipUser.Quantity
 	s.AvailableUnits = repoModels.GetAvailableShips(unitName, attackMissions, defenceShipCarriers, shipUser.Quantity)
 
-	if shipUser.Level > 0 {
-		currentLevelString := strconv.Itoa(shipUser.Level)
-		s.ShipAttributes.Init(shipConstants[currentLevelString])
-		s.CreationRequirements.Init(shipConstants[currentLevelString])
-		s.DestructionReturns.InitDestructionReturns(shipConstants[currentLevelString])
-		s.UnderConstruction = InitUnderConstruction(shipUser.UnderConstruction, shipConstants[currentLevelString])
-	}
+	currentLevelString := strconv.Itoa(shipUser.Level)
+
+	s.ShipAttributes.Init(shipConstants[currentLevelString])
+	s.CreationRequirements.Init(shipConstants[currentLevelString])
+	s.DestructionReturns.InitDestructionReturns(shipConstants[currentLevelString])
+	s.UnderConstruction = InitUnderConstruction(shipUser.UnderConstruction, shipConstants[currentLevelString])
 }
 
-func (s *Ship) InitScout(unitName string, shipUser repoModels.Ship, spyMissions []repoModels.SpyMission, shipConstants map[string]map[string]interface{}) {
+func (s *Ship) InitScout(unitName string, unitType string, shipUser repoModels.Ship, spyMissions []repoModels.SpyMission, shipConstants map[string]map[string]interface{}) {
+
 	s.Name = unitName
+	s.Type = unitType
 	s.Level = shipUser.Level
 	s.TotalUnits = shipUser.Quantity
 	s.AvailableUnits = repoModels.GetAvailableScouts(unitName, spyMissions, shipUser.Quantity)
 
 	currentLevelString := strconv.Itoa(shipUser.Level)
-	if shipUser.Level > 0 {
-		s.ShipAttributes.Init(shipConstants[currentLevelString])
-		s.CreationRequirements.Init(shipConstants[currentLevelString])
-		s.DestructionReturns.InitDestructionReturns(shipConstants[currentLevelString])
-		s.UnderConstruction = InitUnderConstruction(shipUser.UnderConstruction, shipConstants[currentLevelString])
-	}
+	s.ShipAttributes.Init(shipConstants[currentLevelString])
+	s.CreationRequirements.Init(shipConstants[currentLevelString])
+	s.DestructionReturns.InitDestructionReturns(shipConstants[currentLevelString])
+	s.UnderConstruction = InitUnderConstruction(shipUser.UnderConstruction, shipConstants[currentLevelString])
 }

@@ -160,15 +160,17 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 				o.Defences = append(o.Defences, d)
 			}
 		}
-		if shipConstant, ok := militaryConstants[unitName]; ok {
-			if shipConstant.Type == constants.Scout {
-				s := military.Ship{}
-				s.InitScout(unitName, planetUser.Ships[unitName], spyMissions, shipConstant.Levels)
-				o.Scouts = append(o.Scouts, s)
-			} else {
-				s := military.Ship{}
-				s.Init(unitName, planetUser.Ships[unitName], attackMissions, planetUser.DefenceShipCarriers, shipConstant.Levels)
-				o.Ships = append(o.Ships, s)
+		if planetUser.Ships[unitName].Level > 0 {
+			if shipConstant, ok := militaryConstants[unitName]; ok {
+				if shipConstant.Type == constants.Scout {
+					s := military.Ship{}
+					s.InitScout(unitName, shipConstant.Type, planetUser.Ships[unitName], spyMissions, shipConstant.Levels)
+					o.Scouts = append(o.Scouts, s)
+				} else {
+					s := military.Ship{}
+					s.Init(unitName, shipConstant.Type, planetUser.Ships[unitName], attackMissions, planetUser.DefenceShipCarriers, shipConstant.Levels)
+					o.Ships = append(o.Ships, s)
+				}
 			}
 		}
 	}
