@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/themane/MMOServer/constants"
+	"math"
 	"strconv"
 )
 
@@ -35,14 +36,12 @@ func (b *State) Init(building Building, upgradeConstants constants.UpgradeConsta
 }
 
 func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, upgradeConstants constants.UpgradeConstants) {
-	if buildingLevel < upgradeConstants.MaxLevel {
-		nextLevelString := strconv.Itoa(buildingLevel + 1)
-		ratio := buildingMinutesPerWorker / upgradeConstants.Levels[nextLevelString].MinutesRequired
+	buildingLevelString := strconv.Itoa(buildingLevel)
+	ratio := float64(buildingMinutesPerWorker) / float64(upgradeConstants.Levels[buildingLevelString].MinutesRequired)
 
-		c.WaterReturned = upgradeConstants.Levels[nextLevelString].WaterRequired * ratio
-		c.GrapheneReturned = upgradeConstants.Levels[nextLevelString].GrapheneRequired * ratio
-		c.ShelioReturned = upgradeConstants.Levels[nextLevelString].ShelioRequired * ratio
-	}
+	c.WaterReturned = int(math.Floor(float64(upgradeConstants.Levels[buildingLevelString].WaterRequired) * ratio))
+	c.GrapheneReturned = int(math.Floor(float64(upgradeConstants.Levels[buildingLevelString].GrapheneRequired) * ratio))
+	c.ShelioReturned = int(math.Floor(float64(upgradeConstants.Levels[buildingLevelString].ShelioRequired) * ratio))
 }
 
 func (n *NextLevelRequirements) Init(currentLevel int, upgradeConstants constants.UpgradeConstants) {
