@@ -107,6 +107,33 @@ func (u *UserRepositoryImpl) UpgradeBuildingLevel(id string, planetId string, bu
 	return nil
 }
 
+func (u *UserRepositoryImpl) CancelUpgradeBuildingLevel(id string, planetId string, buildingId string,
+	waterReturned int, grapheneReturned int, shelioReturned int) error {
+
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{
+		"$set": bson.M{
+			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_minutes_per_worker": 0,
+		},
+		"$inc": bson.M{
+			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_level": -1,
+			"occupied_planets." + planetId + ".water.amount":                                waterReturned,
+			"occupied_planets." + planetId + ".graphene.amount":                             grapheneReturned,
+			"occupied_planets." + planetId + ".shelio":                                      shelioReturned,
+		},
+	}
+	result := u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	bsonResult, err := result.DecodeBytes()
+	if err != nil {
+		return err
+	}
+	u.logger.Printf(bsonResult.String())
+	u.logger.Printf("Upgraded id: %s, planetId: %s, buildingId: %s\n", id, planetId, buildingId)
+	return nil
+}
+
 func (u *UserRepositoryImpl) UpdateWorkers(id string, planetId string, buildingId string, workers int) error {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)

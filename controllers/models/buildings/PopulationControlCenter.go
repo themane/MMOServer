@@ -11,9 +11,9 @@ type PopulationControlCenter struct {
 	BuildingId            string                            `json:"building_id" example:"POPULATION_CONTROL_CENTER"`
 	Level                 int                               `json:"level" example:"3"`
 	Workers               int                               `json:"workers" example:"12"`
-	BuildingState         State                             `json:"building_state"`
+	BuildingState         repoModels.State                  `json:"building_state"`
 	BuildingAttributes    PopulationControlCenterAttributes `json:"building_attributes"`
-	NextLevelRequirements NextLevelRequirements             `json:"next_level_requirements"`
+	NextLevelRequirements repoModels.NextLevelRequirements  `json:"next_level_requirements"`
 }
 type PopulationControlCenterAttributes struct {
 	MaxPopulationGenerationRate        FloatBuildingAttributes `json:"max_population_generation_rate"`

@@ -56,6 +56,7 @@ func main() {
 	//r.GET("/refresh/user_planet", loginController.RefreshUserPlanet)
 
 	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
+	r.PUT("/upgrade/building/cancel", buildingController.CancelUpgradeBuilding)
 	r.PUT("/update/workers", buildingController.UpdateWorkers)
 	r.PUT("/update/soldiers", buildingController.UpdateSoldiers)
 	r.PUT("/update/population-growth", buildingController.UpdatePopulationRate)

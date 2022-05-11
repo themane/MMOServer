@@ -75,6 +75,42 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// CancelUpgradeBuilding godoc
+// @Summary Cancel Upgrade Building API
+// @Description Cancel API to cancel upgrade of building
+// @Tags Upgrade
+// @Accept json
+// @Produce json
+// @Param username query string true "user identifier"
+// @Param planet_id query string true "planet identifier"
+// @Param building_id query string true "building identifier"
+// @Success 200 {object} models.PlanetResponse
+// @Router /upgrade/building/cancel [put]
+func (b *BuildingController) CancelUpgradeBuilding(c *gin.Context) {
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username", "planet_id", "building_id")
+	if err != nil {
+		b.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	b.logger.Printf("Canceling Upgrade: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
+
+	err = b.buildingService.CancelUpgradeBuilding(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
+	if err != nil {
+		b.logger.Error("Error in canceling upgrade", err)
+		c.JSON(500, err.Error())
+		return
+	}
+	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	if err != nil {
+		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.JSON(200, response)
+}
+
 // UpdateWorkers godoc
 // @Summary Update workers for a building
 // @Description Update API for updating workers employed on a building

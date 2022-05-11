@@ -7,13 +7,13 @@ import (
 )
 
 type ResearchLab struct {
-	BuildingId            string                `json:"building_id" example:"RESEARCH_LAB"`
-	Level                 int                   `json:"level" example:"3"`
-	Workers               int                   `json:"workers" example:"12"`
-	Soldiers              int                   `json:"soldiers" example:"15"`
-	BuildingState         State                 `json:"building_state"`
-	BuildingAttributes    ResearchLabAttributes `json:"building_attributes"`
-	NextLevelRequirements NextLevelRequirements `json:"next_level_requirements"`
+	BuildingId            string                           `json:"building_id" example:"RESEARCH_LAB"`
+	Level                 int                              `json:"level" example:"3"`
+	Workers               int                              `json:"workers" example:"12"`
+	Soldiers              int                              `json:"soldiers" example:"15"`
+	BuildingState         repoModels.State                 `json:"building_state"`
+	BuildingAttributes    ResearchLabAttributes            `json:"building_attributes"`
+	NextLevelRequirements repoModels.NextLevelRequirements `json:"next_level_requirements"`
 }
 
 type ResearchLabAttributes struct {

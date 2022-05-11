@@ -102,8 +102,7 @@ func GetEmployedPopulation(planetUser PlanetUser, militaryConstants map[string]c
 }
 
 type MineUser struct {
-	Mined         int    `json:"mined" bson:"mined"`
-	MiningPlantId string `json:"mining_plant_id" bson:"mining_plant_id"`
+	Mined int `json:"mined" bson:"mined"`
 }
 
 type Building struct {
@@ -178,6 +177,7 @@ type UserRepository interface {
 	UpdateClanId(id string, clanId string) error
 
 	UpgradeBuildingLevel(id string, planetId string, buildingId string, waterRequired int, grapheneRequired int, shelioRequired int, minutesRequired int) error
+	CancelUpgradeBuildingLevel(id string, planetId string, buildingId string, waterReturned int, grapheneReturned int, shelioReturned int) error
 	UpdateWorkers(id string, planetId string, buildingId string, workers int) error
 	UpdateSoldiers(id string, planetId string, buildingId string, soldiers int) error
 	UpdatePopulationRate(id string, planetId string, generationRate int) error

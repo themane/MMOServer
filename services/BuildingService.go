@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/themane/MMOServer/constants"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
-	"strconv"
 )
 
 type BuildingService struct {
@@ -30,11 +29,29 @@ func (b *BuildingService) UpgradeBuilding(username string, planetId string, buil
 	if err != nil {
 		return err
 	}
-	waterRequired, grapheneRequired, shelioRequired, minutesRequired, err := b.verifyAndGetRequiredResources(*userData, planetId, buildingId)
+	requirements, err := b.verifyAndGetRequiredResources(*userData, planetId, buildingId)
 	if err != nil {
 		return err
 	}
-	err = b.userRepository.UpgradeBuildingLevel(userData.Id, planetId, buildingId, waterRequired, grapheneRequired, shelioRequired, minutesRequired)
+	err = b.userRepository.UpgradeBuildingLevel(userData.Id, planetId, buildingId,
+		requirements.WaterRequired, requirements.GrapheneRequired, requirements.ShelioRequired, requirements.MinutesRequiredPerWorker)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *BuildingService) CancelUpgradeBuilding(username string, planetId string, buildingId string) error {
+	userData, err := b.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	returns, err := b.verifyAndGetReturnedResources(*userData, planetId, buildingId)
+	if err != nil {
+		return err
+	}
+	err = b.userRepository.CancelUpgradeBuildingLevel(userData.Id, planetId, buildingId,
+		returns.WaterReturned, returns.GrapheneReturned, returns.ShelioReturned)
 	if err != nil {
 		return err
 	}
@@ -78,31 +95,52 @@ func (b *BuildingService) UpdateSoldiers(username string, planetId string, build
 }
 
 func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.UserData,
-	planetId string, buildingId string) (int, int, int, int, error) {
+	planetId string, buildingId string) (*repoModels.NextLevelRequirements, error) {
 
 	if userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingMinutesPerWorker > 0 {
-		return 0, 0, 0, 0, errors.New("building already under upgradation")
+		return nil, errors.New("building already under upgradation")
 	}
 	buildingLevel := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingLevel
-	nextBuildingLevelString := strconv.Itoa(buildingLevel + 1)
 	buildingType, err := constants.GetBuildingType(buildingId)
 	if err != nil {
-		return 0, 0, 0, 0, errors.New("building not found")
+		return nil, errors.New("building not found")
+	}
+
+	if buildingConstants, ok := b.upgradeConstants[buildingType]; ok {
+		if buildingConstants.MaxLevel <= buildingLevel {
+			return nil, errors.New("max level reached")
+		}
+		requirements := repoModels.NextLevelRequirements{}
+		requirements.Init(buildingLevel, buildingConstants)
+		if userData.OccupiedPlanets[planetId].Water.Amount < requirements.WaterRequired ||
+			userData.OccupiedPlanets[planetId].Graphene.Amount < requirements.GrapheneRequired ||
+			userData.OccupiedPlanets[planetId].Shelio < requirements.ShelioRequired {
+			return nil, errors.New("not enough resources")
+		}
+		return &requirements, nil
+	}
+	return nil, errors.New("building type not found")
+}
+
+func (b *BuildingService) verifyAndGetReturnedResources(userData repoModels.UserData,
+	planetId string, buildingId string) (*repoModels.CancelReturns, error) {
+
+	buildingMinutesPerWorker := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingMinutesPerWorker
+	if buildingMinutesPerWorker == 0 {
+		return nil, errors.New("building not under upgradation")
+	}
+	buildingLevel := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingLevel
+	buildingType, err := constants.GetBuildingType(buildingId)
+	if err != nil {
+		return nil, errors.New("building not found")
 	}
 	if buildingConstants, ok := b.upgradeConstants[buildingType]; ok {
 		if buildingConstants.MaxLevel <= buildingLevel {
-			return 0, 0, 0, 0, errors.New("max level reached")
+			return nil, errors.New("max level reached")
 		}
-		waterRequired := buildingConstants.Levels[nextBuildingLevelString].WaterRequired
-		grapheneRequired := buildingConstants.Levels[nextBuildingLevelString].GrapheneRequired
-		shelioRequired := buildingConstants.Levels[nextBuildingLevelString].ShelioRequired
-		minutesRequired := buildingConstants.Levels[nextBuildingLevelString].MinutesRequired
-		if userData.OccupiedPlanets[planetId].Water.Amount < waterRequired ||
-			userData.OccupiedPlanets[planetId].Graphene.Amount < grapheneRequired ||
-			userData.OccupiedPlanets[planetId].Shelio < shelioRequired {
-			return 0, 0, 0, 0, errors.New("not enough resources")
-		}
-		return waterRequired, grapheneRequired, shelioRequired, minutesRequired, nil
+		returns := repoModels.CancelReturns{}
+		returns.Init(buildingMinutesPerWorker, buildingLevel, buildingConstants)
+		return &returns, nil
 	}
-	return 0, 0, 0, 0, errors.New("building not found")
+	return nil, errors.New("building type not found")
 }

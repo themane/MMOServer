@@ -3,7 +3,14 @@ package models
 import (
 	"github.com/themane/MMOServer/constants"
 	"strconv"
+	"strings"
 )
+
+func GetMiningPlantId(mineId string) string {
+	result := strings.ReplaceAll(mineId, "W", "WMP")
+	result = strings.ReplaceAll(result, "G", "GMP")
+	return result
+}
 
 func GetMiningRate(userData UserData, occupiedPlanets []PlanetUni,
 	waterConstants constants.MiningConstants,
@@ -16,7 +23,7 @@ func GetMiningRate(userData UserData, occupiedPlanets []PlanetUni,
 		planetUser := userData.OccupiedPlanets[planetUni.Id]
 		for _, mineUni := range planetUni.Mines {
 			mineUser := planetUser.Mines[mineUni.Id]
-			miningPlant := planetUser.Buildings[mineUser.MiningPlantId]
+			miningPlant := planetUser.Buildings[GetMiningPlantId(mineUni.Id)]
 
 			var miningRatePerWorker int
 			if mineUni.Type == constants.Water {

@@ -7,13 +7,13 @@ import (
 )
 
 type UnitProductionCenter struct {
-	BuildingId            string                         `json:"building_id" example:"ATTACK_PRODUCTION_CENTER"`
-	Level                 int                            `json:"level" example:"3"`
-	Workers               int                            `json:"workers" example:"12"`
-	Soldiers              int                            `json:"soldiers" example:"15"`
-	BuildingState         State                          `json:"building_state"`
-	BuildingAttributes    UnitProductionCenterAttributes `json:"building_attributes"`
-	NextLevelRequirements NextLevelRequirements          `json:"next_level_requirements"`
+	BuildingId            string                           `json:"building_id" example:"ATTACK_PRODUCTION_CENTER"`
+	Level                 int                              `json:"level" example:"3"`
+	Workers               int                              `json:"workers" example:"12"`
+	Soldiers              int                              `json:"soldiers" example:"15"`
+	BuildingState         repoModels.State                 `json:"building_state"`
+	BuildingAttributes    UnitProductionCenterAttributes   `json:"building_attributes"`
+	NextLevelRequirements repoModels.NextLevelRequirements `json:"next_level_requirements"`
 }
 type UnitProductionCenterAttributes struct {
 	WorkerBonus             map[string]FloatBuildingAttributes `json:"worker_bonus"`

@@ -7,13 +7,13 @@ import (
 )
 
 type ResourceStorage struct {
-	BuildingId            string                    `json:"building_id" example:"WATER_PRESSURE_TANK"`
-	Level                 int                       `json:"level" example:"3"`
-	Workers               int                       `json:"workers" example:"12"`
-	Soldiers              int                       `json:"soldiers" example:"15"`
-	BuildingState         State                     `json:"building_state"`
-	BuildingAttributes    ResourceStorageAttributes `json:"building_attributes"`
-	NextLevelRequirements NextLevelRequirements     `json:"next_level_requirements"`
+	BuildingId            string                           `json:"building_id" example:"WATER_PRESSURE_TANK"`
+	Level                 int                              `json:"level" example:"3"`
+	Workers               int                              `json:"workers" example:"12"`
+	Soldiers              int                              `json:"soldiers" example:"15"`
+	BuildingState         repoModels.State                 `json:"building_state"`
+	BuildingAttributes    ResourceStorageAttributes        `json:"building_attributes"`
+	NextLevelRequirements repoModels.NextLevelRequirements `json:"next_level_requirements"`
 }
 type ResourceStorageAttributes struct {
 	StorageRatePerWorker    FloatBuildingAttributes `json:"storage_rate_per_worker"`

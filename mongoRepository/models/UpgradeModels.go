@@ -1,8 +1,7 @@
-package buildings
+package models
 
 import (
 	"github.com/themane/MMOServer/constants"
-	"github.com/themane/MMOServer/mongoRepository/models"
 	"strconv"
 )
 
@@ -25,7 +24,7 @@ type NextLevelRequirements struct {
 	MinutesRequiredPerWorker int `json:"minutes_required_per_worker" example:"1440"`
 }
 
-func (b *State) Init(building models.Building, upgradeConstants constants.UpgradeConstants) {
+func (b *State) Init(building Building, upgradeConstants constants.UpgradeConstants) {
 	if building.BuildingMinutesPerWorker > 0 {
 		b.State = constants.UpgradingState
 		b.MinutesRemaining = building.BuildingMinutesPerWorker

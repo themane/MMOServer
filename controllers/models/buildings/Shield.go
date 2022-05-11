@@ -10,10 +10,10 @@ import (
 type Shield struct {
 	Id                          string                                `json:"_id" example:"SHLD101"`
 	Level                       int                                   `json:"level" example:"3"`
-	BuildingState               State                                 `json:"building_state"`
+	BuildingState               models.State                          `json:"building_state"`
 	Workers                     int                                   `json:"workers" example:"12"`
 	BuildingAttributes          ShieldAttributes                      `json:"building_attributes"`
-	NextLevelRequirements       NextLevelRequirements                 `json:"next_level_requirements"`
+	NextLevelRequirements       models.NextLevelRequirements          `json:"next_level_requirements"`
 	DeployedDefences            []military.DeployedDefence            `json:"deployed_defences"`
 	DeployedDefenceShipCarriers []military.DeployedDefenceShipCarrier `json:"deployed_defence_ship_carriers"`
 }
