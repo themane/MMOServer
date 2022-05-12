@@ -7,20 +7,28 @@ import (
 )
 
 type Requirements struct {
-	SoldiersRequired float64 `json:"soldiers_required" example:"40"`
-	WorkersRequired  float64 `json:"workers_required" example:"20"`
-	GrapheneRequired float64 `json:"graphene_required" example:"101"`
-	WaterRequired    float64 `json:"water_required" example:"5"`
-	ShelioRequired   float64 `json:"shelio_required" example:"0"`
-	MinutesRequired  float64 `json:"minutes_required" example:"10"`
+	Population      Population `json:"population_required"`
+	Resources       Resources  `json:"resources_required"`
+	MinutesRequired float64    `json:"minutes_required" example:"10"`
+}
+
+type Population struct {
+	Soldiers float64 `json:"soldiers" example:"40"`
+	Workers  float64 `json:"workers" example:"20"`
+}
+
+type Resources struct {
+	Graphene float64 `json:"graphene" example:"101"`
+	Water    float64 `json:"water" example:"5"`
+	Shelio   float64 `json:"shelio" example:"0"`
 }
 
 func (r *Requirements) Init(unitLevelConstants map[string]interface{}) {
-	r.SoldiersRequired = unitLevelConstants["soldiers_required"].(float64)
-	r.WorkersRequired = unitLevelConstants["workers_required"].(float64)
-	r.GrapheneRequired = unitLevelConstants["graphene_required"].(float64)
-	r.WaterRequired = unitLevelConstants["water_required"].(float64)
-	r.ShelioRequired = unitLevelConstants["shelio_required"].(float64)
+	r.Population.Soldiers = unitLevelConstants["soldiers_required"].(float64)
+	r.Population.Workers = unitLevelConstants["workers_required"].(float64)
+	r.Resources.Graphene = unitLevelConstants["graphene_required"].(float64)
+	r.Resources.Water = unitLevelConstants["water_required"].(float64)
+	r.Resources.Shelio = unitLevelConstants["shelio_required"].(float64)
 	r.MinutesRequired = unitLevelConstants["minutes_required"].(float64)
 }
 
@@ -28,37 +36,34 @@ func (r *Requirements) InitNextLevelRequirements(currentLevel int, militaryConst
 	if currentLevel < militaryConstants.MaxLevel {
 		currentLevelString := strconv.Itoa(currentLevel)
 		nextLevelString := strconv.Itoa(currentLevel + 1)
-		r.SoldiersRequired = militaryConstants.Levels[nextLevelString]["soldiers_required"].(float64) - militaryConstants.Levels[currentLevelString]["soldiers_required"].(float64)
-		r.WorkersRequired = militaryConstants.Levels[nextLevelString]["workers_required"].(float64) - militaryConstants.Levels[currentLevelString]["workers_required"].(float64)
-		r.GrapheneRequired = militaryConstants.Levels[nextLevelString]["graphene_required"].(float64)
-		r.WaterRequired = militaryConstants.Levels[nextLevelString]["water_required"].(float64)
-		r.ShelioRequired = militaryConstants.Levels[nextLevelString]["shelio_required"].(float64)
+		r.Population.Soldiers = militaryConstants.Levels[nextLevelString]["soldiers_required"].(float64) - militaryConstants.Levels[currentLevelString]["soldiers_required"].(float64)
+		r.Population.Workers = militaryConstants.Levels[nextLevelString]["workers_required"].(float64) - militaryConstants.Levels[currentLevelString]["workers_required"].(float64)
+		r.Resources.Graphene = militaryConstants.Levels[nextLevelString]["graphene_required"].(float64)
+		r.Resources.Water = militaryConstants.Levels[nextLevelString]["water_required"].(float64)
+		r.Resources.Shelio = militaryConstants.Levels[nextLevelString]["shelio_required"].(float64)
 		r.MinutesRequired = militaryConstants.Levels[nextLevelString]["minutes_required"].(float64)
 	}
 }
 
 type Returns struct {
-	SoldiersReturned float64 `json:"soldiers_returned" example:"40"`
-	WorkersReturned  float64 `json:"workers_returned" example:"20"`
-	GrapheneReturned float64 `json:"graphene_returned" example:"101"`
-	WaterReturned    float64 `json:"water_returned" example:"5"`
-	ShelioReturned   float64 `json:"shelio_returned" example:"0"`
+	Population Population `json:"population_returned"`
+	Resources  Resources  `json:"resources_returned"`
 }
 
 func (r *Returns) InitDestructionReturns(unitLevelConstants map[string]interface{}) {
-	r.SoldiersReturned = math.Floor(unitLevelConstants["soldiers_required"].(float64))
-	r.WorkersReturned = math.Floor(unitLevelConstants["workers_required"].(float64))
-	r.GrapheneReturned = math.Floor(unitLevelConstants["graphene_required"].(float64) / 2)
-	r.WaterReturned = math.Floor(unitLevelConstants["water_required"].(float64) / 2)
-	r.ShelioReturned = math.Floor(unitLevelConstants["shelio_required"].(float64) / 2)
+	r.Population.Soldiers = math.Floor(unitLevelConstants["soldiers_required"].(float64))
+	r.Population.Workers = math.Floor(unitLevelConstants["workers_required"].(float64))
+	r.Resources.Graphene = math.Floor(unitLevelConstants["graphene_required"].(float64) / 2)
+	r.Resources.Water = math.Floor(unitLevelConstants["water_required"].(float64) / 2)
+	r.Resources.Shelio = math.Floor(unitLevelConstants["shelio_required"].(float64) / 2)
 }
 
 func (r *Returns) InitCancelReturns(unitLevelConstants map[string]interface{}, quantity float64) {
-	r.SoldiersReturned = math.Floor(unitLevelConstants["soldiers_required"].(float64)) * quantity
-	r.WorkersReturned = math.Floor(unitLevelConstants["workers_required"].(float64)) * quantity
-	r.GrapheneReturned = math.Floor(unitLevelConstants["graphene_required"].(float64)) * quantity
-	r.WaterReturned = math.Floor(unitLevelConstants["water_required"].(float64)) * quantity
-	r.ShelioReturned = math.Floor(unitLevelConstants["shelio_required"].(float64)) * quantity
+	r.Population.Soldiers = math.Floor(unitLevelConstants["soldiers_required"].(float64)) * quantity
+	r.Population.Workers = math.Floor(unitLevelConstants["workers_required"].(float64)) * quantity
+	r.Resources.Graphene = math.Floor(unitLevelConstants["graphene_required"].(float64)) * quantity
+	r.Resources.Water = math.Floor(unitLevelConstants["water_required"].(float64)) * quantity
+	r.Resources.Shelio = math.Floor(unitLevelConstants["shelio_required"].(float64)) * quantity
 }
 
 type ShipAttributes struct {

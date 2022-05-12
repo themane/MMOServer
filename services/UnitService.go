@@ -294,11 +294,11 @@ func (u *UnitService) validateAndGetRequirements(quantity int, planetUser repoMo
 
 	creationRequirements := models.Requirements{}
 	creationRequirements.Init(unitLevelConstants)
-	if creationRequirements.SoldiersRequired*float64(quantity) > float64(planetUser.Population.IdleSoldiers) ||
-		creationRequirements.WorkersRequired*float64(quantity) > float64(planetUser.Population.IdleWorkers) ||
-		creationRequirements.GrapheneRequired*float64(quantity) > float64(planetUser.Graphene.Amount) ||
-		creationRequirements.WaterRequired*float64(quantity) > float64(planetUser.Water.Amount) ||
-		creationRequirements.ShelioRequired*float64(quantity) > float64(planetUser.Shelio) {
+	if creationRequirements.Population.Soldiers*float64(quantity) > float64(planetUser.Population.IdleSoldiers) ||
+		creationRequirements.Population.Workers*float64(quantity) > float64(planetUser.Population.IdleWorkers) ||
+		creationRequirements.Resources.Graphene*float64(quantity) > float64(planetUser.Graphene.Amount) ||
+		creationRequirements.Resources.Water*float64(quantity) > float64(planetUser.Water.Amount) ||
+		creationRequirements.Resources.Shelio*float64(quantity) > float64(planetUser.Shelio) {
 		return nil, errors.New("not enough resources")
 	}
 	return &creationRequirements, nil
@@ -307,11 +307,11 @@ func (u *UnitService) validateAndGetRequirements(quantity int, planetUser repoMo
 func (u *UnitService) validateAndGetNextLevelRequirements(defenceShipCarrier repoModels.DefenceShipCarrier, planetUser repoModels.PlanetUser) (*models.Requirements, error) {
 	nextLevelRequirements := models.Requirements{}
 	nextLevelRequirements.InitNextLevelRequirements(defenceShipCarrier.Level, u.militaryConstants[defenceShipCarrier.Name])
-	if nextLevelRequirements.SoldiersRequired > float64(planetUser.Population.IdleSoldiers) ||
-		nextLevelRequirements.WorkersRequired > float64(planetUser.Population.IdleWorkers) ||
-		nextLevelRequirements.GrapheneRequired > float64(planetUser.Graphene.Amount) ||
-		nextLevelRequirements.WaterRequired > float64(planetUser.Water.Amount) ||
-		nextLevelRequirements.ShelioRequired > float64(planetUser.Shelio) {
+	if nextLevelRequirements.Population.Soldiers > float64(planetUser.Population.IdleSoldiers) ||
+		nextLevelRequirements.Population.Workers > float64(planetUser.Population.IdleWorkers) ||
+		nextLevelRequirements.Resources.Graphene > float64(planetUser.Graphene.Amount) ||
+		nextLevelRequirements.Resources.Water > float64(planetUser.Water.Amount) ||
+		nextLevelRequirements.Resources.Shelio > float64(planetUser.Shelio) {
 		return nil, errors.New("not enough resources")
 	}
 	return &nextLevelRequirements, nil

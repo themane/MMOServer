@@ -300,11 +300,11 @@ func (u *UserRepositoryImpl) ConstructShips(id string, planetId string, unitName
 			"occupied_planets." + planetId + ".ships." + unitName + ".under_construction.quantity":   quantity,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".population.soldiers": -(constructionRequirements.SoldiersRequired * quantity),
-			"occupied_planets." + planetId + ".population.workers":  -(constructionRequirements.WorkersRequired * quantity),
-			"occupied_planets." + planetId + ".water.amount":        -(constructionRequirements.WaterRequired * quantity),
-			"occupied_planets." + planetId + ".graphene.amount":     -(constructionRequirements.GrapheneRequired * quantity),
-			"occupied_planets." + planetId + ".shelio":              -(constructionRequirements.ShelioRequired * quantity),
+			"occupied_planets." + planetId + ".population.soldiers": -(constructionRequirements.Population.Soldiers * quantity),
+			"occupied_planets." + planetId + ".population.workers":  -(constructionRequirements.Population.Workers * quantity),
+			"occupied_planets." + planetId + ".water.amount":        -(constructionRequirements.Resources.Water * quantity),
+			"occupied_planets." + planetId + ".graphene.amount":     -(constructionRequirements.Resources.Graphene * quantity),
+			"occupied_planets." + planetId + ".shelio":              -(constructionRequirements.Resources.Shelio * quantity),
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
@@ -322,11 +322,11 @@ func (u *UserRepositoryImpl) CancelShipsConstruction(id string, planetId string,
 			"occupied_planets." + planetId + ".ships." + unitName + ".under_construction": 1,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".population.soldiers": cancelReturns.SoldiersReturned,
-			"occupied_planets." + planetId + ".population.workers":  cancelReturns.WorkersReturned,
-			"occupied_planets." + planetId + ".water.amount":        cancelReturns.WaterReturned,
-			"occupied_planets." + planetId + ".graphene.amount":     cancelReturns.GrapheneReturned,
-			"occupied_planets." + planetId + ".shelio":              cancelReturns.ShelioReturned,
+			"occupied_planets." + planetId + ".population.soldiers": cancelReturns.Population.Soldiers,
+			"occupied_planets." + planetId + ".population.workers":  cancelReturns.Population.Workers,
+			"occupied_planets." + planetId + ".water.amount":        cancelReturns.Resources.Water,
+			"occupied_planets." + planetId + ".graphene.amount":     cancelReturns.Resources.Graphene,
+			"occupied_planets." + planetId + ".shelio":              cancelReturns.Resources.Shelio,
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
@@ -341,11 +341,11 @@ func (u *UserRepositoryImpl) DestructShips(id string, planetId string, unitName 
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
 		"occupied_planets." + planetId + ".ships." + unitName + ".quantity": -quantity,
-		"occupied_planets." + planetId + ".population.soldiers":             destructionReturns.SoldiersReturned * quantity,
-		"occupied_planets." + planetId + ".population.workers":              destructionReturns.WorkersReturned * quantity,
-		"occupied_planets." + planetId + ".water.amount":                    destructionReturns.WaterReturned * quantity,
-		"occupied_planets." + planetId + ".graphene.amount":                 destructionReturns.GrapheneReturned * quantity,
-		"occupied_planets." + planetId + ".shelio":                          destructionReturns.ShelioReturned * quantity,
+		"occupied_planets." + planetId + ".population.soldiers":             destructionReturns.Population.Soldiers * quantity,
+		"occupied_planets." + planetId + ".population.workers":              destructionReturns.Population.Workers * quantity,
+		"occupied_planets." + planetId + ".water.amount":                    destructionReturns.Resources.Water * quantity,
+		"occupied_planets." + planetId + ".graphene.amount":                 destructionReturns.Resources.Graphene * quantity,
+		"occupied_planets." + planetId + ".shelio":                          destructionReturns.Resources.Shelio * quantity,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
 	u.logger.Printf("Destructed %s %s ships. id: %s, planetId: %s\n", quantity, unitName, id, planetId)
@@ -364,11 +364,11 @@ func (u *UserRepositoryImpl) ConstructDefences(id string, planetId string, unitN
 			"occupied_planets." + planetId + ".defences." + unitName + ".under_construction.quantity":   quantity,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".population.soldiers": -(constructionRequirements.SoldiersRequired * quantity),
-			"occupied_planets." + planetId + ".population.workers":  -(constructionRequirements.WorkersRequired * quantity),
-			"occupied_planets." + planetId + ".water.amount":        -(constructionRequirements.WaterRequired * quantity),
-			"occupied_planets." + planetId + ".graphene.amount":     -(constructionRequirements.GrapheneRequired * quantity),
-			"occupied_planets." + planetId + ".shelio":              -(constructionRequirements.ShelioRequired * quantity),
+			"occupied_planets." + planetId + ".population.soldiers": -(constructionRequirements.Population.Soldiers * quantity),
+			"occupied_planets." + planetId + ".population.workers":  -(constructionRequirements.Population.Workers * quantity),
+			"occupied_planets." + planetId + ".water.amount":        -(constructionRequirements.Resources.Water * quantity),
+			"occupied_planets." + planetId + ".graphene.amount":     -(constructionRequirements.Resources.Graphene * quantity),
+			"occupied_planets." + planetId + ".shelio":              -(constructionRequirements.Resources.Shelio * quantity),
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
@@ -386,11 +386,11 @@ func (u *UserRepositoryImpl) CancelDefencesConstruction(id string, planetId stri
 			"occupied_planets." + planetId + ".defences." + unitName + ".under_construction": 1,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".population.soldiers": cancelReturns.SoldiersReturned,
-			"occupied_planets." + planetId + ".population.workers":  cancelReturns.WorkersReturned,
-			"occupied_planets." + planetId + ".water.amount":        cancelReturns.WaterReturned,
-			"occupied_planets." + planetId + ".graphene.amount":     cancelReturns.GrapheneReturned,
-			"occupied_planets." + planetId + ".shelio":              cancelReturns.ShelioReturned,
+			"occupied_planets." + planetId + ".population.soldiers": cancelReturns.Population.Soldiers,
+			"occupied_planets." + planetId + ".population.workers":  cancelReturns.Population.Workers,
+			"occupied_planets." + planetId + ".water.amount":        cancelReturns.Resources.Water,
+			"occupied_planets." + planetId + ".graphene.amount":     cancelReturns.Resources.Graphene,
+			"occupied_planets." + planetId + ".shelio":              cancelReturns.Resources.Shelio,
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
@@ -405,11 +405,11 @@ func (u *UserRepositoryImpl) DestructDefences(id string, planetId string, unitNa
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
 		"occupied_planets." + planetId + ".defences." + unitName + ".quantity": -quantity,
-		"occupied_planets." + planetId + ".population.soldiers":                destructionReturns.SoldiersReturned * quantity,
-		"occupied_planets." + planetId + ".population.workers":                 destructionReturns.WorkersReturned * quantity,
-		"occupied_planets." + planetId + ".water.amount":                       destructionReturns.WaterReturned * quantity,
-		"occupied_planets." + planetId + ".graphene.amount":                    destructionReturns.GrapheneReturned * quantity,
-		"occupied_planets." + planetId + ".shelio":                             destructionReturns.ShelioReturned * quantity,
+		"occupied_planets." + planetId + ".population.soldiers":                destructionReturns.Population.Soldiers * quantity,
+		"occupied_planets." + planetId + ".population.workers":                 destructionReturns.Population.Workers * quantity,
+		"occupied_planets." + planetId + ".water.amount":                       destructionReturns.Resources.Water * quantity,
+		"occupied_planets." + planetId + ".graphene.amount":                    destructionReturns.Resources.Graphene * quantity,
+		"occupied_planets." + planetId + ".shelio":                             destructionReturns.Resources.Shelio * quantity,
 	}}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
 	u.logger.Printf("Destructed %s %s ships. id: %s, planetId: %s\n", quantity, unitName, id, planetId)
@@ -429,11 +429,11 @@ func (u *UserRepositoryImpl) ConstructDefenceShipCarrier(id string, planetId str
 			"occupied_planets." + planetId + ".defence_ship_carriers." + unitId + ".under_construction.start_time": primitive.NewDateTimeFromTime(time.Now()),
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".population.soldiers": -constructionRequirements.SoldiersRequired,
-			"occupied_planets." + planetId + ".population.workers":  -constructionRequirements.WorkersRequired,
-			"occupied_planets." + planetId + ".water.amount":        -constructionRequirements.WaterRequired,
-			"occupied_planets." + planetId + ".graphene.amount":     -constructionRequirements.GrapheneRequired,
-			"occupied_planets." + planetId + ".shelio":              -constructionRequirements.ShelioRequired,
+			"occupied_planets." + planetId + ".population.soldiers": -constructionRequirements.Population.Soldiers,
+			"occupied_planets." + planetId + ".population.workers":  -constructionRequirements.Population.Workers,
+			"occupied_planets." + planetId + ".water.amount":        -constructionRequirements.Resources.Water,
+			"occupied_planets." + planetId + ".graphene.amount":     -constructionRequirements.Resources.Graphene,
+			"occupied_planets." + planetId + ".shelio":              -constructionRequirements.Resources.Shelio,
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
@@ -453,11 +453,11 @@ func (u *UserRepositoryImpl) UpgradeDefenceShipCarrier(id string, planetId strin
 		},
 		"$inc": bson.M{
 			"occupied_planets." + planetId + ".defence_ship_carriers." + unitId + ".level": 1,
-			"occupied_planets." + planetId + ".population.soldiers":                        -constructionRequirements.SoldiersRequired,
-			"occupied_planets." + planetId + ".population.workers":                         -constructionRequirements.WorkersRequired,
-			"occupied_planets." + planetId + ".water.amount":                               -constructionRequirements.WaterRequired,
-			"occupied_planets." + planetId + ".graphene.amount":                            -constructionRequirements.GrapheneRequired,
-			"occupied_planets." + planetId + ".shelio":                                     -constructionRequirements.ShelioRequired,
+			"occupied_planets." + planetId + ".population.soldiers":                        -constructionRequirements.Population.Soldiers,
+			"occupied_planets." + planetId + ".population.workers":                         -constructionRequirements.Population.Workers,
+			"occupied_planets." + planetId + ".water.amount":                               -constructionRequirements.Resources.Water,
+			"occupied_planets." + planetId + ".graphene.amount":                            -constructionRequirements.Resources.Graphene,
+			"occupied_planets." + planetId + ".shelio":                                     -constructionRequirements.Resources.Shelio,
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
@@ -476,11 +476,11 @@ func (u *UserRepositoryImpl) CancelDefenceShipCarrierConstruction(id string, pla
 			"occupied_planets." + planetId + ".defence_ship_carriers." + unitId: 1,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".population.soldiers": cancelReturns.SoldiersReturned,
-			"occupied_planets." + planetId + ".population.workers":  cancelReturns.WorkersReturned,
-			"occupied_planets." + planetId + ".water.amount":        cancelReturns.WaterReturned,
-			"occupied_planets." + planetId + ".graphene.amount":     cancelReturns.GrapheneReturned,
-			"occupied_planets." + planetId + ".shelio":              cancelReturns.ShelioReturned,
+			"occupied_planets." + planetId + ".population.soldiers": cancelReturns.Population.Soldiers,
+			"occupied_planets." + planetId + ".population.workers":  cancelReturns.Population.Workers,
+			"occupied_planets." + planetId + ".water.amount":        cancelReturns.Resources.Water,
+			"occupied_planets." + planetId + ".graphene.amount":     cancelReturns.Resources.Graphene,
+			"occupied_planets." + planetId + ".shelio":              cancelReturns.Resources.Shelio,
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
@@ -500,11 +500,11 @@ func (u *UserRepositoryImpl) CancelDefenceShipCarrierUpGradation(id string, plan
 		},
 		"$inc": bson.M{
 			"occupied_planets." + planetId + ".defence_ship_carriers." + unitId + ".level": -1,
-			"occupied_planets." + planetId + ".population.soldiers":                        cancelReturns.SoldiersReturned,
-			"occupied_planets." + planetId + ".population.workers":                         cancelReturns.WorkersReturned,
-			"occupied_planets." + planetId + ".water.amount":                               cancelReturns.WaterReturned,
-			"occupied_planets." + planetId + ".graphene.amount":                            cancelReturns.GrapheneReturned,
-			"occupied_planets." + planetId + ".shelio":                                     cancelReturns.ShelioReturned,
+			"occupied_planets." + planetId + ".population.soldiers":                        cancelReturns.Population.Soldiers,
+			"occupied_planets." + planetId + ".population.workers":                         cancelReturns.Population.Workers,
+			"occupied_planets." + planetId + ".water.amount":                               cancelReturns.Resources.Water,
+			"occupied_planets." + planetId + ".graphene.amount":                            cancelReturns.Resources.Graphene,
+			"occupied_planets." + planetId + ".shelio":                                     cancelReturns.Resources.Shelio,
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
@@ -523,11 +523,11 @@ func (u *UserRepositoryImpl) DestructDefenceShipCarrier(id string, planetId stri
 			"occupied_planets." + planetId + ".defence_ship_carriers." + unitId: 1,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".population.soldiers": destructionReturns.SoldiersReturned,
-			"occupied_planets." + planetId + ".population.workers":  destructionReturns.WorkersReturned,
-			"occupied_planets." + planetId + ".water.amount":        destructionReturns.WaterReturned,
-			"occupied_planets." + planetId + ".graphene.amount":     destructionReturns.GrapheneReturned,
-			"occupied_planets." + planetId + ".shelio":              destructionReturns.ShelioReturned,
+			"occupied_planets." + planetId + ".population.soldiers": destructionReturns.Population.Soldiers,
+			"occupied_planets." + planetId + ".population.workers":  destructionReturns.Population.Workers,
+			"occupied_planets." + planetId + ".water.amount":        destructionReturns.Resources.Water,
+			"occupied_planets." + planetId + ".graphene.amount":     destructionReturns.Resources.Graphene,
+			"occupied_planets." + planetId + ".shelio":              destructionReturns.Resources.Shelio,
 		},
 	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
