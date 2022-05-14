@@ -48,10 +48,18 @@ func (u *UnitService) ConstructUnits(username string, planetId string, unitName 
 				if err != nil {
 					return err
 				}
+				if planetUser.Defences[unitName].UnderConstruction.Quantity > 0 {
+					err = u.userRepository.AddConstructionDefences(userData.Id, planetId, unitName, float64(quantity), *requirements)
+					if err != nil {
+						return err
+					}
+					return nil
+				}
 				err = u.userRepository.ConstructDefences(userData.Id, planetId, unitName, float64(quantity), *requirements)
 				if err != nil {
 					return err
 				}
+				return nil
 			} else if unitMilitaryConstants.Type == constants.DefenceShipCarrier {
 				if quantity != 1 {
 					return errors.New("only single construction of DefenceShipCarrier supported")
@@ -69,6 +77,7 @@ func (u *UnitService) ConstructUnits(username string, planetId string, unitName 
 				if err != nil {
 					return err
 				}
+				return nil
 			} else {
 				if planetUser.Ships[unitName].Level <= 0 {
 					return errors.New("unit not available for construction")
@@ -79,12 +88,19 @@ func (u *UnitService) ConstructUnits(username string, planetId string, unitName 
 				if err != nil {
 					return err
 				}
+				if planetUser.Ships[unitName].UnderConstruction.Quantity > 0 {
+					err = u.userRepository.AddConstructionShips(userData.Id, planetId, unitName, float64(quantity), *requirements)
+					if err != nil {
+						return err
+					}
+					return nil
+				}
 				err = u.userRepository.ConstructShips(userData.Id, planetId, unitName, float64(quantity), *requirements)
 				if err != nil {
 					return err
 				}
+				return nil
 			}
-			return nil
 		}
 		return errors.New("unit not valid")
 	}
@@ -119,7 +135,7 @@ func (u *UnitService) CancelUnitsConstruction(username string, planetId string, 
 				unitLevelString := strconv.Itoa(planetUser.Ships[unitName].Level)
 				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
 				cancelReturns := models.Returns{}
-				cancelReturns.InitCancelReturns(unitLevelConstants, float64(planetUser.Defences[unitName].UnderConstruction.Quantity))
+				cancelReturns.InitCancelReturns(unitLevelConstants, float64(planetUser.Ships[unitName].UnderConstruction.Quantity))
 				err = u.userRepository.CancelShipsConstruction(userData.Id, planetId, unitName, cancelReturns)
 				if err != nil {
 					return err

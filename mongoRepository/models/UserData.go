@@ -195,10 +195,14 @@ type UserRepository interface {
 	CancelResearch(id string, planetId string, researchName string, grapheneReturned int, waterReturned int, shelioReturned int) error
 
 	ConstructShips(id string, planetId string, unitName string, quantity float64, constructionRequirements models.Requirements) error
+	AddConstructionShips(id string, planetId string, unitName string, quantity float64, constructionRequirements models.Requirements) error
+	RemoveConstructionShips(id string, planetId string, unitName string, quantity float64, cancelReturns models.Returns) error
 	CancelShipsConstruction(id string, planetId string, unitName string, cancelReturns models.Returns) error
 	DestructShips(id string, planetId string, unitName string, quantity float64, destructionReturns models.Returns) error
 
 	ConstructDefences(id string, planetId string, unitName string, quantity float64, constructionRequirements models.Requirements) error
+	AddConstructionDefences(id string, planetId string, unitName string, quantity float64, constructionRequirements models.Requirements) error
+	RemoveConstructionDefences(id string, planetId string, unitName string, quantity float64, cancelReturns models.Returns) error
 	CancelDefencesConstruction(id string, planetId string, unitName string, cancelReturns models.Returns) error
 	DestructDefences(id string, planetId string, unitName string, quantity float64, destructionReturns models.Returns) error
 
