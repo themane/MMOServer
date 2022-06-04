@@ -1,10 +1,8 @@
 package schedulers
 
 import (
-	"github.com/go-co-op/gocron"
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/mongoRepository/models"
-	"time"
 )
 
 type ScheduledJobManager struct {
@@ -30,15 +28,15 @@ func NewScheduledJobManager(userRepository models.UserRepository, universeReposi
 	}
 }
 
-func (j *ScheduledJobManager) SchedulePlanetUpdates() {
-	s := gocron.NewScheduler(time.UTC)
-	_, err := s.Every(10).Hour().Do(j.scheduledPopulationIncrease)
-	if err != nil {
-		j.logger.Error("error in scheduled population increase", err)
-	}
-	_, err1 := s.Every(10).Minute().Do(j.scheduledMining)
-	if err1 != nil {
-		j.logger.Error("error in scheduled mining increase", err1)
-	}
-	s.StartAsync()
-}
+//func (j *ScheduledJobManager) SchedulePlanetUpdates() {
+//	s := gocron.NewScheduler(time.UTC)
+//	_, err := s.Every(10).Hour().Do(j.scheduledPopulationIncrease)
+//	if err != nil {
+//		j.logger.Error("error in scheduled population increase", err)
+//	}
+//	_, err1 := s.Every(10).Minute().Do(j.scheduledMining)
+//	if err1 != nil {
+//		j.logger.Error("error in scheduled mining increase", err1)
+//	}
+//	s.StartAsync()
+//}
