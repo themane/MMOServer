@@ -27,11 +27,12 @@ func InitResearchLab(planetUser repoModels.PlanetUser,
 
 	r := new(ResearchLab)
 	r.BuildingId = constants.ResearchLab
-	r.Level = planetUser.Buildings[constants.ResearchLab].BuildingLevel
-	r.Workers = planetUser.Buildings[constants.ResearchLab].Workers
-	r.BuildingState.Init(planetUser.Buildings[constants.ResearchLab], upgradeConstants)
-	r.BuildingAttributes.Init(planetUser.Buildings[constants.ResearchLab].BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
-	r.NextLevelRequirements.Init(planetUser.Buildings[constants.ResearchLab].BuildingLevel, upgradeConstants)
+	researchLab := planetUser.GetBuilding(constants.ResearchLab)
+	r.Level = researchLab.BuildingLevel
+	r.Workers = researchLab.Workers
+	r.BuildingState.Init(*researchLab, upgradeConstants)
+	r.BuildingAttributes.Init(researchLab.BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
+	r.NextLevelRequirements.Init(researchLab.BuildingLevel, upgradeConstants)
 	return r
 }
 

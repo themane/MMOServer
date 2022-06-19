@@ -50,7 +50,7 @@ func (m *Mine) Init(mineUni models.MineUni, planetUser models.PlanetUser,
 	m.Id = mineUni.Id
 	m.Type = mineUni.Type
 	m.MaxLimit = mineUni.MaxLimit
-	m.Mined = planetUser.Mines[mineUni.Id].Mined
+	m.Mined = planetUser.GetMine(mineUni.Id).Mined
 	if mineUni.Type == constants.Water {
 		m.MiningPlant.Init(planetUser, mineUni.Id, waterConstants, waterMiningPlantConstants)
 	}
@@ -63,9 +63,9 @@ func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string,
 	miningConstants constants.MiningConstants, miningPlantUpgradeConstants constants.UpgradeConstants) {
 
 	m.BuildingId = models.GetMiningPlantId(mineId)
-	m.Level = planetUser.Buildings[m.BuildingId].BuildingLevel
-	m.Workers = planetUser.Buildings[m.BuildingId].Workers
-	m.BuildingState.Init(planetUser.Buildings[m.BuildingId], miningPlantUpgradeConstants)
+	m.Level = planetUser.GetBuilding(m.BuildingId).BuildingLevel
+	m.Workers = planetUser.GetBuilding(m.BuildingId).Workers
+	m.BuildingState.Init(*planetUser.GetBuilding(m.BuildingId), miningPlantUpgradeConstants)
 	m.BuildingAttributes.Init(m.Level, miningConstants)
 	m.NextLevelRequirements.Init(m.Level, miningPlantUpgradeConstants)
 }

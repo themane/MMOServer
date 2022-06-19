@@ -63,11 +63,19 @@ func (b *BuildingService) UpdateWorkers(username string, planetId string, buildi
 	if err != nil {
 		return err
 	}
-	if constants.IsShieldId(buildingId) && userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingMinutesPerWorker == 0 {
+	planetUser := userData.GetOccupiedPlanet(planetId)
+	if planetUser == nil {
+		return errors.New("planet not occupied")
+	}
+	building := planetUser.GetBuilding(buildingId)
+	if building == nil {
+		return errors.New("building id not valid")
+	}
+	if constants.IsShieldId(buildingId) && building.BuildingMinutesPerWorker == 0 {
 		return errors.New("workers not employed at working shield")
 	}
-	currentWorkers := userData.OccupiedPlanets[planetId].Buildings[buildingId].Workers
-	idleWorkers := userData.OccupiedPlanets[planetId].Population.IdleWorkers
+	currentWorkers := building.Workers
+	idleWorkers := planetUser.Population.IdleWorkers
 	if currentWorkers == workers {
 		return nil
 	} else if workers > currentWorkers && idleWorkers < workers-currentWorkers {
@@ -84,8 +92,16 @@ func (b *BuildingService) UpdateSoldiers(username string, planetId string, build
 	if _, ok := constants.GetSoldiersSupportedBuildingIds()[buildingId]; !ok {
 		return errors.New("soldiers not employed at " + buildingId)
 	}
-	currentSoldiers := userData.OccupiedPlanets[planetId].Buildings[buildingId].Soldiers
-	idleSoldiers := userData.OccupiedPlanets[planetId].Population.IdleSoldiers
+	planetUser := userData.GetOccupiedPlanet(planetId)
+	if planetUser == nil {
+		return errors.New("planet not occupied")
+	}
+	building := planetUser.GetBuilding(buildingId)
+	if building == nil {
+		return errors.New("building id not valid")
+	}
+	currentSoldiers := building.Soldiers
+	idleSoldiers := planetUser.Population.IdleSoldiers
 	if currentSoldiers == soldiers {
 		return nil
 	} else if soldiers > currentSoldiers && idleSoldiers < soldiers-currentSoldiers {
@@ -97,10 +113,18 @@ func (b *BuildingService) UpdateSoldiers(username string, planetId string, build
 func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.UserData,
 	planetId string, buildingId string) (*repoModels.NextLevelRequirements, error) {
 
-	if userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingMinutesPerWorker > 0 {
+	planetUser := userData.GetOccupiedPlanet(planetId)
+	if planetUser == nil {
+		return nil, errors.New("planet not occupied")
+	}
+	building := planetUser.GetBuilding(buildingId)
+	if building == nil {
+		return nil, errors.New("building id not valid")
+	}
+	if building.BuildingMinutesPerWorker > 0 {
 		return nil, errors.New("building already under upgradation")
 	}
-	buildingLevel := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingLevel
+	buildingLevel := building.BuildingLevel
 	buildingType, err := constants.GetBuildingType(buildingId)
 	if err != nil {
 		return nil, errors.New("building not found")
@@ -112,9 +136,9 @@ func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.User
 		}
 		requirements := repoModels.NextLevelRequirements{}
 		requirements.Init(buildingLevel, buildingConstants)
-		if userData.OccupiedPlanets[planetId].Water.Amount < requirements.WaterRequired ||
-			userData.OccupiedPlanets[planetId].Graphene.Amount < requirements.GrapheneRequired ||
-			userData.OccupiedPlanets[planetId].Shelio < requirements.ShelioRequired {
+		if planetUser.Water.Amount < requirements.WaterRequired ||
+			planetUser.Graphene.Amount < requirements.GrapheneRequired ||
+			planetUser.Shelio < requirements.ShelioRequired {
 			return nil, errors.New("not enough resources")
 		}
 		return &requirements, nil
@@ -125,11 +149,19 @@ func (b *BuildingService) verifyAndGetRequiredResources(userData repoModels.User
 func (b *BuildingService) verifyAndGetReturnedResources(userData repoModels.UserData,
 	planetId string, buildingId string) (*repoModels.CancelReturns, error) {
 
-	buildingMinutesPerWorker := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingMinutesPerWorker
+	planetUser := userData.GetOccupiedPlanet(planetId)
+	if planetUser == nil {
+		return nil, errors.New("planet not occupied")
+	}
+	building := planetUser.GetBuilding(buildingId)
+	if building == nil {
+		return nil, errors.New("building id not valid")
+	}
+	buildingMinutesPerWorker := building.BuildingMinutesPerWorker
 	if buildingMinutesPerWorker == 0 {
 		return nil, errors.New("building not under upgradation")
 	}
-	buildingLevel := userData.OccupiedPlanets[planetId].Buildings[buildingId].BuildingLevel
+	buildingLevel := building.BuildingLevel
 	buildingType, err := constants.GetBuildingType(buildingId)
 	if err != nil {
 		return nil, errors.New("building not found")

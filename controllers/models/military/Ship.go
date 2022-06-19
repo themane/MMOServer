@@ -25,7 +25,7 @@ type Ship struct {
 }
 
 func (s *Ship) Init(unitName string, unitType string, shipUser repoModels.Ship,
-	attackMissions []repoModels.AttackMission, defenceShipCarriers map[string]repoModels.DefenceShipCarrier,
+	attackMissions []repoModels.AttackMission, defenceShipCarriers []repoModels.DefenceShipCarrier,
 	shipConstants map[string]map[string]interface{}) {
 
 	s.Name = unitName

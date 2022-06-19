@@ -32,8 +32,8 @@ type SpecialRequirement struct {
 	Description string `json:"description"`
 }
 
-func (b *State) Init(research models.ResearchUser, researchConstants constants.ResearchConstants) {
-	if research.ResearchMinutesPerWorker > 0 {
+func (b *State) Init(research *models.ResearchUser, researchConstants constants.ResearchConstants) {
+	if research != nil && research.ResearchMinutesPerWorker > 0 {
 		b.State = constants.UpgradingState
 		b.MinutesRemaining = research.ResearchMinutesPerWorker
 		b.CancelReturns.Init(research.ResearchMinutesPerWorker, research.Level, researchConstants)

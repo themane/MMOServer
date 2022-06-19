@@ -55,20 +55,20 @@ func (r *QuickRefreshService) RefreshPlanet(username string, inputPlanetId strin
 	if errUser != nil {
 		return nil, errUser
 	}
-	for planetId, planetUser := range userData.OccupiedPlanets {
-		if planetId == inputPlanetId {
-			planetUni, err := r.universeRepository.FindById(planetId)
+	for _, planetUser := range userData.OccupiedPlanets {
+		if planetUser.Id == inputPlanetId {
+			planetUni, err := r.universeRepository.FindById(planetUser.Id)
 			if err != nil {
 				return nil, err
 			}
-			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetId)
+			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetUser.Id)
 			if err != nil {
-				r.logger.Error("error in retrieving attack missions for: "+planetId, err)
+				r.logger.Error("error in retrieving attack missions for: "+planetUser.Id, err)
 				return nil, errors.New("error in retrieving attack missions")
 			}
-			spyMissions, err := r.missionRepository.FindSpyMissionsFromPlanetId(planetId)
+			spyMissions, err := r.missionRepository.FindSpyMissionsFromPlanetId(planetUser.Id)
 			if err != nil {
-				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
+				r.logger.Error("error in retrieving spy missions for: "+planetUser.Id, err)
 				return nil, errors.New("error in retrieving spy missions")
 			}
 			planetResponse := controllerModels.OccupiedPlanet{}
@@ -86,8 +86,8 @@ func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId s
 	if errUser != nil {
 		return nil, errUser
 	}
-	for planetId, planetUser := range userData.OccupiedPlanets {
-		if planetId == inputPlanetId {
+	for _, planetUser := range userData.OccupiedPlanets {
+		if planetUser.Id == inputPlanetId {
 			response := controllerModels.UserPlanetResponse{}
 			var notifications []models.Notification
 			response.Init(planetUser, r.upgradeConstants, r.buildingConstants[constants.Shield], r.militaryConstants, r.speciesConstants[userData.Profile.Species], notifications)
@@ -102,15 +102,15 @@ func (r *QuickRefreshService) RefreshMine(username string, inputPlanetId string,
 	if errUser != nil {
 		return nil, errUser
 	}
-	for planetId, planetUser := range userData.OccupiedPlanets {
-		if planetId == inputPlanetId {
-			planetUni, errUni := r.universeRepository.FindById(planetId)
+	for _, planetUser := range userData.OccupiedPlanets {
+		if planetUser.Id == inputPlanetId {
+			planetUni, errUni := r.universeRepository.FindById(planetUser.Id)
 			if errUni != nil {
 				return nil, errUni
 			}
 
-			for mineId, mineUni := range planetUni.Mines {
-				if mineId == inputMineId {
+			for _, mineUni := range planetUni.Mines {
+				if mineUni.Id == inputMineId {
 					response := buildings.Mine{}
 					response.Init(mineUni, planetUser,
 						r.upgradeConstants[constants.WaterMiningPlant], r.upgradeConstants[constants.GrapheneMiningPlant],
@@ -128,11 +128,11 @@ func (r *QuickRefreshService) RefreshAttackMissions(username string, inputPlanet
 	if errUser != nil {
 		return nil, errUser
 	}
-	for planetId := range userData.OccupiedPlanets {
-		if planetId == inputPlanetId {
-			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetId)
+	for _, planetUser := range userData.OccupiedPlanets {
+		if planetUser.Id == inputPlanetId {
+			attackMissions, err := r.missionRepository.FindAttackMissionsFromPlanetId(planetUser.Id)
 			if err != nil {
-				r.logger.Error("error in retrieving attack missions for: "+planetId, err)
+				r.logger.Error("error in retrieving attack missions for: "+planetUser.Id, err)
 				return nil, errors.New("error in retrieving attack missions")
 			}
 			var activeMissions []controllerModels.ActiveMission
@@ -152,11 +152,11 @@ func (r *QuickRefreshService) RefreshSpyMissions(username string, inputPlanetId 
 	if errUser != nil {
 		return nil, errUser
 	}
-	for planetId := range userData.OccupiedPlanets {
-		if planetId == inputPlanetId {
-			spyMissions, err := r.missionRepository.FindSpyMissionsFromPlanetId(planetId)
+	for _, planetUser := range userData.OccupiedPlanets {
+		if planetUser.Id == inputPlanetId {
+			spyMissions, err := r.missionRepository.FindSpyMissionsFromPlanetId(planetUser.Id)
 			if err != nil {
-				r.logger.Error("error in retrieving spy missions for: "+planetId, err)
+				r.logger.Error("error in retrieving spy missions for: "+planetUser.Id, err)
 				return nil, errors.New("error in retrieving spy missions")
 			}
 			var activeMissions []controllerModels.ActiveMission

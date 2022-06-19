@@ -8,8 +8,8 @@ type ClanData struct {
 }
 
 type ClanMember struct {
-	MemberId string `json:"member_id" bson:"member_id"`
-	Role     string `json:"role" bson:"role"`
+	Id   string `json:"_id" bson:"_id"`
+	Role string `json:"role" bson:"role"`
 }
 
 type ClanRepository interface {

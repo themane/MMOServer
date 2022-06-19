@@ -36,75 +36,78 @@ func (u *UnitService) ConstructUnits(username string, planetId string, unitName 
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		if unitMilitaryConstants, ok := u.militaryConstants[unitName]; ok {
-			if unitMilitaryConstants.Type == constants.Defender {
-				if planetUser.Defences[unitName].Level <= 0 {
-					return errors.New("unit not available for construction")
-				}
-				unitLevelString := strconv.Itoa(planetUser.Defences[unitName].Level)
-				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
-				requirements, err := u.validateAndGetRequirements(quantity, planetUser, unitLevelConstants)
-				if err != nil {
-					return err
-				}
-				if planetUser.Defences[unitName].UnderConstruction.Quantity > 0 {
-					err = u.userRepository.AddConstructionDefences(userData.Id, planetId, unitName, float64(quantity), *requirements)
-					if err != nil {
-						return err
-					}
-					return nil
-				}
-				err = u.userRepository.ConstructDefences(userData.Id, planetId, unitName, float64(quantity), *requirements)
-				if err != nil {
-					return err
-				}
-				return nil
-			} else if unitMilitaryConstants.Type == constants.DefenceShipCarrier {
-				if quantity != 1 {
-					return errors.New("only single construction of DefenceShipCarrier supported")
-				}
-				unitLevelConstants := unitMilitaryConstants.Levels["1"]
-				requirements, err := u.validateAndGetRequirements(quantity, planetUser, unitLevelConstants)
-				if err != nil {
-					return err
-				}
-				id, err := uuid.NewRandom()
-				if err != nil {
-					return errors.New("error in generating DefenceShipCarrier id")
-				}
-				err = u.userRepository.ConstructDefenceShipCarrier(userData.Id, planetId, unitName, id.String(), *requirements)
-				if err != nil {
-					return err
-				}
-				return nil
-			} else {
-				if planetUser.Ships[unitName].Level <= 0 {
-					return errors.New("unit not available for construction")
-				}
-				unitLevelString := strconv.Itoa(planetUser.Ships[unitName].Level)
-				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
-				requirements, err := u.validateAndGetRequirements(quantity, planetUser, unitLevelConstants)
-				if err != nil {
-					return err
-				}
-				if planetUser.Ships[unitName].UnderConstruction.Quantity > 0 {
-					err = u.userRepository.AddConstructionShips(userData.Id, planetId, unitName, float64(quantity), *requirements)
-					if err != nil {
-						return err
-					}
-					return nil
-				}
-				err = u.userRepository.ConstructShips(userData.Id, planetId, unitName, float64(quantity), *requirements)
+	planetUser := userData.GetOccupiedPlanet(planetId)
+	if planetUser == nil {
+		return errors.New("planet not occupied")
+	}
+	if unitMilitaryConstants, ok := u.militaryConstants[unitName]; ok {
+		if unitMilitaryConstants.Type == constants.Defender {
+			defence := planetUser.GetDefence(unitName)
+			if defence.Level <= 0 {
+				return errors.New("unit not available for construction")
+			}
+			unitLevelString := strconv.Itoa(defence.Level)
+			unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
+			requirements, err := u.validateAndGetRequirements(quantity, *planetUser, unitLevelConstants)
+			if err != nil {
+				return err
+			}
+			if defence.UnderConstruction.Quantity > 0 {
+				err = u.userRepository.AddConstructionDefences(userData.Id, planetId, unitName, float64(quantity), *requirements)
 				if err != nil {
 					return err
 				}
 				return nil
 			}
+			err = u.userRepository.ConstructDefences(userData.Id, planetId, unitName, float64(quantity), *requirements)
+			if err != nil {
+				return err
+			}
+			return nil
+		} else if unitMilitaryConstants.Type == constants.DefenceShipCarrier {
+			if quantity != 1 {
+				return errors.New("only single construction of DefenceShipCarrier supported")
+			}
+			unitLevelConstants := unitMilitaryConstants.Levels["1"]
+			requirements, err := u.validateAndGetRequirements(quantity, *planetUser, unitLevelConstants)
+			if err != nil {
+				return err
+			}
+			id, err := uuid.NewRandom()
+			if err != nil {
+				return errors.New("error in generating DefenceShipCarrier id")
+			}
+			err = u.userRepository.ConstructDefenceShipCarrier(userData.Id, planetId, unitName, id.String(), *requirements)
+			if err != nil {
+				return err
+			}
+			return nil
+		} else {
+			ship := planetUser.GetShip(unitName)
+			if ship.Level <= 0 {
+				return errors.New("unit not available for construction")
+			}
+			unitLevelString := strconv.Itoa(ship.Level)
+			unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
+			requirements, err := u.validateAndGetRequirements(quantity, *planetUser, unitLevelConstants)
+			if err != nil {
+				return err
+			}
+			if ship.UnderConstruction.Quantity > 0 {
+				err = u.userRepository.AddConstructionShips(userData.Id, planetId, unitName, float64(quantity), *requirements)
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+			err = u.userRepository.ConstructShips(userData.Id, planetId, unitName, float64(quantity), *requirements)
+			if err != nil {
+				return err
+			}
+			return nil
 		}
-		return errors.New("unit not valid")
 	}
-	return errors.New("planet not occupied")
+	return errors.New("unit not valid")
 }
 
 func (u *UnitService) CancelUnitsConstruction(username string, planetId string, unitName string) error {
@@ -112,40 +115,43 @@ func (u *UnitService) CancelUnitsConstruction(username string, planetId string, 
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		if unitMilitaryConstants, ok := u.militaryConstants[unitName]; ok {
-			if unitMilitaryConstants.Type == constants.Defender {
-				if planetUser.Defences[unitName].UnderConstruction.Quantity <= 0 {
-					return errors.New("no units under construction")
-				}
-				unitLevelString := strconv.Itoa(planetUser.Defences[unitName].Level)
-				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
-				cancelReturns := models.Returns{}
-				cancelReturns.InitCancelReturns(unitLevelConstants, float64(planetUser.Defences[unitName].UnderConstruction.Quantity))
-				err = u.userRepository.CancelDefencesConstruction(userData.Id, planetId, unitName, cancelReturns)
-				if err != nil {
-					return err
-				}
-			} else if unitMilitaryConstants.Type == constants.DefenceShipCarrier {
-				return errors.New("unit not valid")
-			} else {
-				if planetUser.Ships[unitName].UnderConstruction.Quantity <= 0 {
-					return errors.New("no units under construction")
-				}
-				unitLevelString := strconv.Itoa(planetUser.Ships[unitName].Level)
-				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
-				cancelReturns := models.Returns{}
-				cancelReturns.InitCancelReturns(unitLevelConstants, float64(planetUser.Ships[unitName].UnderConstruction.Quantity))
-				err = u.userRepository.CancelShipsConstruction(userData.Id, planetId, unitName, cancelReturns)
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-		return errors.New("unit not valid")
+	planetUser := userData.GetOccupiedPlanet(planetId)
+	if planetUser == nil {
+		return errors.New("planet not occupied")
 	}
-	return errors.New("planet not occupied")
+	if unitMilitaryConstants, ok := u.militaryConstants[unitName]; ok {
+		if unitMilitaryConstants.Type == constants.Defender {
+			defence := planetUser.GetDefence(unitName)
+			if defence.UnderConstruction.Quantity <= 0 {
+				return errors.New("no units under construction")
+			}
+			unitLevelString := strconv.Itoa(defence.Level)
+			unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
+			cancelReturns := models.Returns{}
+			cancelReturns.InitCancelReturns(unitLevelConstants, float64(defence.UnderConstruction.Quantity))
+			err = u.userRepository.CancelDefencesConstruction(userData.Id, planetId, unitName, cancelReturns)
+			if err != nil {
+				return err
+			}
+		} else if unitMilitaryConstants.Type == constants.DefenceShipCarrier {
+			return errors.New("unit not valid")
+		} else {
+			ship := planetUser.GetShip(unitName)
+			if ship.UnderConstruction.Quantity <= 0 {
+				return errors.New("no units under construction")
+			}
+			unitLevelString := strconv.Itoa(ship.Level)
+			unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
+			cancelReturns := models.Returns{}
+			cancelReturns.InitCancelReturns(unitLevelConstants, float64(ship.UnderConstruction.Quantity))
+			err = u.userRepository.CancelShipsConstruction(userData.Id, planetId, unitName, cancelReturns)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return errors.New("unit not valid")
 }
 
 func (u *UnitService) DestructUnits(username string, planetId string, unitName string, quantity int) error {
@@ -153,60 +159,63 @@ func (u *UnitService) DestructUnits(username string, planetId string, unitName s
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		if unitMilitaryConstants, ok := u.militaryConstants[unitName]; ok {
-			if unitMilitaryConstants.Type == constants.Defender {
-				if repoModels.GetIdleDefences(planetUser.Defences[unitName].GuardingShield, planetUser.Defences[unitName].Quantity) < quantity {
-					return errors.New("not enough idle units")
-				}
-				unitLevelString := strconv.Itoa(planetUser.Defences[unitName].Level)
-				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
-				destructionReturns := models.Returns{}
-				destructionReturns.InitDestructionReturns(unitLevelConstants)
-				err = u.userRepository.DestructDefences(userData.Id, planetId, unitName, float64(quantity), destructionReturns)
-				if err != nil {
-					return err
-				}
-			} else if unitMilitaryConstants.Type == constants.DefenceShipCarrier {
-				return errors.New("unit not valid")
-			} else if unitMilitaryConstants.Type == constants.Scout {
-				spyMissions, err1 := u.missionRepository.FindSpyMissionsFromPlanetId(planetId)
-				if err1 != nil {
-					return err1
-				}
-				if repoModels.GetAvailableScouts(unitName, spyMissions, planetUser.Ships[unitName].Quantity) < quantity {
-					return errors.New("not enough idle units")
-				}
-				unitLevelString := strconv.Itoa(planetUser.Defences[unitName].Level)
-				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
-				destructionReturns := models.Returns{}
-				destructionReturns.InitDestructionReturns(unitLevelConstants)
-				err = u.userRepository.DestructShips(userData.Id, planetId, unitName, float64(quantity), destructionReturns)
-				if err != nil {
-					return err
-				}
-			} else {
-				attackMissions, err2 := u.missionRepository.FindAttackMissionsFromPlanetId(planetId)
-				if err2 != nil {
-					return err2
-				}
-				if repoModels.GetAvailableShips(unitName, attackMissions, planetUser.DefenceShipCarriers, planetUser.Ships[unitName].Quantity) < quantity {
-					return errors.New("not enough idle units")
-				}
-				unitLevelString := strconv.Itoa(planetUser.Defences[unitName].Level)
-				unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
-				destructionReturns := models.Returns{}
-				destructionReturns.InitDestructionReturns(unitLevelConstants)
-				err = u.userRepository.DestructShips(userData.Id, planetId, unitName, float64(quantity), destructionReturns)
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-		return errors.New("unit not valid")
+	planetUser := userData.GetOccupiedPlanet(planetId)
+	if planetUser == nil {
+		return errors.New("planet not occupied")
 	}
-	return errors.New("planet not occupied")
+	if unitMilitaryConstants, ok := u.militaryConstants[unitName]; ok {
+		if unitMilitaryConstants.Type == constants.Defender {
+			defence := planetUser.GetDefence(unitName)
+			if repoModels.GetIdleDefences(defence.GuardingShield, defence.Quantity) < quantity {
+				return errors.New("not enough idle units")
+			}
+			unitLevelString := strconv.Itoa(defence.Level)
+			unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
+			destructionReturns := models.Returns{}
+			destructionReturns.InitDestructionReturns(unitLevelConstants)
+			err = u.userRepository.DestructDefences(userData.Id, planetId, unitName, float64(quantity), destructionReturns)
+			if err != nil {
+				return err
+			}
+		} else if unitMilitaryConstants.Type == constants.DefenceShipCarrier {
+			return errors.New("unit not valid")
+		} else if unitMilitaryConstants.Type == constants.Scout {
+			spyMissions, err1 := u.missionRepository.FindSpyMissionsFromPlanetId(planetId)
+			if err1 != nil {
+				return err1
+			}
+			if repoModels.GetAvailableScouts(unitName, spyMissions, planetUser.GetShip(unitName).Quantity) < quantity {
+				return errors.New("not enough idle units")
+			}
+			unitLevelString := strconv.Itoa(planetUser.GetDefence(unitName).Level)
+			unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
+			destructionReturns := models.Returns{}
+			destructionReturns.InitDestructionReturns(unitLevelConstants)
+			err = u.userRepository.DestructShips(userData.Id, planetId, unitName, float64(quantity), destructionReturns)
+			if err != nil {
+				return err
+			}
+		} else {
+			attackMissions, err2 := u.missionRepository.FindAttackMissionsFromPlanetId(planetId)
+			if err2 != nil {
+				return err2
+			}
+			ship := planetUser.GetShip(unitName)
+			if repoModels.GetAvailableShips(unitName, attackMissions, planetUser.DefenceShipCarriers, ship.Quantity) < quantity {
+				return errors.New("not enough idle units")
+			}
+			unitLevelString := strconv.Itoa(ship.Level)
+			unitLevelConstants := unitMilitaryConstants.Levels[unitLevelString]
+			destructionReturns := models.Returns{}
+			destructionReturns.InitDestructionReturns(unitLevelConstants)
+			err = u.userRepository.DestructShips(userData.Id, planetId, unitName, float64(quantity), destructionReturns)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return errors.New("unit not valid")
 }
 
 func (u *UnitService) UpgradeDefenceShipCarrier(username string, planetId string, unitId string) error {
@@ -214,32 +223,34 @@ func (u *UnitService) UpgradeDefenceShipCarrier(username string, planetId string
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		if defenceShipCarrier, ok := planetUser.DefenceShipCarriers[unitId]; ok {
-			if defenceShipCarrier.GuardingShield != "" {
-				return errors.New("not idle unit")
-			}
-			if defenceShipCarrier.UnderConstruction.StartTime.Time().After(time.Now()) {
-				return errors.New("unit under construction")
-			}
-			for _, q := range defenceShipCarrier.HostingShips {
-				if q > 0 {
-					return errors.New("unit has deployed ships")
-				}
-			}
-			requirements, err1 := u.validateAndGetNextLevelRequirements(defenceShipCarrier, planetUser)
-			if err1 != nil {
-				return err1
-			}
-			err = u.userRepository.UpgradeDefenceShipCarrier(userData.Id, planetId, unitId, *requirements)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-		return errors.New("unit not valid")
+	occupiedPlanet := userData.GetOccupiedPlanet(planetId)
+	if occupiedPlanet == nil {
+		return errors.New("planet not occupied")
 	}
-	return errors.New("planet not occupied")
+	defenceShipCarrier := occupiedPlanet.GetDefenceShipCarrier(unitId)
+	if defenceShipCarrier == nil {
+		return errors.New("defence ship carrier id not valid")
+	}
+	if defenceShipCarrier.GuardingShield != "" {
+		return errors.New("not idle unit")
+	}
+	if defenceShipCarrier.UnderConstruction.StartTime.Time().After(time.Now()) {
+		return errors.New("unit under construction")
+	}
+	for _, q := range defenceShipCarrier.HostingShips {
+		if q > 0 {
+			return errors.New("unit has deployed ships")
+		}
+	}
+	requirements, err1 := u.validateAndGetNextLevelRequirements(*defenceShipCarrier, *occupiedPlanet)
+	if err1 != nil {
+		return err1
+	}
+	err = u.userRepository.UpgradeDefenceShipCarrier(userData.Id, planetId, unitId, *requirements)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *UnitService) CancelDefenceShipCarrierUpGradation(username string, planetId string, unitId string) error {
@@ -247,30 +258,32 @@ func (u *UnitService) CancelDefenceShipCarrierUpGradation(username string, plane
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		if defenceShipCarrier, ok := planetUser.DefenceShipCarriers[unitId]; ok {
-			if !defenceShipCarrier.UnderConstruction.StartTime.Time().After(time.Now()) {
-				return errors.New("unit not under construction")
-			}
-			unitLevelConstants := u.militaryConstants[defenceShipCarrier.Name].Levels[strconv.Itoa(defenceShipCarrier.Level)]
-			cancelReturns := models.Returns{}
-			cancelReturns.InitCancelReturns(unitLevelConstants, 1)
-			if defenceShipCarrier.Level > 1 {
-				err = u.userRepository.CancelDefenceShipCarrierUpGradation(userData.Id, planetId, unitId, cancelReturns)
-				if err != nil {
-					return err
-				}
-			} else {
-				err = u.userRepository.CancelDefenceShipCarrierConstruction(userData.Id, planetId, unitId, cancelReturns)
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-		return errors.New("unit not valid")
+	occupiedPlanet := userData.GetOccupiedPlanet(planetId)
+	if occupiedPlanet == nil {
+		return errors.New("planet not occupied")
 	}
-	return errors.New("planet not occupied")
+	defenceShipCarrier := occupiedPlanet.GetDefenceShipCarrier(unitId)
+	if defenceShipCarrier == nil {
+		return errors.New("defence ship carrier id not valid")
+	}
+	if !defenceShipCarrier.UnderConstruction.StartTime.Time().After(time.Now()) {
+		return errors.New("unit not under construction")
+	}
+	unitLevelConstants := u.militaryConstants[defenceShipCarrier.Name].Levels[strconv.Itoa(defenceShipCarrier.Level)]
+	cancelReturns := models.Returns{}
+	cancelReturns.InitCancelReturns(unitLevelConstants, 1)
+	if defenceShipCarrier.Level > 1 {
+		err = u.userRepository.CancelDefenceShipCarrierUpGradation(userData.Id, planetId, unitId, cancelReturns)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = u.userRepository.CancelDefenceShipCarrierConstruction(userData.Id, planetId, unitId, cancelReturns)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (u *UnitService) DestructDefenceShipCarrier(username string, planetId string, unitId string) error {
@@ -278,31 +291,33 @@ func (u *UnitService) DestructDefenceShipCarrier(username string, planetId strin
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		if defenceShipCarrier, ok := planetUser.DefenceShipCarriers[unitId]; ok {
-			if defenceShipCarrier.GuardingShield != "" {
-				return errors.New("not idle unit")
-			}
-			if defenceShipCarrier.UnderConstruction.StartTime.Time().After(time.Now()) {
-				return errors.New("unit under construction")
-			}
-			for _, q := range defenceShipCarrier.HostingShips {
-				if q > 0 {
-					return errors.New("unit has deployed ships")
-				}
-			}
-			unitLevelConstants := u.militaryConstants[defenceShipCarrier.Name].Levels[strconv.Itoa(defenceShipCarrier.Level)]
-			returns := models.Returns{}
-			returns.InitDestructionReturns(unitLevelConstants)
-			err = u.userRepository.DestructDefenceShipCarrier(userData.Id, planetId, unitId, returns)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-		return errors.New("unit not valid")
+	occupiedPlanet := userData.GetOccupiedPlanet(planetId)
+	if occupiedPlanet == nil {
+		return errors.New("planet not occupied")
 	}
-	return errors.New("planet not occupied")
+	defenceShipCarrier := occupiedPlanet.GetDefenceShipCarrier(unitId)
+	if defenceShipCarrier == nil {
+		return errors.New("defence ship carrier id not valid")
+	}
+	if defenceShipCarrier.GuardingShield != "" {
+		return errors.New("not idle unit")
+	}
+	if defenceShipCarrier.UnderConstruction.StartTime.Time().After(time.Now()) {
+		return errors.New("unit under construction")
+	}
+	for _, q := range defenceShipCarrier.HostingShips {
+		if q > 0 {
+			return errors.New("unit has deployed ships")
+		}
+	}
+	unitLevelConstants := u.militaryConstants[defenceShipCarrier.Name].Levels[strconv.Itoa(defenceShipCarrier.Level)]
+	returns := models.Returns{}
+	returns.InitDestructionReturns(unitLevelConstants)
+	err = u.userRepository.DestructDefenceShipCarrier(userData.Id, planetId, unitId, returns)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *UnitService) validateAndGetRequirements(quantity int, planetUser repoModels.PlanetUser,

@@ -30,28 +30,29 @@ func InitAllShields(planetUser models.PlanetUser,
 	for shieldId := range shieldIds {
 		s := Shield{}
 		s.Id = shieldId
-		s.Level = planetUser.Buildings[shieldId].BuildingLevel
-		s.BuildingState.Init(planetUser.Buildings[shieldId], shieldBuildingUpgradeConstants)
-		s.Workers = planetUser.Buildings[shieldId].Workers
-		s.NextLevelRequirements.Init(planetUser.Buildings[shieldId].BuildingLevel, shieldBuildingUpgradeConstants)
-		s.BuildingAttributes.Init(planetUser.Buildings[shieldId].BuildingLevel, shieldBuildingUpgradeConstants.MaxLevel, shieldConstants)
-		for unitName, defenceUser := range planetUser.Defences {
+		shield := planetUser.GetBuilding(shieldId)
+		s.Level = shield.BuildingLevel
+		s.BuildingState.Init(*shield, shieldBuildingUpgradeConstants)
+		s.Workers = shield.Workers
+		s.NextLevelRequirements.Init(shield.BuildingLevel, shieldBuildingUpgradeConstants)
+		s.BuildingAttributes.Init(shield.BuildingLevel, shieldBuildingUpgradeConstants.MaxLevel, shieldConstants)
+		for _, defenceUser := range planetUser.Defences {
 			if deployedDefences, ok := defenceUser.GuardingShield[shieldId]; ok {
 				d := military.DeployedDefence{
-					Name:  unitName,
+					Name:  defenceUser.Name,
 					Level: defenceUser.Level,
 					Units: deployedDefences,
 				}
 				s.DeployedDefences = append(s.DeployedDefences, d)
 			}
 		}
-		for defenceShipCarrierId, defenceShipCarrierUser := range planetUser.DefenceShipCarriers {
+		for _, defenceShipCarrierUser := range planetUser.DefenceShipCarriers {
 			if defenceShipCarrierUser.GuardingShield == shieldId {
 				d := military.DeployedDefenceShipCarrier{
-					Id:            defenceShipCarrierId,
+					Id:            defenceShipCarrierUser.Id,
 					Name:          defenceShipCarrierUser.Name,
 					Level:         defenceShipCarrierUser.Level,
-					DeployedShips: military.GetDeployedShips(planetUser.Ships, defenceShipCarrierUser.HostingShips),
+					DeployedShips: military.GetDeployedShips(planetUser, defenceShipCarrierUser.HostingShips),
 				}
 				s.DeployedDefenceShipCarriers = append(s.DeployedDefenceShipCarriers, d)
 			}

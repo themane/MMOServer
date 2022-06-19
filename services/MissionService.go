@@ -51,36 +51,37 @@ func (a *MissionService) Spy(spyRequest controllerModels.SpyRequest) error {
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[spyRequest.FromPlanetId]; ok {
-		var squadSpeed float64
-		availableShips := planetUser.GetAvailableShips()
-		for _, formation := range spyRequest.Scouts {
-			if availableShips[formation.ShipName] < formation.Quantity {
-				return errors.New("error! found insufficient ships for attack formation")
-			}
-			availableShips[formation.ShipName] -= formation.Quantity
-			currentLevel := strconv.Itoa(planetUser.Ships[formation.ShipName].Level)
-			speed := a.militaryConstants[formation.ShipName].Levels[currentLevel]["speed"].(int)
-			if squadSpeed < float64(speed) {
-				squadSpeed = float64(speed)
-			}
-		}
-
-		blocks := distance(*fromPlanetUni, *toPlanetUni)
-		totalSecondsRequired := blocks * squadSpeed
-		missionTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
-		returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
-		spyMission, err := spyRequest.GetSpyMission(primitive.NewDateTimeFromTime(missionTime), primitive.NewDateTimeFromTime(returnTime))
-		if err != nil {
-			return err
-		}
-		err = a.missionRepository.AddSpyMission(*spyMission)
-		if err != nil {
-			return err
-		}
-		return nil
+	if userData.GetOccupiedPlanet(spyRequest.FromPlanetId) == nil {
+		return errors.New("from planet not occupied")
 	}
-	return errors.New("error occurred in retrieving planet data")
+	planetUser := userData.GetOccupiedPlanet(spyRequest.FromPlanetId)
+	var squadSpeed float64
+	availableShips := planetUser.GetAvailableShips()
+	for _, formation := range spyRequest.Scouts {
+		if availableShips[formation.ShipName] < formation.Quantity {
+			return errors.New("error! found insufficient ships for attack formation")
+		}
+		availableShips[formation.ShipName] -= formation.Quantity
+		currentLevel := strconv.Itoa(planetUser.GetShip(formation.ShipName).Level)
+		speed := a.militaryConstants[formation.ShipName].Levels[currentLevel]["speed"].(int)
+		if squadSpeed < float64(speed) {
+			squadSpeed = float64(speed)
+		}
+	}
+
+	blocks := distance(*fromPlanetUni, *toPlanetUni)
+	totalSecondsRequired := blocks * squadSpeed
+	missionTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
+	returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
+	spyMission, err := spyRequest.GetSpyMission(primitive.NewDateTimeFromTime(missionTime), primitive.NewDateTimeFromTime(returnTime))
+	if err != nil {
+		return err
+	}
+	err = a.missionRepository.AddSpyMission(*spyMission)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *MissionService) Attack(attackRequest controllerModels.AttackRequest) error {
@@ -96,46 +97,47 @@ func (a *MissionService) Attack(attackRequest controllerModels.AttackRequest) er
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[attackRequest.FromPlanetId]; ok {
-		var squadSpeed float64
-		availableShips := planetUser.GetAvailableShips()
-		for attackPointId, formationMap := range attackRequest.Formation {
-			if !validAttackPointId(attackPointId) {
-				return errors.New("error! found invalid attack point id: " + attackPointId)
-			}
-			err := validateAttackLineIds(formationMap, attackPointId)
-			if err != nil {
-				return err
-			}
-			for _, formations := range formationMap {
-				for _, formation := range formations {
-					if availableShips[formation.ShipName] < formation.Quantity {
-						return errors.New("error! found insufficient ships for attack formation")
-					}
-					availableShips[formation.ShipName] -= formation.Quantity
-					currentLevel := strconv.Itoa(planetUser.Ships[formation.ShipName].Level)
-					speed := a.militaryConstants[formation.ShipName].Levels[currentLevel]["speed"].(int)
-					if squadSpeed < float64(speed) {
-						squadSpeed = float64(speed)
-					}
+	if userData.GetOccupiedPlanet(attackRequest.FromPlanetId) == nil {
+		return errors.New("from planet not occupied")
+	}
+	planetUser := userData.GetOccupiedPlanet(attackRequest.FromPlanetId)
+	var squadSpeed float64
+	availableShips := planetUser.GetAvailableShips()
+	for attackPointId, formationMap := range attackRequest.Formation {
+		if !validAttackPointId(attackPointId) {
+			return errors.New("error! found invalid attack point id: " + attackPointId)
+		}
+		err := validateAttackLineIds(formationMap, attackPointId)
+		if err != nil {
+			return err
+		}
+		for _, formations := range formationMap {
+			for _, formation := range formations {
+				if availableShips[formation.ShipName] < formation.Quantity {
+					return errors.New("error! found insufficient ships for attack formation")
+				}
+				availableShips[formation.ShipName] -= formation.Quantity
+				currentLevel := strconv.Itoa(planetUser.GetShip(formation.ShipName).Level)
+				speed := a.militaryConstants[formation.ShipName].Levels[currentLevel]["speed"].(int)
+				if squadSpeed < float64(speed) {
+					squadSpeed = float64(speed)
 				}
 			}
 		}
-		blocks := distance(*fromPlanetUni, *toPlanetUni)
-		totalSecondsRequired := blocks * squadSpeed
-		missionTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
-		returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
-		attackMission, err := attackRequest.GetAttackMission(primitive.NewDateTimeFromTime(missionTime), primitive.NewDateTimeFromTime(returnTime))
-		if err != nil {
-			return err
-		}
-		err = a.missionRepository.AddAttackMission(*attackMission)
-		if err != nil {
-			return err
-		}
-		return nil
 	}
-	return errors.New("error occurred in retrieving planet data")
+	blocks := distance(*fromPlanetUni, *toPlanetUni)
+	totalSecondsRequired := blocks * squadSpeed
+	missionTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired))
+	returnTime := time.Now().Add(time.Second * time.Duration(totalSecondsRequired) * 2)
+	attackMission, err := attackRequest.GetAttackMission(primitive.NewDateTimeFromTime(missionTime), primitive.NewDateTimeFromTime(returnTime))
+	if err != nil {
+		return err
+	}
+	err = a.missionRepository.AddAttackMission(*attackMission)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func distance(fromPlanet repoModels.PlanetUni, toPlanet repoModels.PlanetUni) float64 {

@@ -52,7 +52,7 @@ func generateSectorData(allOccupiedPlanetIds map[string]repoModels.PlanetUser,
 		if err != nil {
 			planetData.Init(planetUni, repoModels.PlanetUser{}, "")
 		} else {
-			planetData.Init(planetUni, userData.OccupiedPlanets[planetId], userData.Profile.Username)
+			planetData.Init(planetUni, *userData.GetOccupiedPlanet(planetId), userData.Profile.Username)
 		}
 		homeSector.UnoccupiedPlanets = append(homeSector.UnoccupiedPlanets, planetData)
 	}

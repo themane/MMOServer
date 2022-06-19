@@ -50,7 +50,7 @@ func (e *Experience) Init(profileUser models.ProfileUser, userExperienceConstant
 func (c *Clan) Init(userData models.UserData, clan models.ClanData) {
 	c.Name = clan.Name
 	for _, clanMember := range clan.Members {
-		if clanMember.MemberId == userData.Id {
+		if clanMember.Id == userData.Id {
 			c.Role = clanMember.Role
 			break
 		}

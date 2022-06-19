@@ -21,11 +21,17 @@ func InitAllResearches(planetUser repoModels.PlanetUser,
 
 	var researches []Research
 	for researchName, researchConstant := range researchConstants {
-		currentLevel := planetUser.Researches[researchName].Level
+		var currentLevel int
+		research := planetUser.GetResearch(researchName)
+		if research == nil {
+			currentLevel = 0
+		} else {
+			currentLevel = research.Level
+		}
 		r := Research{
 			Name:        researchName,
 			Description: researchConstant.Description,
-			Level:       planetUser.Researches[researchName].Level,
+			Level:       currentLevel,
 		}
 		if currentLevel > 0 {
 			r.Bonus = researchConstant.Bonus[strconv.Itoa(currentLevel)]
@@ -34,7 +40,7 @@ func InitAllResearches(planetUser repoModels.PlanetUser,
 			r.NextLevelBonus = researchConstant.Bonus[strconv.Itoa(currentLevel+1)]
 			r.NextLevelRequirements.Init(currentLevel, researchConstant)
 		}
-		r.ResearchState.Init(planetUser.Researches[researchName], researchConstant)
+		r.ResearchState.Init(research, researchConstant)
 		researches = append(researches, r)
 	}
 	return researches

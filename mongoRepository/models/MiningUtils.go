@@ -20,10 +20,10 @@ func GetMiningRate(userData UserData, occupiedPlanets []PlanetUni,
 	planetIdWaterMiningRateMap := map[string]map[string]int{}
 	planetIdGrapheneMiningRateMap := map[string]map[string]int{}
 	for _, planetUni := range occupiedPlanets {
-		planetUser := userData.OccupiedPlanets[planetUni.Id]
+		planetUser := userData.GetOccupiedPlanet(planetUni.Id)
 		for _, mineUni := range planetUni.Mines {
-			mineUser := planetUser.Mines[mineUni.Id]
-			miningPlant := planetUser.Buildings[GetMiningPlantId(mineUni.Id)]
+			mineUser := planetUser.GetMine(mineUni.Id)
+			miningPlant := planetUser.GetBuilding(GetMiningPlantId(mineUni.Id))
 
 			var miningRatePerWorker int
 			if mineUni.Type == constants.Water {

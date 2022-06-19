@@ -53,7 +53,7 @@ func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 		if militaryConstant, ok := militaryConstants[unitName]; ok {
 			if militaryConstant.Type == constants.Defender {
 				d := military.Defence{}
-				d.Init(unitName, planetUser.Defences[unitName], militaryConstant.Levels)
+				d.Init(unitName, *planetUser.GetDefence(unitName), militaryConstant.Levels)
 				p.Defences = append(p.Defences, d)
 			}
 		}

@@ -8,9 +8,18 @@ import (
 )
 
 type UserData struct {
-	Id              string                `json:"_id" bson:"_id" `
-	Profile         ProfileUser           `json:"profile" bson:"profile"`
-	OccupiedPlanets map[string]PlanetUser `json:"occupied_planets" bson:"occupied_planets"`
+	Id              string       `json:"_id" bson:"_id" `
+	Profile         ProfileUser  `json:"profile" bson:"profile"`
+	OccupiedPlanets []PlanetUser `json:"occupied_planets" bson:"occupied_planets"`
+}
+
+func (u *UserData) GetOccupiedPlanet(planetId string) *PlanetUser {
+	for _, planet := range u.OccupiedPlanets {
+		if planet.Id == planetId {
+			return &planet
+		}
+	}
+	return nil
 }
 
 type ProfileUser struct {
@@ -21,18 +30,19 @@ type ProfileUser struct {
 }
 
 type PlanetUser struct {
-	Water               Resource                      `json:"water" bson:"water"`
-	Graphene            Resource                      `json:"graphene" bson:"graphene"`
-	Shelio              int                           `json:"shelio" bson:"shelio"`
-	Population          Population                    `json:"population" bson:"population"`
-	Mines               map[string]MineUser           `json:"mines" bson:"mines"`
-	Ships               map[string]Ship               `json:"ships" bson:"ships"`
-	Defences            map[string]Defence            `json:"defences" bson:"defences"`
-	DefenceShipCarriers map[string]DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
-	Buildings           map[string]Building           `json:"buildings" bson:"buildings"`
-	Researches          map[string]ResearchUser       `json:"researches" bson:"researches"`
-	HomePlanet          bool                          `json:"home_planet" bson:"home_planet"`
-	BasePlanet          bool                          `json:"base_planet" bson:"base_planet"`
+	Id                  string               `json:"_id" bson:"_id"`
+	Water               Resource             `json:"water" bson:"water"`
+	Graphene            Resource             `json:"graphene" bson:"graphene"`
+	Shelio              int                  `json:"shelio" bson:"shelio"`
+	Population          Population           `json:"population" bson:"population"`
+	Mines               []MineUser           `json:"mines" bson:"mines"`
+	Ships               []Ship               `json:"ships" bson:"ships"`
+	Defences            []Defence            `json:"defences" bson:"defences"`
+	DefenceShipCarriers []DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
+	Buildings           []Building           `json:"buildings" bson:"buildings"`
+	Researches          []ResearchUser       `json:"researches" bson:"researches"`
+	HomePlanet          bool                 `json:"home_planet" bson:"home_planet"`
+	BasePlanet          bool                 `json:"base_planet" bson:"base_planet"`
 }
 
 func (p *PlanetUser) GetAvailableShip(shipName string) int {
@@ -40,19 +50,78 @@ func (p *PlanetUser) GetAvailableShip(shipName string) int {
 	for _, defenceShipCarrier := range p.DefenceShipCarriers {
 		defenceShipCarrierDeployed += defenceShipCarrier.HostingShips[shipName]
 	}
-	return p.Ships[shipName].Quantity - defenceShipCarrierDeployed
+	for _, ship := range p.Ships {
+		if ship.Name == shipName {
+			return ship.Quantity - defenceShipCarrierDeployed
+		}
+	}
+	return 0
 }
 
 func (p *PlanetUser) GetAvailableShips() map[string]int {
 	response := map[string]int{}
-	for shipName, ship := range p.Ships {
+	for _, ship := range p.Ships {
 		var defenceShipCarrierDeployed int
 		for _, defenceShipCarrier := range p.DefenceShipCarriers {
-			defenceShipCarrierDeployed += defenceShipCarrier.HostingShips[shipName]
+			defenceShipCarrierDeployed += defenceShipCarrier.HostingShips[ship.Name]
 		}
-		response[shipName] = ship.Quantity - defenceShipCarrierDeployed
+		response[ship.Name] = ship.Quantity - defenceShipCarrierDeployed
 	}
 	return response
+}
+
+func (p *PlanetUser) GetMine(mineId string) *MineUser {
+	for _, mine := range p.Mines {
+		if mine.Id == mineId {
+			return &mine
+		}
+	}
+	return nil
+}
+
+func (p *PlanetUser) GetBuilding(buildingId string) *Building {
+	for _, building := range p.Buildings {
+		if building.Id == buildingId {
+			return &building
+		}
+	}
+	return nil
+}
+
+func (p *PlanetUser) GetShip(shipName string) *Ship {
+	for _, ship := range p.Ships {
+		if ship.Name == shipName {
+			return &ship
+		}
+	}
+	return nil
+}
+
+func (p *PlanetUser) GetDefence(defenceName string) *Defence {
+	for _, defence := range p.Defences {
+		if defence.Name == defenceName {
+			return &defence
+		}
+	}
+	return nil
+}
+
+func (p *PlanetUser) GetDefenceShipCarrier(id string) *DefenceShipCarrier {
+	for _, defenceShipCarrier := range p.DefenceShipCarriers {
+		if defenceShipCarrier.Id == id {
+			return &defenceShipCarrier
+		}
+	}
+	return nil
+}
+
+func (p *PlanetUser) GetResearch(researchName string) *ResearchUser {
+	for _, research := range p.Researches {
+		if research.Name == researchName {
+			return &research
+		}
+	}
+	return nil
 }
 
 type Resource struct {
@@ -62,8 +131,9 @@ type Resource struct {
 }
 
 type ResearchUser struct {
-	Level                    int `json:"level" bson:"level"`
-	ResearchMinutesPerWorker int `json:"research_minutes_per_worker" bson:"research_minutes_per_worker"`
+	Name                     string `json:"name" bson:"name"`
+	Level                    int    `json:"level" bson:"level"`
+	ResearchMinutesPerWorker int    `json:"research_minutes_per_worker" bson:"research_minutes_per_worker"`
 }
 
 type Population struct {
@@ -80,16 +150,16 @@ func GetEmployedPopulation(planetUser PlanetUser, militaryConstants map[string]c
 		totalEmployedWorkers += building.Workers
 		totalEmployedSoldiers += building.Soldiers
 	}
-	for shipName, ship := range planetUser.Ships {
+	for _, ship := range planetUser.Ships {
 		if ship.Level > 0 {
-			totalEmployedWorkers += ship.Quantity * int(militaryConstants[shipName].Levels[strconv.Itoa(ship.Level)]["workers_required"].(float64))
-			totalEmployedSoldiers += ship.Quantity * int(militaryConstants[shipName].Levels[strconv.Itoa(ship.Level)]["soldiers_required"].(float64))
+			totalEmployedWorkers += ship.Quantity * int(militaryConstants[ship.Name].Levels[strconv.Itoa(ship.Level)]["workers_required"].(float64))
+			totalEmployedSoldiers += ship.Quantity * int(militaryConstants[ship.Name].Levels[strconv.Itoa(ship.Level)]["soldiers_required"].(float64))
 		}
 	}
-	for defenceName, defence := range planetUser.Defences {
+	for _, defence := range planetUser.Defences {
 		if defence.Level > 0 {
-			totalEmployedWorkers += defence.Quantity * int(militaryConstants[defenceName].Levels[strconv.Itoa(defence.Level)]["workers_required"].(float64))
-			totalEmployedSoldiers += defence.Quantity * int(militaryConstants[defenceName].Levels[strconv.Itoa(defence.Level)]["soldiers_required"].(float64))
+			totalEmployedWorkers += defence.Quantity * int(militaryConstants[defence.Name].Levels[strconv.Itoa(defence.Level)]["workers_required"].(float64))
+			totalEmployedSoldiers += defence.Quantity * int(militaryConstants[defence.Name].Levels[strconv.Itoa(defence.Level)]["soldiers_required"].(float64))
 		}
 	}
 	for _, defenceShipCarrier := range planetUser.DefenceShipCarriers {
@@ -102,23 +172,26 @@ func GetEmployedPopulation(planetUser PlanetUser, militaryConstants map[string]c
 }
 
 type MineUser struct {
-	Mined int `json:"mined" bson:"mined"`
+	Id    string `json:"_id" bson:"_id"`
+	Mined int    `json:"mined" bson:"mined"`
 }
 
 type Building struct {
-	BuildingLevel            int `json:"building_level" bson:"building_level"`
-	Workers                  int `json:"workers" bson:"workers"`
-	Soldiers                 int `json:"soldiers" bson:"soldiers"`
-	BuildingMinutesPerWorker int `json:"building_minutes_per_worker" bson:"building_minutes_per_worker"`
+	Id                       string `json:"_id" bson:"_id"`
+	BuildingLevel            int    `json:"building_level" bson:"building_level"`
+	Workers                  int    `json:"workers" bson:"workers"`
+	Soldiers                 int    `json:"soldiers" bson:"soldiers"`
+	BuildingMinutesPerWorker int    `json:"building_minutes_per_worker" bson:"building_minutes_per_worker"`
 }
 
 type Ship struct {
+	Name              string            `json:"name" bson:"name"`
 	Level             int               `json:"level" bson:"level"`
 	Quantity          int               `json:"quantity" bson:"quantity"`
 	UnderConstruction UnderConstruction `json:"under_construction" bson:"under_construction"`
 }
 
-func GetAvailableShips(unitName string, attackMissions []AttackMission, defenceShipCarriers map[string]DefenceShipCarrier, totalUnits int) int {
+func GetAvailableShips(unitName string, attackMissions []AttackMission, defenceShipCarriers []DefenceShipCarrier, totalUnits int) int {
 	deployedUnits := 0
 	for _, mission := range attackMissions {
 		for _, shieldFormation := range mission.Formation {
@@ -142,6 +215,7 @@ func GetAvailableScouts(unitName string, spyMissions []SpyMission, totalUnits in
 }
 
 type Defence struct {
+	Name              string            `json:"name" bson:"name"`
 	Level             int               `json:"level" bson:"level"`
 	Quantity          int               `json:"quantity" bson:"quantity"`
 	GuardingShield    map[string]int    `json:"guarding_shield" bson:"guarding_shield"`
@@ -157,6 +231,7 @@ func GetIdleDefences(guardingShield map[string]int, totalUnits int) int {
 }
 
 type DefenceShipCarrier struct {
+	Id                string            `json:"_id" bson:"_id"`
 	Name              string            `json:"name" bson:"name"`
 	Level             int               `json:"level" bson:"level"`
 	HostingShips      map[string]int    `json:"hosting_ships" bson:"hosting_ships"`

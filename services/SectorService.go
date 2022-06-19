@@ -67,7 +67,11 @@ func (s *SectorService) Visit(username string, sectorId string) (*controllerMode
 	}
 
 	var response controllerModels.SectorResponse
-	sector, err := generateSectorData(userData.OccupiedPlanets, *sectorPosition, sectorData, "",
+	occupiedPlanets := map[string]repoModels.PlanetUser{}
+	for _, occupiedPlanet := range userData.OccupiedPlanets {
+		occupiedPlanets[occupiedPlanet.Id] = occupiedPlanet
+	}
+	sector, err := generateSectorData(occupiedPlanets, *sectorPosition, sectorData, "",
 		s.userRepository, s.missionRepository,
 		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants,
 		s.militaryConstants, s.researchConstants, s.speciesConstants[userData.Profile.Species],
@@ -78,7 +82,7 @@ func (s *SectorService) Visit(username string, sectorId string) (*controllerMode
 	}
 	response.Sector = *sector
 
-	response.OccupiedPlanets, err = generateOccupiedPlanetsData(userData.OccupiedPlanets,
+	response.OccupiedPlanets, err = generateOccupiedPlanetsData(occupiedPlanets,
 		sectorPosition.SectorId(), sectorData, s.universeRepository)
 	if err != nil {
 		return nil, err
@@ -100,7 +104,7 @@ func (s *SectorService) Teleport(username string, planetId string) (*controllerM
 	if err != nil {
 		return nil, err
 	}
-	if _, ok := userData.OccupiedPlanets[planetId]; !ok {
+	if userData.GetOccupiedPlanet(planetId) == nil {
 		return nil, errors.New("not a user occupied planet")
 	}
 	planetPosition, err := models.InitPlanetPositionById(planetId)
@@ -113,7 +117,11 @@ func (s *SectorService) Teleport(username string, planetId string) (*controllerM
 	}
 
 	var response controllerModels.SectorResponse
-	sector, err := generateSectorData(userData.OccupiedPlanets, planetPosition.SectorPosition(), sectorData, planetPosition.PlanetId(),
+	occupiedPlanets := map[string]repoModels.PlanetUser{}
+	for _, occupiedPlanet := range userData.OccupiedPlanets {
+		occupiedPlanets[occupiedPlanet.Id] = occupiedPlanet
+	}
+	sector, err := generateSectorData(occupiedPlanets, planetPosition.SectorPosition(), sectorData, planetPosition.PlanetId(),
 		s.userRepository, s.missionRepository,
 		s.upgradeConstants, s.buildingConstants, s.waterConstants, s.grapheneConstants,
 		s.militaryConstants, s.researchConstants, s.speciesConstants[userData.Profile.Species],
@@ -124,7 +132,7 @@ func (s *SectorService) Teleport(username string, planetId string) (*controllerM
 	}
 	response.Sector = *sector
 
-	response.OccupiedPlanets, err = generateOccupiedPlanetsData(userData.OccupiedPlanets,
+	response.OccupiedPlanets, err = generateOccupiedPlanetsData(occupiedPlanets,
 		planetPosition.SectorId(), sectorData, s.universeRepository)
 	if err != nil {
 		return nil, err

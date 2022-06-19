@@ -30,12 +30,13 @@ func InitAttackProductionCenter(planetUser repoModels.PlanetUser,
 
 	u := new(UnitProductionCenter)
 	u.BuildingId = constants.AttackProductionCenter
-	u.Level = planetUser.Buildings[constants.AttackProductionCenter].BuildingLevel
-	u.Workers = planetUser.Buildings[constants.AttackProductionCenter].Workers
-	u.Soldiers = planetUser.Buildings[constants.AttackProductionCenter].Soldiers
-	u.BuildingState.Init(planetUser.Buildings[constants.AttackProductionCenter], attackProductionCenterUpgradeConstants)
-	u.NextLevelRequirements.Init(planetUser.Buildings[constants.AttackProductionCenter].BuildingLevel, attackProductionCenterUpgradeConstants)
-	u.BuildingAttributes.Init(planetUser.Buildings[constants.AttackProductionCenter].BuildingLevel,
+	attackProductionCenter := planetUser.GetBuilding(constants.AttackProductionCenter)
+	u.Level = attackProductionCenter.BuildingLevel
+	u.Workers = attackProductionCenter.Workers
+	u.Soldiers = attackProductionCenter.Soldiers
+	u.BuildingState.Init(*attackProductionCenter, attackProductionCenterUpgradeConstants)
+	u.NextLevelRequirements.Init(attackProductionCenter.BuildingLevel, attackProductionCenterUpgradeConstants)
+	u.BuildingAttributes.Init(attackProductionCenter.BuildingLevel,
 		attackProductionCenterUpgradeConstants.MaxLevel, attackProductionCenterBuildingConstants, constants.GetShipAttributes())
 	return u
 }
@@ -46,12 +47,13 @@ func InitDefenceProductionCenter(planetUser repoModels.PlanetUser,
 
 	u := new(UnitProductionCenter)
 	u.BuildingId = constants.DefenceProductionCenter
-	u.Level = planetUser.Buildings[constants.DefenceProductionCenter].BuildingLevel
-	u.Workers = planetUser.Buildings[constants.DefenceProductionCenter].Workers
-	u.Soldiers = planetUser.Buildings[constants.DefenceProductionCenter].Soldiers
-	u.BuildingState.Init(planetUser.Buildings[constants.DefenceProductionCenter], defenceProductionCenterUpgradeConstants)
-	u.NextLevelRequirements.Init(planetUser.Buildings[constants.DefenceProductionCenter].BuildingLevel, defenceProductionCenterUpgradeConstants)
-	u.BuildingAttributes.Init(planetUser.Buildings[constants.DefenceProductionCenter].BuildingLevel,
+	defenceProductionCenter := planetUser.GetBuilding(constants.DefenceProductionCenter)
+	u.Level = defenceProductionCenter.BuildingLevel
+	u.Workers = defenceProductionCenter.Workers
+	u.Soldiers = defenceProductionCenter.Soldiers
+	u.BuildingState.Init(*defenceProductionCenter, defenceProductionCenterUpgradeConstants)
+	u.NextLevelRequirements.Init(defenceProductionCenter.BuildingLevel, defenceProductionCenterUpgradeConstants)
+	u.BuildingAttributes.Init(defenceProductionCenter.BuildingLevel,
 		defenceProductionCenterUpgradeConstants.MaxLevel, defenceProductionCenterBuildingConstants, constants.GetDefenceAttributes())
 	return u
 }

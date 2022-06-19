@@ -70,13 +70,13 @@ func InitAllDefenceShipCarriers(planetUser repoModels.PlanetUser,
 		if defenceConstant.Type == constants.DefenceShipCarrier {
 			d := DefenceShipCarrier{Name: unitName}
 			d.CreationRequirements.Init(defenceConstants[unitName].Levels["1"])
-			for id, defenceShipCarrierUser := range planetUser.DefenceShipCarriers {
+			for _, defenceShipCarrierUser := range planetUser.DefenceShipCarriers {
 				if defenceShipCarrierUser.Name == unitName {
 					currentLevelString := strconv.Itoa(defenceShipCarrierUser.Level)
 					u := DefenceShipCarrierUnit{
-						Id:            id,
+						Id:            defenceShipCarrierUser.Id,
 						Level:         defenceShipCarrierUser.Level,
-						DeployedShips: GetDeployedShips(planetUser.Ships, defenceShipCarrierUser.HostingShips),
+						DeployedShips: GetDeployedShips(planetUser, defenceShipCarrierUser.HostingShips),
 						Idle:          defenceShipCarrierUser.GuardingShield == "",
 					}
 					u.DefenceAttributes.Init(defenceConstants[unitName].Levels[currentLevelString])
@@ -92,12 +92,12 @@ func InitAllDefenceShipCarriers(planetUser repoModels.PlanetUser,
 	return defenceShipCarriers
 }
 
-func GetDeployedShips(ships map[string]repoModels.Ship, hostingShips map[string]int) []DeployedShip {
+func GetDeployedShips(planetUser repoModels.PlanetUser, hostingShips map[string]int) []DeployedShip {
 	var deployedShips []DeployedShip
 	for unitName, units := range hostingShips {
 		s := DeployedShip{
 			Name:  unitName,
-			Level: ships[unitName].Level,
+			Level: planetUser.GetShip(unitName).Level,
 			Units: units,
 		}
 		deployedShips = append(deployedShips, s)

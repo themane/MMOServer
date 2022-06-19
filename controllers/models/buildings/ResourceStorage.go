@@ -30,13 +30,13 @@ func InitWaterPressureTank(planetUser repoModels.PlanetUser,
 
 	r := new(ResourceStorage)
 	r.BuildingId = constants.WaterPressureTank
-	r.Level = planetUser.Buildings[constants.WaterPressureTank].BuildingLevel
-	r.Workers = planetUser.Buildings[constants.WaterPressureTank].Workers
-	r.Soldiers = planetUser.Buildings[constants.WaterPressureTank].Soldiers
-	r.BuildingState.Init(planetUser.Buildings[constants.WaterPressureTank], upgradeConstants)
-	r.NextLevelRequirements.Init(planetUser.Buildings[constants.WaterPressureTank].BuildingLevel, upgradeConstants)
-	r.BuildingAttributes.Init(planetUser.Buildings[constants.WaterPressureTank].BuildingLevel,
-		upgradeConstants.MaxLevel, buildingConstants)
+	waterPressureTank := planetUser.GetBuilding(constants.WaterPressureTank)
+	r.Level = waterPressureTank.BuildingLevel
+	r.Workers = waterPressureTank.Workers
+	r.Soldiers = waterPressureTank.Soldiers
+	r.BuildingState.Init(*waterPressureTank, upgradeConstants)
+	r.NextLevelRequirements.Init(waterPressureTank.BuildingLevel, upgradeConstants)
+	r.BuildingAttributes.Init(waterPressureTank.BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
 	return r
 }
 
@@ -46,13 +46,13 @@ func InitDiamondStorage(planetUser repoModels.PlanetUser,
 
 	r := new(ResourceStorage)
 	r.BuildingId = constants.DiamondStorage
-	r.Level = planetUser.Buildings[constants.DiamondStorage].BuildingLevel
-	r.Workers = planetUser.Buildings[constants.DiamondStorage].Workers
-	r.Soldiers = planetUser.Buildings[constants.DiamondStorage].Soldiers
-	r.BuildingState.Init(planetUser.Buildings[constants.DiamondStorage], upgradeConstants)
-	r.NextLevelRequirements.Init(planetUser.Buildings[constants.DiamondStorage].BuildingLevel, upgradeConstants)
-	r.BuildingAttributes.Init(planetUser.Buildings[constants.DiamondStorage].BuildingLevel,
-		upgradeConstants.MaxLevel, buildingConstants)
+	diamondStorage := planetUser.GetBuilding(constants.DiamondStorage)
+	r.Level = diamondStorage.BuildingLevel
+	r.Workers = diamondStorage.Workers
+	r.Soldiers = diamondStorage.Soldiers
+	r.BuildingState.Init(*diamondStorage, upgradeConstants)
+	r.NextLevelRequirements.Init(diamondStorage.BuildingLevel, upgradeConstants)
+	r.BuildingAttributes.Init(diamondStorage.BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
 	return r
 }
 

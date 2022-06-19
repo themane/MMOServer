@@ -32,21 +32,23 @@ func (u *UnitsDeploymentService) DeployShipsOnDefenceShipCarrier(username string
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		if defenceShipCarrier, ok := planetUser.DefenceShipCarriers[unitId]; ok {
-			err = u.validateShipsChanges(ships, planetId, defenceShipCarrier, planetUser)
-			if err != nil {
-				return err
-			}
-			err = u.userRepository.DeployShipsOnDefenceShipCarrier(userData.Id, planetId, unitId, ships)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-		return errors.New("unit not valid")
+	occupiedPlanet := userData.GetOccupiedPlanet(planetId)
+	if occupiedPlanet == nil {
+		return errors.New("planet not occupied")
 	}
-	return errors.New("planet not occupied")
+	defenceShipCarrier := occupiedPlanet.GetDefenceShipCarrier(unitId)
+	if defenceShipCarrier == nil {
+		return errors.New("defence ship carrier id not valid")
+	}
+	err = u.validateShipsChanges(ships, planetId, *defenceShipCarrier, *occupiedPlanet)
+	if err != nil {
+		return err
+	}
+	err = u.userRepository.DeployShipsOnDefenceShipCarrier(userData.Id, planetId, unitId, ships)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *UnitsDeploymentService) validateShipsChanges(ships map[string]int, planetId string,
@@ -60,7 +62,8 @@ func (u *UnitsDeploymentService) validateShipsChanges(ships map[string]int, plan
 		if err != nil {
 			return err
 		}
-		if repoModels.GetAvailableShips(shipName, attackMissions, planetUser.DefenceShipCarriers, planetUser.Ships[shipName].Quantity)+defenceShipCarrier.HostingShips[shipName] < quantity {
+		availableShips := repoModels.GetAvailableShips(shipName, attackMissions, planetUser.DefenceShipCarriers, planetUser.GetShip(shipName).Quantity)
+		if availableShips+defenceShipCarrier.HostingShips[shipName] <= quantity {
 			return errors.New("not enough available ships")
 		}
 	}
@@ -72,18 +75,19 @@ func (u *UnitsDeploymentService) DeployDefencesOnShield(username string, planetI
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		err = u.validateDefenceChanges(defences, shieldId, planetUser)
-		if err != nil {
-			return err
-		}
-		err = u.userRepository.DeployDefencesOnShield(userData.Id, planetId, shieldId, defences)
-		if err != nil {
-			return err
-		}
-		return nil
+	occupiedPlanet := userData.GetOccupiedPlanet(planetId)
+	if occupiedPlanet == nil {
+		return errors.New("planet not occupied")
 	}
-	return errors.New("planet not occupied")
+	err = u.validateDefenceChanges(defences, shieldId, *occupiedPlanet)
+	if err != nil {
+		return err
+	}
+	err = u.userRepository.DeployDefencesOnShield(userData.Id, planetId, shieldId, defences)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *UnitsDeploymentService) validateDefenceChanges(defences map[string]int, shieldId string,
@@ -93,8 +97,9 @@ func (u *UnitsDeploymentService) validateDefenceChanges(defences map[string]int,
 		if u.militaryConstants[defenceName].Type != constants.Defender {
 			return errors.New("not a defender")
 		}
-		defence := planetUser.Defences[defenceName]
-		if repoModels.GetIdleDefences(defence.GuardingShield, defence.Quantity)+defence.GuardingShield[shieldId] < quantity {
+		defence := planetUser.GetDefence(defenceName)
+		idleDefences := repoModels.GetIdleDefences(defence.GuardingShield, defence.Quantity)
+		if idleDefences+defence.GuardingShield[shieldId] <= quantity {
 			return errors.New("not enough idle defences")
 		}
 	}
@@ -106,21 +111,23 @@ func (u *UnitsDeploymentService) DeployDefenceShipCarrierOnShield(username strin
 	if err != nil {
 		return err
 	}
-	if planetUser, ok := userData.OccupiedPlanets[planetId]; ok {
-		if defenceShipCarrier, ok := planetUser.DefenceShipCarriers[unitId]; ok {
-			if deploy == false {
-				if defenceShipCarrier.GuardingShield != shieldId {
-					return errors.New("already not guarding")
-				}
-				shieldId = ""
-			}
-			err = u.userRepository.DeployDefenceShipCarrierOnShield(userData.Id, planetId, unitId, shieldId)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-		return errors.New("unit not valid")
+	occupiedPlanet := userData.GetOccupiedPlanet(planetId)
+	if occupiedPlanet == nil {
+		return errors.New("planet not occupied")
 	}
-	return errors.New("planet not occupied")
+	defenceShipCarrier := occupiedPlanet.GetDefenceShipCarrier(unitId)
+	if defenceShipCarrier == nil {
+		return errors.New("defence ship carrier id not valid")
+	}
+	if deploy == false {
+		if defenceShipCarrier.GuardingShield != shieldId {
+			return errors.New("already not guarding")
+		}
+		shieldId = ""
+	}
+	err = u.userRepository.DeployDefenceShipCarrierOnShield(userData.Id, planetId, unitId, shieldId)
+	if err != nil {
+		return err
+	}
+	return nil
 }

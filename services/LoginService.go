@@ -74,7 +74,11 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 
 	var response controllerModels.UserResponse
 	response.Profile.Init(*userData, clanData, l.userExperienceConstants)
-	homeSector, err := generateSectorData(userData.OccupiedPlanets,
+	occupiedPlanets := map[string]repoModels.PlanetUser{}
+	for _, occupiedPlanet := range userData.OccupiedPlanets {
+		occupiedPlanets[occupiedPlanet.Id] = occupiedPlanet
+	}
+	homeSector, err := generateSectorData(occupiedPlanets,
 		homePlanetPosition.SectorPosition(), homeSectorData, "",
 		l.userRepository, l.missionRepository,
 		l.upgradeConstants, l.buildingConstants, l.waterConstants, l.grapheneConstants,
@@ -85,7 +89,7 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 		return nil, err
 	}
 	response.HomeSector = *homeSector
-	response.OccupiedPlanets, err = generateOccupiedPlanetsData(userData.OccupiedPlanets,
+	response.OccupiedPlanets, err = generateOccupiedPlanetsData(occupiedPlanets,
 		homePlanetPosition.SectorId(), homeSectorData, l.universeRepository)
 	if err != nil {
 		return nil, err
@@ -102,10 +106,10 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 
 func getHomeSectorData(userData *repoModels.UserData, universeRepository repoModels.UniverseRepository) (*models.PlanetPosition, map[string]repoModels.PlanetUni, error) {
 	var homePlanetPosition *models.PlanetPosition
-	for planetId, planet := range userData.OccupiedPlanets {
+	for _, planet := range userData.OccupiedPlanets {
 		if planet.HomePlanet {
 			var err error
-			homePlanetPosition, err = models.InitPlanetPositionById(planetId)
+			homePlanetPosition, err = models.InitPlanetPositionById(planet.Id)
 			if err != nil {
 				return nil, nil, err
 			}
