@@ -6,6 +6,7 @@ import (
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserRepositoryImpl struct {
@@ -85,16 +86,23 @@ func (u *UserRepositoryImpl) UpgradeBuildingLevel(id string, planetId string, bu
 	filter := bson.M{"_id": id}
 	update := bson.M{
 		"$set": bson.M{
-			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_minutes_per_worker": minutesRequired,
+			"occupied_planets.$[planetElement].buildings.$[buildingElement].building_minutes_per_worker": minutesRequired,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_level": 1,
-			"occupied_planets." + planetId + ".water.amount":                                -waterRequired,
-			"occupied_planets." + planetId + ".graphene.amount":                             -grapheneRequired,
-			"occupied_planets." + planetId + ".shelio":                                      -shelioRequired,
+			"occupied_planets.$[planetElement].buildings.$[buildingElement].building_level": 1,
+			"occupied_planets.$[planetElement].water.amount":                                -waterRequired,
+			"occupied_planets.$[planetElement].graphene.amount":                             -grapheneRequired,
+			"occupied_planets.$[planetElement].shelio":                                      -shelioRequired,
 		},
 	}
-	result := u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	result := u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+				bson.M{"buildingElement._id": buildingId},
+			},
+		}),
+	)
 	bsonResult, err := result.DecodeBytes()
 	if err != nil {
 		return err
@@ -112,16 +120,23 @@ func (u *UserRepositoryImpl) CancelUpgradeBuildingLevel(id string, planetId stri
 	filter := bson.M{"_id": id}
 	update := bson.M{
 		"$set": bson.M{
-			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_minutes_per_worker": 0,
+			"occupied_planets.$[planetElement].buildings.$[buildingElement].building_minutes_per_worker": 0,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".buildings." + buildingId + ".building_level": -1,
-			"occupied_planets." + planetId + ".water.amount":                                waterReturned,
-			"occupied_planets." + planetId + ".graphene.amount":                             grapheneReturned,
-			"occupied_planets." + planetId + ".shelio":                                      shelioReturned,
+			"occupied_planets.$[planetElement].buildings.$[buildingElement].building_level": -1,
+			"occupied_planets.$[planetElement].water.amount":                                waterReturned,
+			"occupied_planets.$[planetElement].graphene.amount":                             grapheneReturned,
+			"occupied_planets.$[planetElement].shelio":                                      shelioReturned,
 		},
 	}
-	result := u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	result := u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+				bson.M{"buildingElement._id": buildingId},
+			},
+		}),
+	)
 	bsonResult, err := result.DecodeBytes()
 	if err != nil {
 		return err
@@ -136,10 +151,17 @@ func (u *UserRepositoryImpl) UpdateWorkers(id string, planetId string, buildingI
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".buildings." + buildingId + ".workers": workers,
-		"occupied_planets." + planetId + ".population.workers":                   -workers,
+		"occupied_planets.$[planetElement].buildings.$[buildingElement].workers": workers,
+		"occupied_planets.$[planetElement].population.workers":                   -workers,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+				bson.M{"buildingElement._id": buildingId},
+			},
+		}),
+	)
 	u.logger.Printf("Employed workers updated id: %s, planetId: %s, buildingId: %s, workers: %s\n", id, planetId, buildingId, workers)
 	return nil
 }
@@ -149,10 +171,17 @@ func (u *UserRepositoryImpl) UpdateSoldiers(id string, planetId string, building
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".buildings." + buildingId + ".soldiers": soldiers,
-		"occupied_planets." + planetId + ".population.soldiers":                   -soldiers,
+		"occupied_planets.$[planetElement].buildings.$[buildingElement].soldiers": soldiers,
+		"occupied_planets.$[planetElement].population.soldiers":                   -soldiers,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+				bson.M{"buildingElement._id": buildingId},
+			},
+		}),
+	)
 	u.logger.Printf("Employed soldiers updated id: %s, planetId: %s, buildingId: %s, soldiers: %s\n", id, planetId, buildingId, soldiers)
 	return nil
 }
@@ -162,9 +191,15 @@ func (u *UserRepositoryImpl) UpdatePopulationRate(id string, planetId string, ge
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{
-		"occupied_planets." + planetId + ".population.generation_rate": generationRate,
+		"occupied_planets.$[planetElement].population.generation_rate": generationRate,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+			},
+		}),
+	)
 	u.logger.Printf("Updated population generation rate id: %s, planetId: %s, rate: %s\n", id, planetId, generationRate)
 	return nil
 }
@@ -174,11 +209,17 @@ func (u *UserRepositoryImpl) Recruit(id string, planetId string, workers int, so
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".population.unemployed": -(workers + soldiers),
-		"occupied_planets." + planetId + ".population.workers":    workers,
-		"occupied_planets." + planetId + ".population.soldiers":   soldiers,
+		"occupied_planets.$[planetElement].population.unemployed": -(workers + soldiers),
+		"occupied_planets.$[planetElement].population.workers":    workers,
+		"occupied_planets.$[planetElement].population.soldiers":   soldiers,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+			},
+		}),
+	)
 	u.logger.Printf("Assigned workers and soldiers id: %s, planetId: %s, workers: %s, soldiers: %s\n", id, planetId, workers, soldiers)
 	return nil
 }
@@ -188,11 +229,17 @@ func (u *UserRepositoryImpl) KillPopulation(id string, planetId string, unemploy
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".population.unemployed": -unemployed,
-		"occupied_planets." + planetId + ".population.workers":    -workers,
-		"occupied_planets." + planetId + ".population.soldiers":   -soldiers,
+		"occupied_planets.$[planetElement].population.unemployed": -unemployed,
+		"occupied_planets.$[planetElement].population.workers":    -workers,
+		"occupied_planets.$[planetElement].population.soldiers":   -soldiers,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+			},
+		}),
+	)
 	u.logger.Printf("Killed population: %s, planetId: %s, unemployed: %s, workers: %s, soldiers: %s\n", id, planetId, unemployed, workers, soldiers)
 	return nil
 }
@@ -202,12 +249,18 @@ func (u *UserRepositoryImpl) ReserveResources(id string, planetId string, water 
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".water.reserving":    water,
-		"occupied_planets." + planetId + ".water.amount":       -water,
-		"occupied_planets." + planetId + ".graphene.reserving": graphene,
-		"occupied_planets." + planetId + ".graphene.amount":    -graphene,
+		"occupied_planets.$[planetElement].water.reserving":    water,
+		"occupied_planets.$[planetElement].water.amount":       -water,
+		"occupied_planets.$[planetElement].graphene.reserving": graphene,
+		"occupied_planets.$[planetElement].graphene.amount":    -graphene,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+			},
+		}),
+	)
 	u.logger.Printf("Marked for reserving resources: %s, planetId: %s, water: %s, graphene: %s\n", id, planetId, water, graphene)
 	return nil
 }
@@ -217,12 +270,18 @@ func (u *UserRepositoryImpl) ExtractReservedResources(id string, planetId string
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".water.reserved":    -water,
-		"occupied_planets." + planetId + ".water.amount":      water,
-		"occupied_planets." + planetId + ".graphene.reserved": -graphene,
-		"occupied_planets." + planetId + ".graphene.amount":   graphene,
+		"occupied_planets.$[planetElement].water.reserved":    -water,
+		"occupied_planets.$[planetElement].water.amount":      water,
+		"occupied_planets.$[planetElement].graphene.reserved": -graphene,
+		"occupied_planets.$[planetElement].graphene.amount":   graphene,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+			},
+		}),
+	)
 	u.logger.Printf("Extracted reserved resources: %s, planetId: %s, water: %s, graphene: %s\n", id, planetId, water, graphene)
 	return nil
 }
@@ -234,13 +293,20 @@ func (u *UserRepositoryImpl) Research(id string, planetId string, researchName s
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".researches." + researchName + ".level":                       1,
-		"occupied_planets." + planetId + ".researches." + researchName + ".research_minutes_per_worker": minutesRequired,
-		"occupied_planets." + planetId + ".water.amount":                                                -waterRequired,
-		"occupied_planets." + planetId + ".graphene.amount":                                             -grapheneRequired,
-		"occupied_planets." + planetId + ".shelio":                                                      -shelioRequired,
+		"occupied_planets.$[planetElement].researches.$[researchElement].level":                       1,
+		"occupied_planets.$[planetElement].researches.$[researchElement].research_minutes_per_worker": minutesRequired,
+		"occupied_planets.$[planetElement].water.amount":                                              -waterRequired,
+		"occupied_planets.$[planetElement].graphene.amount":                                           -grapheneRequired,
+		"occupied_planets.$[planetElement].shelio":                                                    -shelioRequired,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+				bson.M{"researchElement.name": researchName},
+			},
+		}),
+	)
 	u.logger.Printf("Initiated research: %s, planetId: %s, researchName: %s\n", id, planetId, researchName)
 	return nil
 }
@@ -252,13 +318,20 @@ func (u *UserRepositoryImpl) ResearchUpgrade(id string, planetId string, researc
 	defer disconnect(client, ctx)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{
-		"occupied_planets." + planetId + ".researches." + researchName + ".level":                       1,
-		"occupied_planets." + planetId + ".researches." + researchName + ".research_minutes_per_worker": minutesRequired,
-		"occupied_planets." + planetId + ".water.amount":                                                -waterRequired,
-		"occupied_planets." + planetId + ".graphene.amount":                                             -grapheneRequired,
-		"occupied_planets." + planetId + ".shelio":                                                      -shelioRequired,
+		"occupied_planets.$[planetElement].researches.$[researchElement].level":                       1,
+		"occupied_planets.$[planetElement].researches.$[researchElement].research_minutes_per_worker": minutesRequired,
+		"occupied_planets.$[planetElement].water.amount":                                              -waterRequired,
+		"occupied_planets.$[planetElement].graphene.amount":                                           -grapheneRequired,
+		"occupied_planets.$[planetElement].shelio":                                                    -shelioRequired,
 	}}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+				bson.M{"researchElement.name": researchName},
+			},
+		}),
+	)
 	u.logger.Printf("Initiated research: %s, planetId: %s, researchName: %s\n", id, planetId, researchName)
 	return nil
 }
@@ -271,16 +344,23 @@ func (u *UserRepositoryImpl) CancelResearch(id string, planetId string, research
 	filter := bson.M{"_id": id}
 	update := bson.M{
 		"$set": bson.M{
-			"occupied_planets." + planetId + ".researches." + researchName + ".research_minutes_per_worker": 0,
+			"occupied_planets.$[planetElement].researches.$[researchElement].research_minutes_per_worker": 0,
 		},
 		"$inc": bson.M{
-			"occupied_planets." + planetId + ".researches." + researchName + ".level": -1,
-			"occupied_planets." + planetId + ".water.amount":                          waterReturned,
-			"occupied_planets." + planetId + ".graphene.amount":                       grapheneReturned,
-			"occupied_planets." + planetId + ".shelio":                                shelioReturned,
+			"occupied_planets.$[planetElement].researches.$[researchElement].level": -1,
+			"occupied_planets.$[planetElement].water.amount":                        waterReturned,
+			"occupied_planets.$[planetElement].graphene.amount":                     grapheneReturned,
+			"occupied_planets.$[planetElement].shelio":                              shelioReturned,
 		},
 	}
-	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update,
+		options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.M{"planetElement._id": planetId},
+				bson.M{"researchElement.name": researchName},
+			},
+		}),
+	)
 	u.logger.Printf("Canceled research: %s, planetId: %s, researchName: %s\n", id, planetId, researchName)
 	return nil
 }
