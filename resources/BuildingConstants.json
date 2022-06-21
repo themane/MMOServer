@@ -21,13 +21,13 @@
       "max_population_generation_rate": 1,
       "population_generation_rate_multiplier": 0.0,
       "workers_required": 10,
-      "workers_max_limit": 25
+      "workers_max_limit": 100
     },
     "2": {
       "max_population_generation_rate": 2,
       "population_generation_rate_multiplier": 0.1,
       "workers_required": 30,
-      "workers_max_limit": 75
+      "workers_max_limit": 150
     },
     "3": {
       "max_population_generation_rate": 4,
@@ -52,8 +52,8 @@
     "1": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 10,
-      "soldiers_max_limit": 10,
+      "workers_max_limit": 100,
+      "soldiers_max_limit": 100,
       "workers_bonus": {
         "hit_points": 0.0,
         "armor": 0.0,
@@ -76,8 +76,8 @@
     "2": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 10,
-      "soldiers_max_limit": 10,
+      "workers_max_limit": 100,
+      "soldiers_max_limit": 100,
       "workers_bonus": {
         "hit_points": 0.0,
         "armor": 0.0,
@@ -100,8 +100,8 @@
     "3": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 15,
-      "soldiers_max_limit": 15,
+      "workers_max_limit": 150,
+      "soldiers_max_limit": 150,
       "workers_bonus": {
         "hit_points": 0.0,
         "armor": 0.0,
@@ -124,8 +124,8 @@
     "4": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 15,
-      "soldiers_max_limit": 15,
+      "workers_max_limit": 150,
+      "soldiers_max_limit": 150,
       "workers_bonus": {
         "hit_points": 0.0,
         "armor": 0.0,
@@ -148,8 +148,8 @@
     "5": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 25,
-      "soldiers_max_limit": 25,
+      "workers_max_limit": 250,
+      "soldiers_max_limit": 250,
       "workers_bonus": {
         "hit_points": 0.0,
         "armor": 0.0,
@@ -174,8 +174,8 @@
     "1": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 8,
-      "soldiers_max_limit": 8,
+      "workers_max_limit": 80,
+      "soldiers_max_limit": 80,
       "workers_bonus": {
         "hit_points": 0.0,
         "attack": 0.0,
@@ -190,8 +190,8 @@
     "2": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 8,
-      "soldiers_max_limit": 8,
+      "workers_max_limit": 80,
+      "soldiers_max_limit": 80,
       "workers_bonus": {
         "hit_points": 0.0,
         "attack": 0.0,
@@ -206,8 +206,8 @@
     "3": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 15,
-      "soldiers_max_limit": 13,
+      "workers_max_limit": 150,
+      "soldiers_max_limit": 130,
       "workers_bonus": {
         "hit_points": 0.0,
         "attack": 0.0,
@@ -222,8 +222,8 @@
     "4": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 15,
-      "soldiers_max_limit": 16,
+      "workers_max_limit": 150,
+      "soldiers_max_limit": 160,
       "workers_bonus": {
         "hit_points": 0.0,
         "attack": 0.0,
@@ -238,8 +238,8 @@
     "5": {
       "workers_required": 5,
       "soldiers_required": 5,
-      "workers_max_limit": 25,
-      "soldiers_max_limit": 25,
+      "workers_max_limit": 250,
+      "soldiers_max_limit": 250,
       "workers_bonus": {
         "hit_points": 0.1,
         "attack": 0.0,
@@ -258,40 +258,40 @@
       "max_storage_per_soldier": 10,
       "workers_required": 10,
       "soldiers_required": 10,
-      "workers_max_limit": 25,
-      "soldiers_max_limit": 25
+      "workers_max_limit": 250,
+      "soldiers_max_limit": 250
     },
     "2": {
       "storage_rate_per_worker": 0.02,
       "max_storage_per_soldier": 15,
       "workers_required": 20,
       "soldiers_required": 20,
-      "workers_max_limit": 50,
-      "soldiers_max_limit": 50
+      "workers_max_limit": 500,
+      "soldiers_max_limit": 500
     },
     "3": {
       "storage_rate_per_worker": 0.04,
       "max_storage_per_soldier": 22,
       "workers_required": 40,
       "soldiers_required": 40,
-      "workers_max_limit": 100,
-      "soldiers_max_limit": 100
+      "workers_max_limit": 1000,
+      "soldiers_max_limit": 1000
     },
     "4": {
       "storage_rate_per_worker": 0.04,
       "max_storage_per_soldier": 33,
       "workers_required": 80,
       "soldiers_required": 80,
-      "workers_max_limit": 200,
-      "soldiers_max_limit": 200
+      "workers_max_limit": 2000,
+      "soldiers_max_limit": 2000
     },
     "5": {
       "storage_rate_per_worker": 1,
       "max_storage_per_soldier": 50,
       "workers_required": 200,
       "soldiers_required": 200,
-      "workers_max_limit": 500,
-      "soldiers_max_limit": 500
+      "workers_max_limit": 5000,
+      "soldiers_max_limit": 5000
     }
   },
   "WATER_PRESSURE_TANK": {
@@ -300,62 +300,62 @@
       "max_storage_per_soldier": 10,
       "workers_required": 10,
       "soldiers_required": 10,
-      "workers_max_limit": 25,
-      "soldiers_max_limit": 25
+      "workers_max_limit": 250,
+      "soldiers_max_limit": 250
     },
     "2": {
       "storage_rate_per_worker": 0.02,
       "max_storage_per_soldier": 15,
       "workers_required": 20,
       "soldiers_required": 20,
-      "workers_max_limit": 50,
-      "soldiers_max_limit": 50
+      "workers_max_limit": 500,
+      "soldiers_max_limit": 500
     },
     "3": {
       "storage_rate_per_worker": 0.04,
       "max_storage_per_soldier": 22,
       "workers_required": 40,
       "soldiers_required": 40,
-      "workers_max_limit": 100,
-      "soldiers_max_limit": 100
+      "workers_max_limit": 1000,
+      "soldiers_max_limit": 1000
     },
     "4": {
       "storage_rate_per_worker": 0.04,
       "max_storage_per_soldier": 33,
       "workers_required": 80,
       "soldiers_required": 80,
-      "workers_max_limit": 200,
-      "soldiers_max_limit": 200
+      "workers_max_limit": 2000,
+      "soldiers_max_limit": 2000
     },
     "5": {
       "storage_rate_per_worker": 1,
       "max_storage_per_soldier": 50,
       "workers_required": 200,
       "soldiers_required": 200,
-      "workers_max_limit": 500,
-      "soldiers_max_limit": 500
+      "workers_max_limit": 5000,
+      "soldiers_max_limit": 5000
     }
   },
   "RESEARCH_LAB": {
     "1": {
-      "workers_max_limit": 10,
-      "soldiers_max_limit": 10
+      "workers_max_limit": 100,
+      "soldiers_max_limit": 100
     },
     "2": {
-      "workers_max_limit": 10,
-      "soldiers_max_limit": 10
+      "workers_max_limit": 100,
+      "soldiers_max_limit": 100
     },
     "3": {
-      "workers_max_limit": 15,
-      "soldiers_max_limit": 15
+      "workers_max_limit": 150,
+      "soldiers_max_limit": 150
     },
     "4": {
-      "workers_max_limit": 15,
-      "soldiers_max_limit": 15
+      "workers_max_limit": 150,
+      "soldiers_max_limit": 150
     },
     "5": {
-      "workers_max_limit": 25,
-      "soldiers_max_limit": 25
+      "workers_max_limit": 250,
+      "soldiers_max_limit": 250
     }
   }
 }
