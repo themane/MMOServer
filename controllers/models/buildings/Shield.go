@@ -13,7 +13,7 @@ type Shield struct {
 	BuildingState               models.State                          `json:"building_state"`
 	Workers                     int                                   `json:"workers" example:"12"`
 	BuildingAttributes          ShieldAttributes                      `json:"building_attributes"`
-	NextLevelRequirements       models.NextLevelRequirements          `json:"next_level_requirements"`
+	NextLevelRequirements       *models.NextLevelRequirements         `json:"next_level_requirements"`
 	DeployedDefences            []military.DeployedDefence            `json:"deployed_defences"`
 	DeployedDefenceShipCarriers []military.DeployedDefenceShipCarrier `json:"deployed_defence_ship_carriers"`
 }
@@ -34,8 +34,11 @@ func InitAllShields(planetUser models.PlanetUser,
 		s.Level = shield.BuildingLevel
 		s.BuildingState.Init(*shield, shieldBuildingUpgradeConstants)
 		s.Workers = shield.Workers
-		s.NextLevelRequirements.Init(shield.BuildingLevel, shieldBuildingUpgradeConstants)
 		s.BuildingAttributes.Init(shield.BuildingLevel, shieldBuildingUpgradeConstants.MaxLevel, shieldConstants)
+		if s.Level < shieldBuildingUpgradeConstants.MaxLevel {
+			s.NextLevelRequirements = &models.NextLevelRequirements{}
+			s.NextLevelRequirements.Init(shield.BuildingLevel, shieldBuildingUpgradeConstants)
+		}
 		for _, defenceUser := range planetUser.Defences {
 			if deployedDefences, ok := defenceUser.GuardingShield[shieldId]; ok {
 				d := military.DeployedDefence{

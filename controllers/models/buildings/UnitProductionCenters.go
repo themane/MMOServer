@@ -7,13 +7,13 @@ import (
 )
 
 type UnitProductionCenter struct {
-	BuildingId            string                           `json:"building_id" example:"ATTACK_PRODUCTION_CENTER"`
-	Level                 int                              `json:"level" example:"3"`
-	Workers               int                              `json:"workers" example:"12"`
-	Soldiers              int                              `json:"soldiers" example:"15"`
-	BuildingState         repoModels.State                 `json:"building_state"`
-	BuildingAttributes    UnitProductionCenterAttributes   `json:"building_attributes"`
-	NextLevelRequirements repoModels.NextLevelRequirements `json:"next_level_requirements"`
+	BuildingId            string                            `json:"building_id" example:"ATTACK_PRODUCTION_CENTER"`
+	Level                 int                               `json:"level" example:"3"`
+	Workers               int                               `json:"workers" example:"12"`
+	Soldiers              int                               `json:"soldiers" example:"15"`
+	BuildingState         repoModels.State                  `json:"building_state"`
+	BuildingAttributes    UnitProductionCenterAttributes    `json:"building_attributes"`
+	NextLevelRequirements *repoModels.NextLevelRequirements `json:"next_level_requirements"`
 }
 type UnitProductionCenterAttributes struct {
 	WorkerBonus             map[string]FloatBuildingAttributes `json:"worker_bonus"`
@@ -35,9 +35,12 @@ func InitAttackProductionCenter(planetUser repoModels.PlanetUser,
 	u.Workers = attackProductionCenter.Workers
 	u.Soldiers = attackProductionCenter.Soldiers
 	u.BuildingState.Init(*attackProductionCenter, attackProductionCenterUpgradeConstants)
-	u.NextLevelRequirements.Init(attackProductionCenter.BuildingLevel, attackProductionCenterUpgradeConstants)
 	u.BuildingAttributes.Init(attackProductionCenter.BuildingLevel,
 		attackProductionCenterUpgradeConstants.MaxLevel, attackProductionCenterBuildingConstants, constants.GetShipAttributes())
+	if u.Level < attackProductionCenterUpgradeConstants.MaxLevel {
+		u.NextLevelRequirements = &repoModels.NextLevelRequirements{}
+		u.NextLevelRequirements.Init(attackProductionCenter.BuildingLevel, attackProductionCenterUpgradeConstants)
+	}
 	return u
 }
 
@@ -52,9 +55,12 @@ func InitDefenceProductionCenter(planetUser repoModels.PlanetUser,
 	u.Workers = defenceProductionCenter.Workers
 	u.Soldiers = defenceProductionCenter.Soldiers
 	u.BuildingState.Init(*defenceProductionCenter, defenceProductionCenterUpgradeConstants)
-	u.NextLevelRequirements.Init(defenceProductionCenter.BuildingLevel, defenceProductionCenterUpgradeConstants)
 	u.BuildingAttributes.Init(defenceProductionCenter.BuildingLevel,
 		defenceProductionCenterUpgradeConstants.MaxLevel, defenceProductionCenterBuildingConstants, constants.GetDefenceAttributes())
+	if u.Level < defenceProductionCenterUpgradeConstants.MaxLevel {
+		u.NextLevelRequirements = &repoModels.NextLevelRequirements{}
+		u.NextLevelRequirements.Init(defenceProductionCenter.BuildingLevel, defenceProductionCenterUpgradeConstants)
+	}
 	return u
 }
 

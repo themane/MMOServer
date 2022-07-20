@@ -45,11 +45,9 @@ func (c *CancelReturns) Init(buildingMinutesPerWorker int, buildingLevel int, up
 }
 
 func (n *NextLevelRequirements) Init(currentLevel int, upgradeConstants constants.UpgradeConstants) {
-	if currentLevel < upgradeConstants.MaxLevel {
-		nextLevelString := strconv.Itoa(currentLevel + 1)
-		n.GrapheneRequired = upgradeConstants.Levels[nextLevelString].GrapheneRequired
-		n.WaterRequired = upgradeConstants.Levels[nextLevelString].WaterRequired
-		n.ShelioRequired = upgradeConstants.Levels[nextLevelString].ShelioRequired
-		n.MinutesRequiredPerWorker = upgradeConstants.Levels[nextLevelString].MinutesRequired
-	}
+	nextLevelString := strconv.Itoa(currentLevel + 1)
+	n.GrapheneRequired = upgradeConstants.Levels[nextLevelString].GrapheneRequired
+	n.WaterRequired = upgradeConstants.Levels[nextLevelString].WaterRequired
+	n.ShelioRequired = upgradeConstants.Levels[nextLevelString].ShelioRequired
+	n.MinutesRequiredPerWorker = upgradeConstants.Levels[nextLevelString].MinutesRequired
 }

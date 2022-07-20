@@ -13,7 +13,7 @@ type PopulationControlCenter struct {
 	Workers               int                               `json:"workers" example:"12"`
 	BuildingState         repoModels.State                  `json:"building_state"`
 	BuildingAttributes    PopulationControlCenterAttributes `json:"building_attributes"`
-	NextLevelRequirements repoModels.NextLevelRequirements  `json:"next_level_requirements"`
+	NextLevelRequirements *repoModels.NextLevelRequirements `json:"next_level_requirements"`
 }
 type PopulationControlCenterAttributes struct {
 	MaxPopulationGenerationRate        FloatBuildingAttributes `json:"max_population_generation_rate"`
@@ -32,9 +32,12 @@ func InitPopulationControlCenter(planetUser repoModels.PlanetUser,
 	p.Level = populationControlCenter.BuildingLevel
 	p.Workers = populationControlCenter.Workers
 	p.BuildingState.Init(*populationControlCenter, populationControlCenterUpgradeConstants)
-	p.NextLevelRequirements.Init(populationControlCenter.BuildingLevel, populationControlCenterUpgradeConstants)
 	p.BuildingAttributes.Init(populationControlCenter.BuildingLevel,
 		populationControlCenterUpgradeConstants.MaxLevel, populationControlCenterBuildingConstants)
+	if p.Level < populationControlCenterUpgradeConstants.MaxLevel {
+		p.NextLevelRequirements = &repoModels.NextLevelRequirements{}
+		p.NextLevelRequirements.Init(populationControlCenter.BuildingLevel, populationControlCenterUpgradeConstants)
+	}
 	return p
 }
 

@@ -7,13 +7,13 @@ import (
 )
 
 type ResourceStorage struct {
-	BuildingId            string                           `json:"building_id" example:"WATER_PRESSURE_TANK"`
-	Level                 int                              `json:"level" example:"3"`
-	Workers               int                              `json:"workers" example:"12"`
-	Soldiers              int                              `json:"soldiers" example:"15"`
-	BuildingState         repoModels.State                 `json:"building_state"`
-	BuildingAttributes    ResourceStorageAttributes        `json:"building_attributes"`
-	NextLevelRequirements repoModels.NextLevelRequirements `json:"next_level_requirements"`
+	BuildingId            string                            `json:"building_id" example:"WATER_PRESSURE_TANK"`
+	Level                 int                               `json:"level" example:"3"`
+	Workers               int                               `json:"workers" example:"12"`
+	Soldiers              int                               `json:"soldiers" example:"15"`
+	BuildingState         repoModels.State                  `json:"building_state"`
+	BuildingAttributes    ResourceStorageAttributes         `json:"building_attributes"`
+	NextLevelRequirements *repoModels.NextLevelRequirements `json:"next_level_requirements"`
 }
 type ResourceStorageAttributes struct {
 	StorageRatePerWorker    FloatBuildingAttributes `json:"storage_rate_per_worker"`
@@ -35,8 +35,11 @@ func InitWaterPressureTank(planetUser repoModels.PlanetUser,
 	r.Workers = waterPressureTank.Workers
 	r.Soldiers = waterPressureTank.Soldiers
 	r.BuildingState.Init(*waterPressureTank, upgradeConstants)
-	r.NextLevelRequirements.Init(waterPressureTank.BuildingLevel, upgradeConstants)
 	r.BuildingAttributes.Init(waterPressureTank.BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
+	if r.Level < upgradeConstants.MaxLevel {
+		r.NextLevelRequirements = &repoModels.NextLevelRequirements{}
+		r.NextLevelRequirements.Init(waterPressureTank.BuildingLevel, upgradeConstants)
+	}
 	return r
 }
 
@@ -51,8 +54,11 @@ func InitDiamondStorage(planetUser repoModels.PlanetUser,
 	r.Workers = diamondStorage.Workers
 	r.Soldiers = diamondStorage.Soldiers
 	r.BuildingState.Init(*diamondStorage, upgradeConstants)
-	r.NextLevelRequirements.Init(diamondStorage.BuildingLevel, upgradeConstants)
 	r.BuildingAttributes.Init(diamondStorage.BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
+	if r.Level < upgradeConstants.MaxLevel {
+		r.NextLevelRequirements = &repoModels.NextLevelRequirements{}
+		r.NextLevelRequirements.Init(diamondStorage.BuildingLevel, upgradeConstants)
+	}
 	return r
 }
 

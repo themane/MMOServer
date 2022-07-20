@@ -13,7 +13,7 @@ type Research struct {
 	Bonus                 map[string]interface{} `json:"bonus"`
 	NextLevelBonus        map[string]interface{} `json:"next_level_bonus"`
 	ResearchState         State                  `json:"research_state"`
-	NextLevelRequirements NextLevelRequirements  `json:"next_level_requirements"`
+	NextLevelRequirements *NextLevelRequirements `json:"next_level_requirements"`
 }
 
 func InitAllResearches(planetUser repoModels.PlanetUser,
@@ -38,7 +38,14 @@ func InitAllResearches(planetUser repoModels.PlanetUser,
 		}
 		if currentLevel < researchConstant.MaxLevel {
 			r.NextLevelBonus = researchConstant.Bonus[strconv.Itoa(currentLevel+1)]
+			r.NextLevelRequirements = &NextLevelRequirements{}
 			r.NextLevelRequirements.Init(currentLevel, researchConstant)
+		}
+		if currentLevel == 0 {
+			r.Bonus = map[string]interface{}{}
+			for k := range r.NextLevelBonus {
+				r.Bonus[k] = 0
+			}
 		}
 		r.ResearchState.Init(research, researchConstant)
 		researches = append(researches, r)

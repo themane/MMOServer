@@ -4,19 +4,19 @@
     "description": "upgrades hit-points of carriers",
     "bonus": {
       "1": {
-        "ANUJ.hitpoint": 20,
-        "AGRAJA.hitpoint": 0,
-        "YATA.hitpoint": 0
+        "ANUJ_hitpoint": 20,
+        "AGRAJA_hitpoint": 0,
+        "YATA_hitpoint": 0
       },
       "2": {
-        "ANUJ.hitpoint": 20,
-        "AGRAJA.hitpoint": 40,
-        "YATA.hitpoint": 0
+        "ANUJ_hitpoint": 20,
+        "AGRAJA_hitpoint": 40,
+        "YATA_hitpoint": 0
       },
       "3": {
-        "ANUJ.hitpoint": 40,
-        "AGRAJA.hitpoint": 40,
-        "YATA.hitpoint": 40
+        "ANUJ_hitpoint": 40,
+        "AGRAJA_hitpoint": 40,
+        "YATA_hitpoint": 40
       }
     },
     "requirements": {
@@ -65,23 +65,23 @@
     }
   },
   "FLASH": {
-    "max_level": 4,
+    "max_level": 3,
     "description": "upgrades speed for quick attacks",
     "bonus": {
       "1": {
-        "ANUJ.speed": 0,
-        "YAVASA.speed": -20,
-        "WAHED.speed": 0
+        "ANUJ_speed": 0,
+        "YAVASA_speed": -20,
+        "WAHED_speed": 0
       },
       "2": {
-        "ANUJ.speed": -20,
-        "YAVASA.speed": -40,
-        "WAHED.speed": 0
+        "ANUJ_speed": -20,
+        "YAVASA_speed": -40,
+        "WAHED_speed": 0
       },
       "3": {
-        "ANUJ.speed": -20,
-        "YAVASA.speed": -40,
-        "WAHED.speed": -40
+        "ANUJ_speed": -20,
+        "YAVASA_speed": -40,
+        "WAHED_speed": -40
       }
     },
     "requirements": {

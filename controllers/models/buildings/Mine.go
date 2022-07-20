@@ -15,12 +15,12 @@ type Mine struct {
 }
 
 type MiningPlant struct {
-	BuildingId            string                       `json:"building_id,omitempty" example:"WMP101"`
-	Level                 int                          `json:"level" example:"3"`
-	Workers               int                          `json:"workers" example:"12"`
-	BuildingState         models.State                 `json:"building_state"`
-	BuildingAttributes    MiningAttributes             `json:"building_attributes"`
-	NextLevelRequirements models.NextLevelRequirements `json:"next_level_requirements"`
+	BuildingId            string                        `json:"building_id,omitempty" example:"WMP101"`
+	Level                 int                           `json:"level" example:"3"`
+	Workers               int                           `json:"workers" example:"12"`
+	BuildingState         models.State                  `json:"building_state"`
+	BuildingAttributes    MiningAttributes              `json:"building_attributes"`
+	NextLevelRequirements *models.NextLevelRequirements `json:"next_level_requirements"`
 }
 
 type MiningAttributes struct {
@@ -67,7 +67,10 @@ func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string,
 	m.Workers = planetUser.GetBuilding(m.BuildingId).Workers
 	m.BuildingState.Init(*planetUser.GetBuilding(m.BuildingId), miningPlantUpgradeConstants)
 	m.BuildingAttributes.Init(m.Level, miningConstants)
-	m.NextLevelRequirements.Init(m.Level, miningPlantUpgradeConstants)
+	if m.Level < miningPlantUpgradeConstants.MaxLevel {
+		m.NextLevelRequirements = &models.NextLevelRequirements{}
+		m.NextLevelRequirements.Init(m.Level, miningPlantUpgradeConstants)
+	}
 }
 
 func (n *MiningAttributes) Init(currentLevel int, miningConstants constants.MiningConstants) {
