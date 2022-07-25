@@ -178,7 +178,7 @@ func (o *OccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoMod
 	}
 	o.DefenceShipCarriers = military.InitAllDefenceShipCarriers(planetUser, militaryConstants)
 
-	o.HomePlanet = planetUser.HomePlanet || planetUni.Position.Id == customHomePlanetId
+	o.HomePlanet = planetUser.HomePlanet || planetUni.Id == customHomePlanetId
 
 	for _, attackMission := range attackMissions {
 		activeMission := ActiveMission{}
