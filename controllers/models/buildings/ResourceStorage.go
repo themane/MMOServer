@@ -88,5 +88,12 @@ func (a *ResourceStorageAttributes) Init(currentLevel int, maxLevel int, buildin
 		a.MinimumSoldiersRequired.Next = buildingConstants[nextLevelString]["soldiers_required"].(float64)
 		a.WorkersMaxLimit.Next = buildingConstants[nextLevelString]["workers_max_limit"].(float64)
 		a.SoldiersMaxLimit.Next = buildingConstants[nextLevelString]["soldiers_max_limit"].(float64)
+	} else {
+		a.StorageRatePerWorker.Next = buildingConstants[maxLevelString]["storage_rate_per_worker"].(float64)
+		a.MaxStoragePerSoldier.Next = buildingConstants[maxLevelString]["max_storage_per_soldier"].(float64)
+		a.MinimumWorkersRequired.Next = buildingConstants[maxLevelString]["workers_required"].(float64)
+		a.MinimumSoldiersRequired.Next = buildingConstants[maxLevelString]["soldiers_required"].(float64)
+		a.WorkersMaxLimit.Next = buildingConstants[maxLevelString]["workers_max_limit"].(float64)
+		a.SoldiersMaxLimit.Next = buildingConstants[maxLevelString]["soldiers_max_limit"].(float64)
 	}
 }

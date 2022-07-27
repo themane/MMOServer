@@ -86,5 +86,8 @@ func (n *MiningAttributes) Init(currentLevel int, miningConstants constants.Mini
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		n.WorkersMaxLimit.Next = miningConstants.Levels[nextLevelString].WorkersMaxLimit
 		n.MiningRatePerWorker.Next = miningConstants.Levels[nextLevelString].MiningRatePerWorker
+	} else {
+		n.WorkersMaxLimit.Next = miningConstants.Levels[maxLevelString].WorkersMaxLimit
+		n.MiningRatePerWorker.Next = miningConstants.Levels[maxLevelString].MiningRatePerWorker
 	}
 }

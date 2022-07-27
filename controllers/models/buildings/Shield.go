@@ -9,6 +9,7 @@ import (
 
 type Shield struct {
 	Id                          string                                `json:"_id" example:"SHLD101"`
+	Name                        string                                `json:"name" example:"shield"`
 	Level                       int                                   `json:"level" example:"3"`
 	BuildingState               models.State                          `json:"building_state"`
 	Workers                     int                                   `json:"workers" example:"12"`
@@ -19,7 +20,8 @@ type Shield struct {
 }
 
 type ShieldAttributes struct {
-	HitPoints FloatBuildingAttributes `json:"hit_points"`
+	HitPoints       FloatBuildingAttributes `json:"hit_points"`
+	WorkersMaxLimit FloatBuildingAttributes `json:"workers_max_limit"`
 }
 
 func InitAllShields(planetUser models.PlanetUser,
@@ -30,6 +32,7 @@ func InitAllShields(planetUser models.PlanetUser,
 	for shieldId := range shieldIds {
 		s := Shield{}
 		s.Id = shieldId
+		s.Name = constants.Shield
 		shield := planetUser.GetBuilding(shieldId)
 		s.Level = shield.BuildingLevel
 		s.BuildingState.Init(*shield, shieldBuildingUpgradeConstants)
@@ -70,10 +73,16 @@ func (n *ShieldAttributes) Init(currentLevel int, maxLevel int, shieldConstants 
 	if currentLevel > 0 {
 		currentLevelString := strconv.Itoa(currentLevel)
 		n.HitPoints.Current = shieldConstants[currentLevelString]["hit_points"].(float64)
+		n.WorkersMaxLimit.Current = shieldConstants[currentLevelString]["workers_max_limit"].(float64)
 	}
 	n.HitPoints.Max = shieldConstants[maxLevelString]["hit_points"].(float64)
+	n.WorkersMaxLimit.Max = shieldConstants[maxLevelString]["workers_max_limit"].(float64)
 	if currentLevel < maxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		n.HitPoints.Next = shieldConstants[nextLevelString]["hit_points"].(float64)
+		n.WorkersMaxLimit.Next = shieldConstants[nextLevelString]["workers_max_limit"].(float64)
+	} else {
+		n.HitPoints.Next = shieldConstants[maxLevelString]["hit_points"].(float64)
+		n.WorkersMaxLimit.Next = shieldConstants[maxLevelString]["workers_max_limit"].(float64)
 	}
 }

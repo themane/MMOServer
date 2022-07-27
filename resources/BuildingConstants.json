@@ -1,19 +1,24 @@
 {
   "SHIELD": {
     "1": {
-      "hit_points": 200
+      "hit_points": 200,
+      "workers_max_limit": 100
     },
     "2": {
-      "hit_points": 300
+      "hit_points": 300,
+      "workers_max_limit": 100
     },
     "3": {
-      "hit_points": 450
+      "hit_points": 450,
+      "workers_max_limit": 200
     },
     "4": {
-      "hit_points": 675
+      "hit_points": 675,
+      "workers_max_limit": 200
     },
     "5": {
-      "hit_points": 1000
+      "hit_points": 1000,
+      "workers_max_limit": 500
     }
   },
   "POPULATION_CONTROL_CENTER": {

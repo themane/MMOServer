@@ -96,6 +96,13 @@ func (a *UnitProductionCenterAttributes) Init(currentLevel int, maxLevel int,
 		a.MinimumSoldiersRequired.Next = buildingConstants[nextLevelString]["soldiers_required"].(float64)
 		a.WorkersMaxLimit.Next = buildingConstants[nextLevelString]["workers_max_limit"].(float64)
 		a.SoldiersMaxLimit.Next = buildingConstants[nextLevelString]["soldiers_max_limit"].(float64)
+	} else {
+		nextWorkerBonus = buildingConstants[maxLevelString]["workers_bonus"].(map[string]interface{})
+		nextSoldierBonus = buildingConstants[maxLevelString]["soldiers_bonus"].(map[string]interface{})
+		a.MinimumWorkersRequired.Next = buildingConstants[maxLevelString]["workers_required"].(float64)
+		a.MinimumSoldiersRequired.Next = buildingConstants[maxLevelString]["soldiers_required"].(float64)
+		a.WorkersMaxLimit.Next = buildingConstants[maxLevelString]["workers_max_limit"].(float64)
+		a.SoldiersMaxLimit.Next = buildingConstants[maxLevelString]["soldiers_max_limit"].(float64)
 	}
 	a.WorkerBonus = map[string]FloatBuildingAttributes{}
 	a.initBonus(a.WorkerBonus, currentWorkerBonus, nextWorkerBonus, maxWorkerBonus, bonusAttrs)

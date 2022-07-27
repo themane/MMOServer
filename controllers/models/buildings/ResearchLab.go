@@ -55,5 +55,8 @@ func (p *ResearchLabAttributes) Init(currentLevel int, maxLevel int,
 		nextLevelString := strconv.Itoa(currentLevel + 1)
 		p.WorkersMaxLimit.Next = researchLabBuildingConstants[nextLevelString]["workers_max_limit"].(float64)
 		p.SoldiersMaxLimit.Next = researchLabBuildingConstants[nextLevelString]["soldiers_max_limit"].(float64)
+	} else {
+		p.WorkersMaxLimit.Next = researchLabBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
+		p.SoldiersMaxLimit.Next = researchLabBuildingConstants[maxLevelString]["soldiers_max_limit"].(float64)
 	}
 }

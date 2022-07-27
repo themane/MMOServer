@@ -62,5 +62,10 @@ func (p *PopulationControlCenterAttributes) Init(currentLevel int, maxLevel int,
 		p.PopulationGenerationRateMultiplier.Next = populationControlCenterBuildingConstants[nextLevelString]["population_generation_rate_multiplier"].(float64)
 		p.MinimumWorkersRequired.Next = populationControlCenterBuildingConstants[nextLevelString]["workers_required"].(float64)
 		p.WorkersMaxLimit.Next = populationControlCenterBuildingConstants[nextLevelString]["workers_max_limit"].(float64)
+	} else {
+		p.MaxPopulationGenerationRate.Next = populationControlCenterBuildingConstants[maxLevelString]["max_population_generation_rate"].(float64)
+		p.PopulationGenerationRateMultiplier.Next = populationControlCenterBuildingConstants[maxLevelString]["population_generation_rate_multiplier"].(float64)
+		p.MinimumWorkersRequired.Next = populationControlCenterBuildingConstants[maxLevelString]["workers_required"].(float64)
+		p.WorkersMaxLimit.Next = populationControlCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
 	}
 }
