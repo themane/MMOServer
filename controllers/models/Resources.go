@@ -17,6 +17,7 @@ type Resource struct {
 	Amount    int     `json:"amount" example:"23"`
 	Reserved  int     `json:"reserved" example:"14"`
 	Reserving int     `json:"reserving" example:"10"`
+	Total     int     `json:"total" example:"47"`
 }
 
 func InitResources(planetUser models.PlanetUser) *Resources {
@@ -26,12 +27,14 @@ func InitResources(planetUser models.PlanetUser) *Resources {
 		Amount:    planetUser.Water.Amount,
 		Reserved:  planetUser.Water.Reserved,
 		Reserving: planetUser.Water.Reserving,
+		Total:     planetUser.Water.Amount + planetUser.Water.Reserved + planetUser.Water.Reserving,
 		MaxLimit:  limit,
 	}
 	r.Graphene = Resource{
 		Amount:    planetUser.Graphene.Amount,
 		Reserved:  planetUser.Graphene.Reserved,
 		Reserving: planetUser.Graphene.Reserving,
+		Total:     planetUser.Graphene.Amount + planetUser.Graphene.Reserved + planetUser.Graphene.Reserving,
 		MaxLimit:  limit,
 	}
 	r.Shelio = planetUser.Shelio
