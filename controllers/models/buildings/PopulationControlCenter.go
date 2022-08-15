@@ -53,6 +53,8 @@ func (p *PopulationControlCenterAttributes) Init(currentLevel int, maxLevel int,
 	}
 	maxLevelString := strconv.Itoa(maxLevel)
 	workersMaxLimit := populationControlCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
+	p.PopulationGenerationRateMultiplier.Max = populationControlCenterBuildingConstants[maxLevelString]["population_generation_rate_multiplier"].(float64)
+	p.MinimumWorkersRequired.Max = populationControlCenterBuildingConstants[maxLevelString]["workers_required"].(float64)
 	p.MaxPopulationGenerationRate.Max = models.GetMaxPopulationGenerationRate(populationControlCenterBuildingConstants[maxLevelString], workersMaxLimit)
 	p.WorkersMaxLimit.Max = populationControlCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
 
