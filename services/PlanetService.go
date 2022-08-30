@@ -44,7 +44,7 @@ func (p *PlanetService) UpdatePopulationRate(username string, planetId string, g
 	populationControlCenterLevel := planetUser.GetBuilding(constants.PopulationControlCenter).BuildingLevel
 
 	populationControlCenterConstants := p.buildingConstants[constants.PopulationControlCenter][strconv.Itoa(populationControlCenterLevel)]
-	maxPopulationGenerationRate := int(models.GetMaxPopulationGenerationRate(populationControlCenterConstants, float64(currentDeployedWorkers)))
+	maxPopulationGenerationRate := int(models.MaxSelectablePopulationGenerationRate(populationControlCenterConstants, currentDeployedWorkers))
 	if maxPopulationGenerationRate < generationRate {
 		return errors.New("rate above maximum")
 	}
