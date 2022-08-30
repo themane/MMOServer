@@ -32,7 +32,7 @@ func InitPopulationControlCenter(planetUser repoModels.PlanetUser,
 	p.Level = populationControlCenter.BuildingLevel
 	p.Workers = populationControlCenter.Workers
 	p.BuildingState.Init(*populationControlCenter, populationControlCenterUpgradeConstants)
-	p.BuildingAttributes.Init(populationControlCenter.BuildingLevel,
+	p.BuildingAttributes.Init(populationControlCenter.BuildingLevel, populationControlCenter.Workers,
 		populationControlCenterUpgradeConstants.MaxLevel, populationControlCenterBuildingConstants)
 	if p.Level < populationControlCenterUpgradeConstants.MaxLevel {
 		p.NextLevelRequirements = &repoModels.NextLevelRequirements{}
@@ -41,32 +41,32 @@ func InitPopulationControlCenter(planetUser repoModels.PlanetUser,
 	return p
 }
 
-func (p *PopulationControlCenterAttributes) Init(currentLevel int, maxLevel int,
+func (p *PopulationControlCenterAttributes) Init(currentLevel int, workersDeployed int, maxLevel int,
 	populationControlCenterBuildingConstants map[string]map[string]interface{}) {
 
 	if currentLevel > 0 {
 		currentLevelString := strconv.Itoa(currentLevel)
-		p.MaxPopulationGenerationRate.Current = populationControlCenterBuildingConstants[currentLevelString]["max_population_generation_rate"].(float64)
 		p.PopulationGenerationRateMultiplier.Current = populationControlCenterBuildingConstants[currentLevelString]["population_generation_rate_multiplier"].(float64)
+		p.MaxPopulationGenerationRate.Current =
+			models.MaxSelectablePopulationGenerationRate(populationControlCenterBuildingConstants[currentLevelString], workersDeployed)
 		p.MinimumWorkersRequired.Current = populationControlCenterBuildingConstants[currentLevelString]["workers_required"].(float64)
 		p.WorkersMaxLimit.Current = populationControlCenterBuildingConstants[currentLevelString]["workers_max_limit"].(float64)
 	}
 	maxLevelString := strconv.Itoa(maxLevel)
-	workersMaxLimit := populationControlCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
 	p.PopulationGenerationRateMultiplier.Max = populationControlCenterBuildingConstants[maxLevelString]["population_generation_rate_multiplier"].(float64)
+	p.MaxPopulationGenerationRate.Max = models.MaxPopulationGenerationRate(populationControlCenterBuildingConstants[maxLevelString])
 	p.MinimumWorkersRequired.Max = populationControlCenterBuildingConstants[maxLevelString]["workers_required"].(float64)
-	p.MaxPopulationGenerationRate.Max = models.GetMaxPopulationGenerationRate(populationControlCenterBuildingConstants[maxLevelString], workersMaxLimit)
 	p.WorkersMaxLimit.Max = populationControlCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
 
 	if currentLevel < maxLevel {
 		nextLevelString := strconv.Itoa(currentLevel + 1)
-		p.MaxPopulationGenerationRate.Next = populationControlCenterBuildingConstants[nextLevelString]["max_population_generation_rate"].(float64)
 		p.PopulationGenerationRateMultiplier.Next = populationControlCenterBuildingConstants[nextLevelString]["population_generation_rate_multiplier"].(float64)
+		p.MaxPopulationGenerationRate.Next = models.MaxPopulationGenerationRate(populationControlCenterBuildingConstants[nextLevelString])
 		p.MinimumWorkersRequired.Next = populationControlCenterBuildingConstants[nextLevelString]["workers_required"].(float64)
 		p.WorkersMaxLimit.Next = populationControlCenterBuildingConstants[nextLevelString]["workers_max_limit"].(float64)
 	} else {
-		p.MaxPopulationGenerationRate.Next = populationControlCenterBuildingConstants[maxLevelString]["max_population_generation_rate"].(float64)
 		p.PopulationGenerationRateMultiplier.Next = populationControlCenterBuildingConstants[maxLevelString]["population_generation_rate_multiplier"].(float64)
+		p.MaxPopulationGenerationRate.Next = models.MaxPopulationGenerationRate(populationControlCenterBuildingConstants[maxLevelString])
 		p.MinimumWorkersRequired.Next = populationControlCenterBuildingConstants[maxLevelString]["workers_required"].(float64)
 		p.WorkersMaxLimit.Next = populationControlCenterBuildingConstants[maxLevelString]["workers_max_limit"].(float64)
 	}
