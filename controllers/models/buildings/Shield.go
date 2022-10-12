@@ -53,14 +53,16 @@ func InitAllShields(planetUser models.PlanetUser,
 			}
 		}
 		for _, defenceShipCarrierUser := range planetUser.DefenceShipCarriers {
-			d := military.DeployedDefenceShipCarrier{
-				Id:            defenceShipCarrierUser.Id,
-				Name:          defenceShipCarrierUser.Name,
-				Level:         defenceShipCarrierUser.Level,
-				Deployed:      defenceShipCarrierUser.GuardingShield == shieldId,
-				DeployedShips: military.GetDeployedShips(planetUser, defenceShipCarrierUser.HostingShips),
+			if defenceShipCarrierUser.GuardingShield == "" || defenceShipCarrierUser.GuardingShield == shieldId {
+				d := military.DeployedDefenceShipCarrier{
+					Id:            defenceShipCarrierUser.Id,
+					Name:          defenceShipCarrierUser.Name,
+					Level:         defenceShipCarrierUser.Level,
+					Deployed:      defenceShipCarrierUser.GuardingShield == shieldId,
+					DeployedShips: military.GetDeployedShips(planetUser, defenceShipCarrierUser.HostingShips),
+				}
+				s.DeployedDefenceShipCarriers = append(s.DeployedDefenceShipCarriers, d)
 			}
-			s.DeployedDefenceShipCarriers = append(s.DeployedDefenceShipCarriers, d)
 		}
 		shields = append(shields, s)
 	}
