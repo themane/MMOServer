@@ -38,6 +38,7 @@ func GetSoldiersSupportedBuildingIds() map[string]struct{} {
 	return map[string]struct{}{
 		AttackProductionCenter: {}, DefenceProductionCenter: {},
 		DiamondStorage: {}, WaterPressureTank: {},
+		ResearchLab: {},
 	}
 }
 

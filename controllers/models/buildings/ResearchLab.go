@@ -30,6 +30,7 @@ func InitResearchLab(planetUser repoModels.PlanetUser,
 	researchLab := planetUser.GetBuilding(constants.ResearchLab)
 	r.Level = researchLab.BuildingLevel
 	r.Workers = researchLab.Workers
+	r.Soldiers = researchLab.Soldiers
 	r.BuildingState.Init(*researchLab, upgradeConstants)
 	r.BuildingAttributes.Init(researchLab.BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
 	if r.Level < upgradeConstants.MaxLevel {
