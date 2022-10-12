@@ -42,6 +42,7 @@ type DeployedDefenceShipCarrier struct {
 	Id            string         `json:"_id" example:"DSC001"`
 	Name          string         `json:"name" example:"VIKRAM"`
 	Level         int            `json:"level" example:"1"`
+	Deployed      bool           `json:"deployed" example:"true"`
 	DeployedShips []DeployedShip `json:"deployed_ships"`
 }
 
