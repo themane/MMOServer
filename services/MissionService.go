@@ -38,8 +38,8 @@ func NewMissionService(
 	}
 }
 
-func (a *MissionService) Spy(spyRequest controllerModels.SpyRequest) error {
-	userData, err := a.userRepository.FindByUsername(spyRequest.Username)
+func (a *MissionService) Spy(username string, spyRequest controllerModels.SpyRequest) error {
+	userData, err := a.userRepository.FindByUsername(username)
 	if err != nil {
 		return err
 	}
@@ -84,8 +84,8 @@ func (a *MissionService) Spy(spyRequest controllerModels.SpyRequest) error {
 	return nil
 }
 
-func (a *MissionService) Attack(attackRequest controllerModels.AttackRequest) error {
-	userData, err := a.userRepository.FindByUsername(attackRequest.Username)
+func (a *MissionService) Attack(username string, attackRequest controllerModels.AttackRequest) error {
+	userData, err := a.userRepository.FindByUsername(username)
 	if err != nil {
 		return err
 	}

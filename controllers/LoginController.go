@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
+	"github.com/themane/MMOServer/controllers/utils"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
@@ -14,6 +15,7 @@ type LoginController struct {
 	loginService   *services.LoginService
 	refreshService *services.QuickRefreshService
 	sectorService  *services.SectorService
+	apiSecret      string
 	logger         *constants.LoggingUtils
 }
 
@@ -28,6 +30,7 @@ func NewLoginController(userRepository models.UserRepository,
 	militaryConstants map[string]constants.MilitaryConstants,
 	researchConstants map[string]constants.ResearchConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
+	apiSecret string,
 	logLevel string,
 ) *LoginController {
 	return &LoginController{
@@ -37,7 +40,8 @@ func NewLoginController(userRepository models.UserRepository,
 			upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel),
 		sectorService: services.NewSectorService(userRepository, universeRepository, missionRepository,
 			experienceConstants, upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel),
-		logger: constants.NewLoggingUtils("LOGIN_CONTROLLER", logLevel),
+		apiSecret: apiSecret,
+		logger:    constants.NewLoggingUtils("LOGIN_CONTROLLER", logLevel),
 	}
 }
 
@@ -47,7 +51,6 @@ func NewLoginController(userRepository models.UserRepository,
 // @Tags data retrieval
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Success 200 {object} models.LoginResponse
 // @Router /login [post]
 func (l *LoginController) Login(c *gin.Context) {
@@ -73,7 +76,55 @@ func (l *LoginController) Login(c *gin.Context) {
 		c.JSON(204, msg)
 		return
 	}
+	token, err := utils.GenerateToken(response.Profile.Username, l.apiSecret)
+	if err != nil {
+		l.logger.Error("error in getting auth token generation", err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.Header("X-Api-Token", token)
+
+	refreshToken, err := utils.GenerateRefreshToken(response.Profile.Username, l.apiSecret)
+	if err != nil {
+		l.logger.Error("error in getting auth token generation", err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.Header("X-Refresh-Token", refreshToken)
+
 	c.JSON(200, response)
+}
+
+// RefreshToken godoc
+// @Summary Refresh Token API
+// @Description Refresh Token
+// @Tags data retrieval
+// @Accept json
+// @Produce json
+// @Router /refresh/token [post]
+func (l *LoginController) RefreshToken(c *gin.Context) {
+	username, err := utils.RefreshTokenValid(c, l.apiSecret)
+	if err != nil {
+		l.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
+	token, err := utils.GenerateToken(username, l.apiSecret)
+	if err != nil {
+		l.logger.Error("error in getting auth token generation", err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.Header("X-Api-Token", token)
+
+	refreshToken, err := utils.GenerateRefreshToken(username, l.apiSecret)
+	if err != nil {
+		l.logger.Error("error in getting auth token generation", err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.Header("X-Refresh-Token", refreshToken)
+	c.Status(200)
 }
 
 // RefreshPlanet godoc
@@ -82,28 +133,33 @@ func (l *LoginController) Login(c *gin.Context) {
 // @Tags data retrieval
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Success 200 {object} models.PlanetResponse
 // @Router /refresh/planet [get]
 func (l *LoginController) RefreshPlanet(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, l.apiSecret)
+	if err != nil {
+		l.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id")
+	parsedParams, err := parseStrings(values, "planet_id")
 	if err != nil {
 		l.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 
-	l.logger.Printf("Refreshing planet data for: %s", parsedParams["username"])
-	response, err := l.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	l.logger.Printf("Refreshing planet data for: %s", username)
+	response, err := l.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		l.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	if response == nil {
-		l.logger.Printf("data not found for user: %s, planet_id: %s", parsedParams["username"], parsedParams["planet_id"])
+		l.logger.Printf("data not found for user: %s, planet_id: %s", username, parsedParams["planet_id"])
 		c.JSON(204, nil)
 		return
 	}
@@ -116,28 +172,33 @@ func (l *LoginController) RefreshPlanet(c *gin.Context) {
 // @Tags data retrieval
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Success 200 {object} models.UserPlanetResponse
 // @Router /refresh/user_planet [get]
 func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, l.apiSecret)
+	if err != nil {
+		l.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id")
+	parsedParams, err := parseStrings(values, "planet_id")
 	if err != nil {
 		l.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 
-	l.logger.Printf("Refreshing population data for: %s", parsedParams["username"])
-	response, err := l.refreshService.RefreshUserPlanet(parsedParams["username"], parsedParams["planet_id"])
+	l.logger.Printf("Refreshing population data for: %s", username)
+	response, err := l.refreshService.RefreshUserPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		l.logger.Error("error in gathering population data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
 		return
 	}
 	if response == nil {
-		l.logger.Printf("population data not found for user: %s, planet_id: %s", parsedParams["username"], parsedParams["planet_id"])
+		l.logger.Printf("population data not found for user: %s, planet_id: %s", username, parsedParams["planet_id"])
 		c.JSON(204, nil)
 		return
 	}
@@ -150,21 +211,26 @@ func (l *LoginController) RefreshUserPlanet(c *gin.Context) {
 // @Tags Sector
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param sector_id query string true "sector id to visit"
 // @Success 200 {object} controllerModels.SectorResponse
 // @Router /sector/visit [get]
 func (l *LoginController) Visit(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, l.apiSecret)
+	if err != nil {
+		l.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "sector_id")
+	parsedParams, err := parseStrings(values, "sector_id")
 	if err != nil {
 		l.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 
-	l.logger.Printf("Username: %s visiting sector: %s", parsedParams["username"], parsedParams["sector_id"])
-	response, err := l.sectorService.Visit(parsedParams["username"], parsedParams["sector_id"])
+	l.logger.Printf("Username: %s visiting sector: %s", username, parsedParams["sector_id"])
+	response, err := l.sectorService.Visit(username, parsedParams["sector_id"])
 	if err != nil {
 		l.logger.Error("error in visiting sector: "+parsedParams["sector_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "internal server error. contact administrators for more info", HttpCode: 500})
@@ -179,21 +245,26 @@ func (l *LoginController) Visit(c *gin.Context) {
 // @Tags Sector
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet id to visit"
 // @Success 200 {object} controllerModels.SectorResponse
 // @Router /sector/teleport [get]
 func (l *LoginController) Teleport(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, l.apiSecret)
+	if err != nil {
+		l.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id")
+	parsedParams, err := parseStrings(values, "planet_id")
 	if err != nil {
 		l.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 
-	l.logger.Printf("Username: %s teleporting to planet: %s", parsedParams["username"], parsedParams["planet_id"])
-	response, err := l.sectorService.Teleport(parsedParams["username"], parsedParams["planet_id"])
+	l.logger.Printf("Username: %s teleporting to planet: %s", username, parsedParams["planet_id"])
+	response, err := l.sectorService.Teleport(username, parsedParams["planet_id"])
 	if err != nil {
 		l.logger.Error("error in visiting planet: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "internal server error. contact administrators for more info", HttpCode: 500})

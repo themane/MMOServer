@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
+	"github.com/themane/MMOServer/controllers/utils"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"strconv"
@@ -14,6 +15,7 @@ type BuildingController struct {
 	planetService   *services.PlanetService
 	unitService     *services.UnitService
 	refreshService  *services.QuickRefreshService
+	apiSecret       string
 	logger          *constants.LoggingUtils
 }
 
@@ -27,6 +29,7 @@ func NewBuildingController(
 	militaryConstants map[string]constants.MilitaryConstants,
 	researchConstants map[string]constants.ResearchConstants,
 	speciesConstants map[string]constants.SpeciesConstants,
+	apiSecret string,
 	logLevel string,
 ) *BuildingController {
 	return &BuildingController{
@@ -35,7 +38,8 @@ func NewBuildingController(
 		unitService:     services.NewUnitService(userRepository, missionRepository, militaryConstants, logLevel),
 		refreshService: services.NewQuickRefreshService(userRepository, universeRepository, missionRepository,
 			upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel),
-		logger: constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
+		apiSecret: apiSecret,
+		logger:    constants.NewLoggingUtils("BUILDING_CONTROLLER", logLevel),
 	}
 }
 
@@ -45,28 +49,33 @@ func NewBuildingController(
 // @Tags Upgrade
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param building_id query string true "building identifier"
 // @Success 200 {object} models.PlanetResponse
 // @Router /upgrade/building [put]
 func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "building_id")
+	parsedParams, err := parseStrings(values, "planet_id", "building_id")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
-	b.logger.Printf("Upgrading: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
+	b.logger.Printf("Upgrading: %s, %s, %s", username, parsedParams["planet_id"], parsedParams["building_id"])
 
-	err = b.buildingService.UpgradeBuilding(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
+	err = b.buildingService.UpgradeBuilding(username, parsedParams["planet_id"], parsedParams["building_id"])
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -81,28 +90,33 @@ func (b *BuildingController) UpgradeBuilding(c *gin.Context) {
 // @Tags Upgrade
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param building_id query string true "building identifier"
 // @Success 200 {object} models.PlanetResponse
 // @Router /upgrade/building/cancel [put]
 func (b *BuildingController) CancelUpgradeBuilding(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "building_id")
+	parsedParams, err := parseStrings(values, "planet_id", "building_id")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
-	b.logger.Printf("Canceling Upgrade: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
+	b.logger.Printf("Canceling Upgrade: %s, %s, %s", username, parsedParams["planet_id"], parsedParams["building_id"])
 
-	err = b.buildingService.CancelUpgradeBuilding(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"])
+	err = b.buildingService.CancelUpgradeBuilding(username, parsedParams["planet_id"], parsedParams["building_id"])
 	if err != nil {
 		b.logger.Error("Error in canceling upgrade", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -117,15 +131,20 @@ func (b *BuildingController) CancelUpgradeBuilding(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param building_id query string true "building identifier"
 // @Param workers query int true "updated workers count"
 // @Success 200 {object} models.PlanetResponse
 // @Router /update/workers [put]
 func (b *BuildingController) UpdateWorkers(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "building_id", "workers")
+	parsedParams, err := parseStrings(values, "planet_id", "building_id", "workers")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
@@ -135,15 +154,15 @@ func (b *BuildingController) UpdateWorkers(c *gin.Context) {
 	if err != nil || workers < 0 {
 		c.JSON(400, "invalid worker count")
 	}
-	b.logger.Printf("Updating workers: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], workers)
+	b.logger.Printf("Updating workers: %s, %s, %s", username, parsedParams["planet_id"], parsedParams["building_id"], workers)
 
-	err = b.buildingService.UpdateWorkers(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], workers)
+	err = b.buildingService.UpdateWorkers(username, parsedParams["planet_id"], parsedParams["building_id"], workers)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -158,15 +177,20 @@ func (b *BuildingController) UpdateWorkers(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param building_id query string true "building identifier"
 // @Param soldiers query int true "updated soldiers count"
 // @Success 200 {object} models.PlanetResponse
 // @Router /update/workers [put]
 func (b *BuildingController) UpdateSoldiers(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "building_id", "soldiers")
+	parsedParams, err := parseStrings(values, "planet_id", "building_id", "soldiers")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
@@ -176,15 +200,15 @@ func (b *BuildingController) UpdateSoldiers(c *gin.Context) {
 	if err != nil || soldiers < 0 {
 		c.JSON(400, "invalid soldier count")
 	}
-	b.logger.Printf("Updating soldiers: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], soldiers)
+	b.logger.Printf("Updating soldiers: %s, %s, %s", username, parsedParams["planet_id"], parsedParams["building_id"], soldiers)
 
-	err = b.buildingService.UpdateSoldiers(parsedParams["username"], parsedParams["planet_id"], parsedParams["building_id"], soldiers)
+	err = b.buildingService.UpdateSoldiers(username, parsedParams["planet_id"], parsedParams["building_id"], soldiers)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -199,14 +223,19 @@ func (b *BuildingController) UpdateSoldiers(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param generation_rate query int true "updated population generation rate"
 // @Success 200 {object} models.PlanetResponse
 // @Router /update/population-rate [put]
 func (b *BuildingController) UpdatePopulationRate(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "generation_rate")
+	parsedParams, err := parseStrings(values, "planet_id", "generation_rate")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
@@ -216,15 +245,15 @@ func (b *BuildingController) UpdatePopulationRate(c *gin.Context) {
 	if err != nil || generationRate < 0 {
 		c.JSON(400, "invalid population generation rate")
 	}
-	b.logger.Printf("Updating population generation rate: %s, %s, %s", parsedParams["username"], parsedParams["planet_id"], generationRate)
+	b.logger.Printf("Updating population generation rate: %s, %s, %s", username, parsedParams["planet_id"], generationRate)
 
-	err = b.planetService.UpdatePopulationRate(parsedParams["username"], parsedParams["planet_id"], generationRate)
+	err = b.planetService.UpdatePopulationRate(username, parsedParams["planet_id"], generationRate)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -239,15 +268,20 @@ func (b *BuildingController) UpdatePopulationRate(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param workers query int true "workers to be employed"
 // @Param soldiers query int true "soldiers to be employed"
 // @Success 200 {object} models.PlanetResponse
 // @Router /population/recruit [put]
 func (b *BuildingController) EmployPopulation(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "workers", "soldiers")
+	parsedParams, err := parseStrings(values, "planet_id", "workers", "soldiers")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
@@ -261,15 +295,15 @@ func (b *BuildingController) EmployPopulation(c *gin.Context) {
 	if err != nil || soldiers < 0 {
 		c.JSON(400, "invalid soldiers count")
 	}
-	b.logger.Printf("Employing population: %s, %s, workers: %s, soldiers: %s", parsedParams["username"], parsedParams["planet_id"], workers, soldiers)
+	b.logger.Printf("Employing population: %s, %s, workers: %s, soldiers: %s", username, parsedParams["planet_id"], workers, soldiers)
 
-	err = b.planetService.EmployPopulation(parsedParams["username"], parsedParams["planet_id"], workers, soldiers)
+	err = b.planetService.EmployPopulation(username, parsedParams["planet_id"], workers, soldiers)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -284,7 +318,6 @@ func (b *BuildingController) EmployPopulation(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param workers query int true "unemployed population to be killed"
 // @Param workers query int true "workers to be killed"
@@ -292,8 +325,14 @@ func (b *BuildingController) EmployPopulation(c *gin.Context) {
 // @Success 200 {object} models.PlanetResponse
 // @Router /population/kill [put]
 func (b *BuildingController) KillPopulation(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "unemployed", "workers", "soldiers")
+	parsedParams, err := parseStrings(values, "planet_id", "unemployed", "workers", "soldiers")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
@@ -312,15 +351,15 @@ func (b *BuildingController) KillPopulation(c *gin.Context) {
 		c.JSON(400, "invalid soldiers count")
 	}
 	b.logger.Printf("Killing population: %s, %s, unemployed: %s, workers: %s, soldiers: %s",
-		parsedParams["username"], parsedParams["planet_id"], unemployed, workers, soldiers)
+		username, parsedParams["planet_id"], unemployed, workers, soldiers)
 
-	err = b.planetService.KillPopulation(parsedParams["username"], parsedParams["planet_id"], unemployed, workers, soldiers)
+	err = b.planetService.KillPopulation(username, parsedParams["planet_id"], unemployed, workers, soldiers)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -335,15 +374,20 @@ func (b *BuildingController) KillPopulation(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param water query int true "water to be reserved"
 // @Param graphene query int true "graphene to be reserved"
 // @Success 200 {object} models.PlanetResponse
 // @Router /resource/reserve [put]
 func (b *BuildingController) ReserveResources(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "water", "graphene")
+	parsedParams, err := parseStrings(values, "planet_id", "water", "graphene")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
@@ -358,15 +402,15 @@ func (b *BuildingController) ReserveResources(c *gin.Context) {
 		c.JSON(400, "invalid graphene amount")
 	}
 	b.logger.Printf("Reserving resources: %s, %s, water: %s, graphene: %s",
-		parsedParams["username"], parsedParams["planet_id"], water, graphene)
+		username, parsedParams["planet_id"], water, graphene)
 
-	err = b.planetService.ReserveResources(parsedParams["username"], parsedParams["planet_id"], water, graphene)
+	err = b.planetService.ReserveResources(username, parsedParams["planet_id"], water, graphene)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -381,28 +425,33 @@ func (b *BuildingController) ReserveResources(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Success 200 {object} models.PlanetResponse
 // @Router /resource/reserve/cancel [put]
 func (b *BuildingController) CancelReserveResources(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id")
+	parsedParams, err := parseStrings(values, "planet_id")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 	b.logger.Printf("Canceling ongoing reserving of resources: %s, %s",
-		parsedParams["username"], parsedParams["planet_id"])
+		username, parsedParams["planet_id"])
 
-	err = b.planetService.CancelReserveResources(parsedParams["username"], parsedParams["planet_id"])
+	err = b.planetService.CancelReserveResources(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -417,15 +466,20 @@ func (b *BuildingController) CancelReserveResources(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param water query int true "water to be extracted"
 // @Param graphene query int true "graphene to be extracted"
 // @Success 200 {object} models.PlanetResponse
 // @Router /resource/reserve/extract [put]
 func (b *BuildingController) ExtractReservedResources(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "water", "graphene")
+	parsedParams, err := parseStrings(values, "planet_id", "water", "graphene")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
@@ -440,15 +494,15 @@ func (b *BuildingController) ExtractReservedResources(c *gin.Context) {
 		c.JSON(400, "invalid graphene amount")
 	}
 	b.logger.Printf("Extracting reserved resources: %s, %s, water: %s, graphene: %s",
-		parsedParams["username"], parsedParams["planet_id"], water, graphene)
+		username, parsedParams["planet_id"], water, graphene)
 
-	err = b.planetService.ExtractReservedResources(parsedParams["username"], parsedParams["planet_id"], water, graphene)
+	err = b.planetService.ExtractReservedResources(username, parsedParams["planet_id"], water, graphene)
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -463,29 +517,34 @@ func (b *BuildingController) ExtractReservedResources(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param research_name query string true "research identifier"
 // @Success 200 {object} models.PlanetResponse
 // @Router /resource/reserve/extract [put]
 func (b *BuildingController) Research(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "research_name")
+	parsedParams, err := parseStrings(values, "planet_id", "research_name")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 	b.logger.Printf("Initiating research: %s, %s, %s",
-		parsedParams["username"], parsedParams["planet_id"], parsedParams["research_name"])
+		username, parsedParams["planet_id"], parsedParams["research_name"])
 
-	err = b.planetService.Research(parsedParams["username"], parsedParams["planet_id"], parsedParams["research_name"])
+	err = b.planetService.Research(username, parsedParams["planet_id"], parsedParams["research_name"])
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -500,29 +559,34 @@ func (b *BuildingController) Research(c *gin.Context) {
 // @Tags Update
 // @Accept json
 // @Produce json
-// @Param username query string true "user identifier"
 // @Param planet_id query string true "planet identifier"
 // @Param research_name query string true "research identifier"
 // @Success 200 {object} models.PlanetResponse
 // @Router /resource/reserve/extract [put]
 func (b *BuildingController) CancelResearch(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, b.apiSecret)
+	if err != nil {
+		b.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "username", "planet_id", "research_name")
+	parsedParams, err := parseStrings(values, "planet_id", "research_name")
 	if err != nil {
 		b.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
 	b.logger.Printf("Cancelling research: %s, %s, %s",
-		parsedParams["username"], parsedParams["planet_id"], parsedParams["research_name"])
+		username, parsedParams["planet_id"], parsedParams["research_name"])
 
-	err = b.planetService.CancelResearch(parsedParams["username"], parsedParams["planet_id"], parsedParams["research_name"])
+	err = b.planetService.CancelResearch(username, parsedParams["planet_id"], parsedParams["research_name"])
 	if err != nil {
 		b.logger.Error("Error in updating", err)
 		c.JSON(500, err.Error())
 		return
 	}
-	response, err := b.refreshService.RefreshPlanet(parsedParams["username"], parsedParams["planet_id"])
+	response, err := b.refreshService.RefreshPlanet(username, parsedParams["planet_id"])
 	if err != nil {
 		b.logger.Error("error in gathering planet data for: "+parsedParams["planet_id"], err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})

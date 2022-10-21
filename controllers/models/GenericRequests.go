@@ -2,6 +2,7 @@ package models
 
 type LoginRequest struct {
 	Username string `json:"username" example:"devashish"`
+	IdToken  string `json:"id_token" example:"asdbf1412b"`
 }
 
 type DeployRequest struct {

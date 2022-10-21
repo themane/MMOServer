@@ -23,7 +23,8 @@ var once = sync.Once{}
 var baseURL string
 var mongoDB string
 var maxSystems int
-var secretName string
+var mongoUrlSecretName string
+var apiSecretName string
 var logLevel string
 
 // @title MMO Game Server
@@ -53,6 +54,7 @@ func main() {
 
 	r.POST("/login", loginController.Login)
 	r.GET("/refresh/planet", loginController.RefreshPlanet)
+	r.GET("/refresh/token", loginController.RefreshToken)
 	//r.GET("/refresh/user_planet", loginController.RefreshUserPlanet)
 
 	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
@@ -97,7 +99,8 @@ func main() {
 
 func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.MissionController, *controllers.UnitsController) {
 	log.Println("Initializing handlers")
-	mongoURL := accessSecretVersion()
+	mongoURL := accessSecretVersion(mongoUrlSecretName)
+	apiSecret := accessSecretVersion(apiSecretName)
 
 	upgradeConstants := constants.GetUpgradeConstants()
 	buildingConstants := constants.GetBuildingConstants()
@@ -116,13 +119,13 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB, logLevel)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
 	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository,
-		experienceConstants, upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel)
+		experienceConstants, upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, apiSecret, logLevel)
 	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository,
-		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel)
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, apiSecret, logLevel)
 	missionController := controllers.NewMissionController(userRepository, universeRepository, missionRepository,
-		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel)
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, apiSecret, logLevel)
 	unitsController := controllers.NewUnitsController(userRepository, universeRepository, missionRepository,
-		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, logLevel)
+		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, apiSecret, logLevel)
 
 	log.Println("Initialized all handlers")
 	return loginController, buildingController, missionController, unitsController
@@ -133,10 +136,15 @@ func initialize() {
 	if baseURL == "" {
 		baseURL = "http://localhost:8080"
 	}
-	secretName = os.Getenv("SECRET_NAME")
+	mongoUrlSecretName = os.Getenv("MONGO_SECRET_NAME")
 	mongoDB = os.Getenv("MONGO_DB")
-	if secretName == "" || mongoDB == "" {
+	if mongoUrlSecretName == "" || mongoDB == "" {
 		log.Fatal("Mongo not configured")
+	}
+
+	apiSecretName = os.Getenv("API_SECRET_NAME")
+	if apiSecretName == "" {
+		apiSecretName = "API_SECRET"
 	}
 
 	maxSystemsString := os.Getenv("MAX_SYSTEMS")
@@ -156,7 +164,7 @@ func initialize() {
 	}
 }
 
-func accessSecretVersion() string {
+func accessSecretVersion(secretName string) string {
 	ctx := context.Background()
 	client, err := secretManager.NewClient(ctx)
 	if err != nil {
