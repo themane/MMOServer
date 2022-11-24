@@ -58,11 +58,15 @@ func NewLoginService(
 	}
 }
 
-func (l *LoginService) Login(username string) (*controllerModels.UserResponse, error) {
-	userData, err := l.userRepository.FindByUsername(username)
+func (l *LoginService) GoogleLogin(userId string) (*controllerModels.UserResponse, error) {
+	userData, err := l.userRepository.FindByGoogleId(userId)
 	if err != nil {
 		return nil, err
 	}
+	return l.login(userData)
+}
+
+func (l *LoginService) login(userData *repoModels.UserData) (*controllerModels.UserResponse, error) {
 	clanData, err := getClanData(userData.Profile.ClanId, l.clanRepository)
 	if err != nil {
 		return nil, err
@@ -94,13 +98,6 @@ func (l *LoginService) Login(username string) (*controllerModels.UserResponse, e
 	if err != nil {
 		return nil, err
 	}
-	//for _, userPlanet := range userData.OccupiedPlanets {
-	//notifications, err1 := l.notificationService.getNotifications(userPlanet)
-	//if err1 != nil {
-	//	return nil, err1
-	//}
-	//response.Notifications = append(response.Notifications, notifications...)
-	//}
 	return &response, nil
 }
 

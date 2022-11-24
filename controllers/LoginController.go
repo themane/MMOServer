@@ -1,14 +1,13 @@
 package controllers
 
 import (
-	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/controllers/utils"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
-	"io/ioutil"
 )
 
 type LoginController struct {
@@ -54,17 +53,16 @@ func NewLoginController(userRepository models.UserRepository,
 // @Success 200 {object} models.LoginResponse
 // @Router /login [post]
 func (l *LoginController) Login(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	var request controllerModels.LoginRequest
-	err := json.Unmarshal(body, &request)
+	claims, err := utils.ValidateIdToken(c)
 	if err != nil {
-		l.logger.Error("request not parseable", err)
-		c.JSON(400, "Request not parseable")
+		l.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
 		return
 	}
-	l.logger.Printf("Logged in user: %s", request.Username)
+	l.logger.Printf("Logged in user: %s", claims["email"])
 
-	response, err := l.loginService.Login(request.Username)
+	id := fmt.Sprintf("%v", claims["sub"])
+	response, err := l.loginService.GoogleLogin(id)
 	if err != nil {
 		l.logger.Error("error in getting user data", err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})

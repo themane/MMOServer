@@ -247,6 +247,8 @@ type UnderConstruction struct {
 type UserRepository interface {
 	FindById(id string) (*UserData, error)
 	FindByUsername(username string) (*UserData, error)
+	FindByGoogleId(userId string) (*UserData, error)
+	//FindByFacebookId(user_id string) (*UserData, error)
 
 	AddExperience(id string, experience int) error
 	UpdateClanId(id string, clanId string) error
