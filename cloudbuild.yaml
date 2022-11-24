@@ -29,9 +29,15 @@ steps:
       - '--set-env-vars'
       - 'MAX_SYSTEMS=$_MAX_SYSTEMS'
       - '--set-env-vars'
-      - 'SECRET_NAME=projects/$PROJECT_ID/secrets/$_SECRET_NAME/versions/latest'
+      - 'MONGO_SECRET_NAME=projects/$PROJECT_ID/secrets/$_MONGO_SECRET_NAME/versions/latest'
+      - '--set-env-vars'
+      - 'API_SECRET_NAME=projects/$PROJECT_ID/secrets/$_API_SECRET_NAME/versions/latest'
       - '--set-env-vars'
       - 'BASE_URL=$_BASE_URL'
+      - '--set-env-vars'
+      - 'TOKEN_LIFESPAN_MINUTES=$_TOKEN_LIFESPAN_MINUTES'
+      - '--set-env-vars'
+      - 'REFRESH_TOKEN_LIFESPAN_MINUTES=$_REFRESH_TOKEN_LIFESPAN_MINUTES'
     id: Deploy
     entrypoint: gcloud
 images:
