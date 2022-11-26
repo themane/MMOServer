@@ -63,9 +63,11 @@ func (m *MiningPlant) Init(planetUser models.PlanetUser, mineId string,
 	miningConstants constants.MiningConstants, miningPlantUpgradeConstants constants.UpgradeConstants) {
 
 	m.BuildingId = models.GetMiningPlantId(mineId)
-	m.Level = planetUser.GetBuilding(m.BuildingId).BuildingLevel
-	m.Workers = planetUser.GetBuilding(m.BuildingId).Workers
-	m.BuildingState.Init(*planetUser.GetBuilding(m.BuildingId), miningPlantUpgradeConstants)
+	if planetUser.GetBuilding(m.BuildingId) != nil {
+		m.Level = planetUser.GetBuilding(m.BuildingId).BuildingLevel
+		m.Workers = planetUser.GetBuilding(m.BuildingId).Workers
+	}
+	m.BuildingState.Init(planetUser.GetBuilding(m.BuildingId), miningPlantUpgradeConstants)
 	m.BuildingAttributes.Init(m.Level, miningConstants)
 	if m.Level < miningPlantUpgradeConstants.MaxLevel {
 		m.NextLevelRequirements = &models.NextLevelRequirements{}

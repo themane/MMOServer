@@ -1,11 +1,12 @@
 package models
 
-type LoginRequest struct {
-	Username string `json:"username" example:"devashish"`
-	IdToken  string `json:"id_token" example:"asdbf1412b"`
+type RegistrationRequest struct {
+	Username string `json:"username" example:"asjfdkj13"`
+	Species  string `json:"species" example:"ARYAN"`
+	Birthday string `json:"birthday" example:"2001-01-12"`
+	Location string `json:"location" example:"UTC"`
 }
 
 type DeployRequest struct {
-	Username string `json:"username" example:"devashish"`
 	PlanetId string `json:"planet_id" example:"001:002:03"`
 }

@@ -2,7 +2,6 @@ package mongoRepository
 
 import (
 	"context"
-	"errors"
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
@@ -112,16 +111,22 @@ func (u *UniverseRepositoryImpl) GetAllOccupiedPlanets(system int) (map[string]r
 	return result, nil
 }
 
-func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoModels.PlanetUni, error) {
+func (u *UniverseRepositoryImpl) GetRandomUnoccupiedBasePlanet(system int) (*repoModels.PlanetUni, error) {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)
-	filter := bson.M{
-		"position.system": system,
-		"occupied":        nil,
-	}
-	randomChoicePipeline := bson.M{
-		"$match":  filter,
-		"$sample": bson.M{"size": 1},
+	randomChoicePipeline := mongo.Pipeline{
+		{{
+			"$match", bson.D{
+				{"position.system", system},
+				{"$or", []interface{}{
+					bson.D{{"occupied", nil}},
+					bson.D{{"occupied", bson.M{"$exists": false}}},
+				}},
+			},
+		}},
+		{{
+			"$sample", bson.D{{"size", 1}},
+		}},
 	}
 	cursor, err := u.getCollection(client).Aggregate(ctx, randomChoicePipeline)
 	if err != nil {
@@ -136,18 +141,56 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedPlanet(system int) (*repoMod
 		}
 		return &planet, nil
 	}
-	return nil, errors.New("no new planet could be assigned")
+	return nil, &NoSuchCombinationError{}
+}
+
+func (u *UniverseRepositoryImpl) GetRandomUnoccupiedHomePlanet(system int, sector int, excludedPlanet int) (*repoModels.PlanetUni, error) {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	randomChoicePipeline := mongo.Pipeline{
+		{{
+			"$match", bson.D{
+				{"position.system", system},
+				{"position.sector", sector},
+				{"position.planet", bson.D{{"$ne", excludedPlanet}}},
+				{"$or", []interface{}{
+					bson.D{{"occupied", nil}},
+					bson.D{{"occupied", bson.M{"$exists": false}}},
+					bson.D{{"occupied", "PRIMITIVE"}},
+				}},
+			},
+		}},
+		{{
+			"$sample", bson.D{{"size", 1}},
+		}},
+	}
+	cursor, err := u.getCollection(client).Aggregate(ctx, randomChoicePipeline)
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(ctx) {
+		planet := repoModels.PlanetUni{}
+		err := cursor.Decode(&planet)
+		if err != nil {
+			u.logger.Error("Error in decoding planet data received from Mongo", err)
+			return nil, err
+		}
+		return &planet, nil
+	}
+	return nil, &NoSuchCombinationError{}
 }
 
 func (u *UniverseRepositoryImpl) MarkOccupied(system int, sector int, planet int, userId string) error {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)
-	filter := bson.M{
-		"position.system": system,
-		"position.sector": sector,
-		"position.planet": planet,
+	filter := bson.D{
+		{"position.system", system},
+		{"position.sector", sector},
+		{"position.planet", planet},
 	}
-	update := bson.M{"occupied": userId}
+	update := bson.M{
+		"$set": bson.M{"occupied": userId},
+	}
 	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
 	u.logger.Printf("Marked planet: %s as occupied\n", models.PlanetId(system, sector, planet))
 	return nil

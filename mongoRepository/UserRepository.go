@@ -30,6 +30,17 @@ func (u *UserRepositoryImpl) getCollection(client *mongo.Client) *mongo.Collecti
 	return client.Database(u.mongoDB).Collection("user_data")
 }
 
+func (u *UserRepositoryImpl) AddUser(userData repoModels.UserData) error {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	_, err := u.getCollection(client).InsertOne(ctx, userData)
+	if err != nil {
+		u.logger.Error("Error in decoding user data received from Mongo", err)
+		return err
+	}
+	return nil
+}
+
 func (u *UserRepositoryImpl) FindById(id string) (*repoModels.UserData, error) {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)

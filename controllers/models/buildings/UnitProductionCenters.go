@@ -30,16 +30,17 @@ func InitAttackProductionCenter(planetUser repoModels.PlanetUser,
 
 	u := new(UnitProductionCenter)
 	u.BuildingId = constants.AttackProductionCenter
-	attackProductionCenter := planetUser.GetBuilding(constants.AttackProductionCenter)
-	u.Level = attackProductionCenter.BuildingLevel
-	u.Workers = attackProductionCenter.Workers
-	u.Soldiers = attackProductionCenter.Soldiers
-	u.BuildingState.Init(*attackProductionCenter, attackProductionCenterUpgradeConstants)
-	u.BuildingAttributes.Init(attackProductionCenter.BuildingLevel,
-		attackProductionCenterUpgradeConstants.MaxLevel, attackProductionCenterBuildingConstants, constants.GetShipAttributes())
+	if planetUser.GetBuilding(constants.AttackProductionCenter) != nil {
+		u.Level = planetUser.GetBuilding(constants.AttackProductionCenter).BuildingLevel
+		u.Workers = planetUser.GetBuilding(constants.AttackProductionCenter).Workers
+		u.Soldiers = planetUser.GetBuilding(constants.AttackProductionCenter).Soldiers
+	}
+	u.BuildingState.Init(planetUser.GetBuilding(constants.AttackProductionCenter), attackProductionCenterUpgradeConstants)
+	u.BuildingAttributes.Init(u.Level, attackProductionCenterUpgradeConstants.MaxLevel,
+		attackProductionCenterBuildingConstants, constants.GetShipAttributes())
 	if u.Level < attackProductionCenterUpgradeConstants.MaxLevel {
 		u.NextLevelRequirements = &repoModels.NextLevelRequirements{}
-		u.NextLevelRequirements.Init(attackProductionCenter.BuildingLevel, attackProductionCenterUpgradeConstants)
+		u.NextLevelRequirements.Init(u.Level, attackProductionCenterUpgradeConstants)
 	}
 	return u
 }
@@ -50,16 +51,17 @@ func InitDefenceProductionCenter(planetUser repoModels.PlanetUser,
 
 	u := new(UnitProductionCenter)
 	u.BuildingId = constants.DefenceProductionCenter
-	defenceProductionCenter := planetUser.GetBuilding(constants.DefenceProductionCenter)
-	u.Level = defenceProductionCenter.BuildingLevel
-	u.Workers = defenceProductionCenter.Workers
-	u.Soldiers = defenceProductionCenter.Soldiers
-	u.BuildingState.Init(*defenceProductionCenter, defenceProductionCenterUpgradeConstants)
-	u.BuildingAttributes.Init(defenceProductionCenter.BuildingLevel,
-		defenceProductionCenterUpgradeConstants.MaxLevel, defenceProductionCenterBuildingConstants, constants.GetDefenceAttributes())
+	if planetUser.GetBuilding(constants.DefenceProductionCenter) != nil {
+		u.Level = planetUser.GetBuilding(constants.DefenceProductionCenter).BuildingLevel
+		u.Workers = planetUser.GetBuilding(constants.DefenceProductionCenter).Workers
+		u.Soldiers = planetUser.GetBuilding(constants.DefenceProductionCenter).Soldiers
+	}
+	u.BuildingState.Init(planetUser.GetBuilding(constants.DefenceProductionCenter), defenceProductionCenterUpgradeConstants)
+	u.BuildingAttributes.Init(u.Level, defenceProductionCenterUpgradeConstants.MaxLevel,
+		defenceProductionCenterBuildingConstants, constants.GetDefenceAttributes())
 	if u.Level < defenceProductionCenterUpgradeConstants.MaxLevel {
 		u.NextLevelRequirements = &repoModels.NextLevelRequirements{}
-		u.NextLevelRequirements.Init(defenceProductionCenter.BuildingLevel, defenceProductionCenterUpgradeConstants)
+		u.NextLevelRequirements.Init(u.Level, defenceProductionCenterUpgradeConstants)
 	}
 	return u
 }

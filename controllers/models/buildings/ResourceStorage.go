@@ -30,15 +30,16 @@ func InitWaterPressureTank(planetUser repoModels.PlanetUser,
 
 	r := new(ResourceStorage)
 	r.BuildingId = constants.WaterPressureTank
-	waterPressureTank := planetUser.GetBuilding(constants.WaterPressureTank)
-	r.Level = waterPressureTank.BuildingLevel
-	r.Workers = waterPressureTank.Workers
-	r.Soldiers = waterPressureTank.Soldiers
-	r.BuildingState.Init(*waterPressureTank, upgradeConstants)
-	r.BuildingAttributes.Init(waterPressureTank.BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
+	if planetUser.GetBuilding(constants.WaterPressureTank) != nil {
+		r.Level = planetUser.GetBuilding(constants.WaterPressureTank).BuildingLevel
+		r.Workers = planetUser.GetBuilding(constants.WaterPressureTank).Workers
+		r.Soldiers = planetUser.GetBuilding(constants.WaterPressureTank).Soldiers
+	}
+	r.BuildingState.Init(planetUser.GetBuilding(constants.WaterPressureTank), upgradeConstants)
+	r.BuildingAttributes.Init(r.Level, upgradeConstants.MaxLevel, buildingConstants)
 	if r.Level < upgradeConstants.MaxLevel {
 		r.NextLevelRequirements = &repoModels.NextLevelRequirements{}
-		r.NextLevelRequirements.Init(waterPressureTank.BuildingLevel, upgradeConstants)
+		r.NextLevelRequirements.Init(r.Level, upgradeConstants)
 	}
 	return r
 }
@@ -49,15 +50,16 @@ func InitDiamondStorage(planetUser repoModels.PlanetUser,
 
 	r := new(ResourceStorage)
 	r.BuildingId = constants.DiamondStorage
-	diamondStorage := planetUser.GetBuilding(constants.DiamondStorage)
-	r.Level = diamondStorage.BuildingLevel
-	r.Workers = diamondStorage.Workers
-	r.Soldiers = diamondStorage.Soldiers
-	r.BuildingState.Init(*diamondStorage, upgradeConstants)
-	r.BuildingAttributes.Init(diamondStorage.BuildingLevel, upgradeConstants.MaxLevel, buildingConstants)
+	if planetUser.GetBuilding(constants.DiamondStorage) != nil {
+		r.Level = planetUser.GetBuilding(constants.DiamondStorage).BuildingLevel
+		r.Workers = planetUser.GetBuilding(constants.DiamondStorage).Workers
+		r.Soldiers = planetUser.GetBuilding(constants.DiamondStorage).Soldiers
+	}
+	r.BuildingState.Init(planetUser.GetBuilding(constants.DiamondStorage), upgradeConstants)
+	r.BuildingAttributes.Init(r.Level, upgradeConstants.MaxLevel, buildingConstants)
 	if r.Level < upgradeConstants.MaxLevel {
 		r.NextLevelRequirements = &repoModels.NextLevelRequirements{}
-		r.NextLevelRequirements.Init(diamondStorage.BuildingLevel, upgradeConstants)
+		r.NextLevelRequirements.Init(r.Level, upgradeConstants)
 	}
 	return r
 }

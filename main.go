@@ -23,6 +23,7 @@ var once = sync.Once{}
 var baseURL string
 var mongoDB string
 var maxSystems int
+var registrationRetries int
 var mongoUrlSecretName string
 var apiSecretName string
 var logLevel string
@@ -47,14 +48,16 @@ func main() {
 	url := ginSwagger.URL(baseURL + "/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	loginController, buildingController, missionController, unitsController := getHandlers()
+	registrationController, refreshController, buildingController, missionController, unitsController := getHandlers()
 	//scheduledJobManager.SchedulePlanetUpdates()
 
 	r.GET("/ping", controllers.Ping)
 
-	r.POST("/login", loginController.Login)
-	r.GET("/refresh/planet", loginController.RefreshPlanet)
-	r.GET("/refresh/token", loginController.RefreshToken)
+	r.POST("/register", registrationController.Register)
+	r.HEAD("/check/username", registrationController.CheckUsername)
+	r.POST("/login", registrationController.Login)
+	r.GET("/refresh/token", registrationController.RefreshToken)
+	r.GET("/refresh/planet", refreshController.RefreshPlanet)
 	//r.GET("/refresh/user_planet", loginController.RefreshUserPlanet)
 
 	r.PUT("/upgrade/building", buildingController.UpgradeBuilding)
@@ -87,8 +90,8 @@ func main() {
 	r.POST("/spy", missionController.Spy)
 	r.POST("/attack", missionController.Attack)
 
-	r.GET("/sector/visit", loginController.Visit)
-	r.GET("/sector/teleport", loginController.Teleport)
+	r.GET("/sector/visit", refreshController.Visit)
+	r.GET("/sector/teleport", refreshController.Teleport)
 
 	err := r.Run()
 	if err != nil {
@@ -97,7 +100,14 @@ func main() {
 	}
 }
 
-func getHandlers() (*controllers.LoginController, *controllers.BuildingController, *controllers.MissionController, *controllers.UnitsController) {
+func getHandlers() (
+	*controllers.RegistrationController,
+	*controllers.RefreshController,
+	*controllers.BuildingController,
+	*controllers.MissionController,
+	*controllers.UnitsController,
+) {
+
 	log.Println("Initializing handlers")
 	mongoURL := accessSecretVersion(mongoUrlSecretName)
 	apiSecret := accessSecretVersion(apiSecretName)
@@ -118,7 +128,10 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 	clanRepository = mongoRepository.NewClanRepository(mongoURL, mongoDB, logLevel)
 	universeRepository = mongoRepository.NewUniverseRepository(mongoURL, mongoDB, logLevel)
 	missionRepository = mongoRepository.NewMissionRepository(mongoURL, mongoDB, logLevel)
-	loginController := controllers.NewLoginController(userRepository, clanRepository, universeRepository, missionRepository,
+	registrationController := controllers.NewRegistrationController(userRepository, clanRepository, universeRepository, missionRepository,
+		experienceConstants, upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants,
+		apiSecret, maxSystems, registrationRetries, logLevel)
+	refreshController := controllers.NewRefreshController(userRepository, universeRepository, missionRepository,
 		experienceConstants, upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, apiSecret, logLevel)
 	buildingController := controllers.NewBuildingController(userRepository, universeRepository, missionRepository,
 		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, apiSecret, logLevel)
@@ -128,7 +141,7 @@ func getHandlers() (*controllers.LoginController, *controllers.BuildingControlle
 		upgradeConstants, buildingConstants, mineConstants, militaryConstants, researchConstants, speciesConstants, apiSecret, logLevel)
 
 	log.Println("Initialized all handlers")
-	return loginController, buildingController, missionController, unitsController
+	return registrationController, refreshController, buildingController, missionController, unitsController
 }
 
 func initialize() {
@@ -154,6 +167,16 @@ func initialize() {
 	log.Println("USING MAX_SYSTEMS: " + maxSystemsString)
 	var err error
 	maxSystems, err = strconv.Atoi(maxSystemsString)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	registrationRetriesString := os.Getenv("REGISTRATION_RETRIES")
+	if registrationRetriesString == "" {
+		registrationRetriesString = "3"
+	}
+	log.Println("USING REGISTRATION_RETRIES: " + registrationRetriesString)
+	registrationRetries, err = strconv.Atoi(registrationRetriesString)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -28,15 +28,16 @@ func InitPopulationControlCenter(planetUser repoModels.PlanetUser,
 
 	p := new(PopulationControlCenter)
 	p.BuildingId = constants.PopulationControlCenter
-	populationControlCenter := planetUser.GetBuilding(constants.PopulationControlCenter)
-	p.Level = populationControlCenter.BuildingLevel
-	p.Workers = populationControlCenter.Workers
-	p.BuildingState.Init(*populationControlCenter, populationControlCenterUpgradeConstants)
-	p.BuildingAttributes.Init(populationControlCenter.BuildingLevel, populationControlCenter.Workers,
+	if planetUser.GetBuilding(constants.PopulationControlCenter) != nil {
+		p.Level = planetUser.GetBuilding(constants.PopulationControlCenter).BuildingLevel
+		p.Workers = planetUser.GetBuilding(constants.PopulationControlCenter).Workers
+	}
+	p.BuildingState.Init(planetUser.GetBuilding(constants.PopulationControlCenter), populationControlCenterUpgradeConstants)
+	p.BuildingAttributes.Init(p.Level, p.Workers,
 		populationControlCenterUpgradeConstants.MaxLevel, populationControlCenterBuildingConstants)
 	if p.Level < populationControlCenterUpgradeConstants.MaxLevel {
 		p.NextLevelRequirements = &repoModels.NextLevelRequirements{}
-		p.NextLevelRequirements.Init(populationControlCenter.BuildingLevel, populationControlCenterUpgradeConstants)
+		p.NextLevelRequirements.Init(p.Level, populationControlCenterUpgradeConstants)
 	}
 	return p
 }

@@ -23,10 +23,17 @@ func (u *UserData) GetOccupiedPlanet(planetId string) *PlanetUser {
 }
 
 type ProfileUser struct {
-	Username   string `json:"username" bson:"username"`
-	Experience int    `json:"experience" bson:"experience"`
-	Species    string `json:"species" bson:"species"`
-	ClanId     string `json:"clan_id" bson:"clan_id"`
+	Username          string            `json:"username" bson:"username"`
+	Experience        int               `json:"experience" bson:"experience"`
+	Species           string            `json:"species" bson:"species"`
+	ClanId            string            `json:"clan_id" bson:"clan_id"`
+	GoogleCredentials GoogleCredentials `json:"google_credentials" bson:"google_credentials"`
+}
+
+type GoogleCredentials struct {
+	Id    string `json:"id" bson:"id"`
+	Email string `json:"email" bson:"email"`
+	Name  string `json:"name" bson:"name"`
 }
 
 type PlanetUser struct {
@@ -292,4 +299,6 @@ type UserRepository interface {
 	DeployShipsOnDefenceShipCarrier(id string, planetId string, unitId string, ships map[string]int) error
 	DeployDefencesOnShield(id string, planetId string, shieldId string, defences map[string]int) error
 	DeployDefenceShipCarrierOnShield(id string, planetId string, unitId string, shieldId string) error
+
+	AddUser(userData UserData) error
 }

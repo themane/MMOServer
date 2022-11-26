@@ -46,6 +46,7 @@ type UniverseRepository interface {
 
 	GetSector(system int, sector int) (map[string]PlanetUni, error)
 	GetAllOccupiedPlanets(system int) (map[string]PlanetUni, error)
-	GetRandomUnoccupiedPlanet(system int) (*PlanetUni, error)
+	GetRandomUnoccupiedBasePlanet(system int) (*PlanetUni, error)
+	GetRandomUnoccupiedHomePlanet(system int, sector int, excludedPlanet int) (*PlanetUni, error)
 	MarkOccupied(system int, sector int, planet int, userId string) error
 }

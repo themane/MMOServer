@@ -33,14 +33,15 @@ func InitAllShields(planetUser models.PlanetUser,
 		s := Shield{}
 		s.Id = shieldId
 		s.Name = constants.Shield
-		shield := planetUser.GetBuilding(shieldId)
-		s.Level = shield.BuildingLevel
-		s.BuildingState.Init(*shield, shieldBuildingUpgradeConstants)
-		s.Workers = shield.Workers
-		s.BuildingAttributes.Init(shield.BuildingLevel, shieldBuildingUpgradeConstants.MaxLevel, shieldConstants)
+		if planetUser.GetBuilding(shieldId) != nil {
+			s.Level = planetUser.GetBuilding(shieldId).BuildingLevel
+			s.Workers = planetUser.GetBuilding(shieldId).Workers
+		}
+		s.BuildingState.Init(planetUser.GetBuilding(shieldId), shieldBuildingUpgradeConstants)
+		s.BuildingAttributes.Init(s.Level, shieldBuildingUpgradeConstants.MaxLevel, shieldConstants)
 		if s.Level < shieldBuildingUpgradeConstants.MaxLevel {
 			s.NextLevelRequirements = &models.NextLevelRequirements{}
-			s.NextLevelRequirements.Init(shield.BuildingLevel, shieldBuildingUpgradeConstants)
+			s.NextLevelRequirements.Init(s.Level, shieldBuildingUpgradeConstants)
 		}
 		for _, defenceUser := range planetUser.Defences {
 			if deployedDefences, ok := defenceUser.GuardingShield[shieldId]; ok {
