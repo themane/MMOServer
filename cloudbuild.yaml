@@ -38,6 +38,8 @@ steps:
       - 'TOKEN_LIFESPAN_MINUTES=$_TOKEN_LIFESPAN_MINUTES'
       - '--set-env-vars'
       - 'REFRESH_TOKEN_LIFESPAN_MINUTES=$_REFRESH_TOKEN_LIFESPAN_MINUTES'
+      - '--set-env-vars'
+      - 'REGISTRATION_RETRIES=$_REGISTRATION_RETRIES'
     id: Deploy
     entrypoint: gcloud
 images:
