@@ -83,6 +83,20 @@ func (u *UserRepositoryImpl) FindByGoogleId(userId string) (*repoModels.UserData
 	return &result, nil
 }
 
+func (u *UserRepositoryImpl) FindByFacebookId(userId string) (*repoModels.UserData, error) {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	result := repoModels.UserData{}
+	filter := bson.M{"profile.facebook_credentials.id": userId}
+	singleResult := u.getCollection(client).FindOne(ctx, filter)
+	err := singleResult.Decode(&result)
+	if err != nil {
+		u.logger.Error("Error in decoding user data received from Mongo", err)
+		return nil, err
+	}
+	return &result, nil
+}
+
 func (u *UserRepositoryImpl) AddExperience(id string, experience int) error {
 	client, ctx := u.getMongoClient()
 	defer disconnect(client, ctx)

@@ -66,6 +66,14 @@ func (l *LoginService) GoogleLogin(userId string) (*controllerModels.UserRespons
 	return l.login(userData)
 }
 
+func (l *LoginService) FacebookLogin(userId string) (*controllerModels.UserResponse, error) {
+	userData, err := l.userRepository.FindByFacebookId(userId)
+	if err != nil {
+		return nil, err
+	}
+	return l.login(userData)
+}
+
 func (l *LoginService) login(userData *repoModels.UserData) (*controllerModels.UserResponse, error) {
 	clanData, err := getClanData(userData.Profile.ClanId, l.clanRepository)
 	if err != nil {

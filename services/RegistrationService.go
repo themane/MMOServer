@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
+	"github.com/themane/MMOServer/models"
 	"github.com/themane/MMOServer/mongoRepository"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"hash/fnv"
@@ -43,9 +44,7 @@ func NewRegistrationService(
 	}
 }
 
-func (r *RegistrationService) Register(request controllerModels.RegistrationRequest,
-	id string, email string, name string) error {
-
+func (r *RegistrationService) Register(request controllerModels.RegistrationRequest, userDetails models.UserSocialDetails) error {
 	if r.UsernameExists(request.Username) {
 		return errors.New("username already taken")
 	}
@@ -54,7 +53,7 @@ func (r *RegistrationService) Register(request controllerModels.RegistrationRequ
 	if err != nil {
 		return err
 	}
-	basePalnetUni, homePlanetUni, err := r.findNewPlanet(request.Location)
+	basePlanetUni, homePlanetUni, err := r.findNewPlanet(request.Location)
 	if err != nil {
 		return err
 	}
@@ -65,21 +64,24 @@ func (r *RegistrationService) Register(request controllerModels.RegistrationRequ
 			Mined: 0,
 		})
 	}
+	profile := repoModels.ProfileUser{
+		Username:   request.Username,
+		Experience: 0,
+		Species:    strings.ToUpper(request.Species),
+	}
+	if userDetails.Authenticator == constants.GoogleAuthenticator {
+		profile.GoogleCredentials = userDetails
+	}
+	if userDetails.Authenticator == constants.FacebookAuthenticator {
+		profile.FacebookCredentials = userDetails
+	}
+
 	userData := repoModels.UserData{
-		Id: newUUID.String(),
-		Profile: repoModels.ProfileUser{
-			Username:   request.Username,
-			Experience: 0,
-			Species:    strings.ToUpper(request.Species),
-			GoogleCredentials: repoModels.GoogleCredentials{
-				Id:    id,
-				Email: email,
-				Name:  name,
-			},
-		},
+		Id:      newUUID.String(),
+		Profile: profile,
 		OccupiedPlanets: []repoModels.PlanetUser{
 			{
-				Id:         basePalnetUni.Id,
+				Id:         basePlanetUni.Id,
 				BasePlanet: true,
 			},
 			{
@@ -113,7 +115,7 @@ func (r *RegistrationService) Register(request controllerModels.RegistrationRequ
 	}
 
 	err = r.universeRepository.MarkOccupied(
-		basePalnetUni.Position.System, basePalnetUni.Position.Sector, basePalnetUni.Position.Planet, userData.Id)
+		basePlanetUni.Position.System, basePlanetUni.Position.Sector, basePlanetUni.Position.Planet, userData.Id)
 	if err != nil {
 		return err
 	}

@@ -23,17 +23,12 @@ func (u *UserData) GetOccupiedPlanet(planetId string) *PlanetUser {
 }
 
 type ProfileUser struct {
-	Username          string            `json:"username" bson:"username"`
-	Experience        int               `json:"experience" bson:"experience"`
-	Species           string            `json:"species" bson:"species"`
-	ClanId            string            `json:"clan_id" bson:"clan_id"`
-	GoogleCredentials GoogleCredentials `json:"google_credentials" bson:"google_credentials"`
-}
-
-type GoogleCredentials struct {
-	Id    string `json:"id" bson:"id"`
-	Email string `json:"email" bson:"email"`
-	Name  string `json:"name" bson:"name"`
+	Username            string                   `json:"username" bson:"username"`
+	Experience          int                      `json:"experience" bson:"experience"`
+	Species             string                   `json:"species" bson:"species"`
+	ClanId              string                   `json:"clan_id" bson:"clan_id"`
+	GoogleCredentials   models.UserSocialDetails `json:"google_credentials" bson:"google_credentials"`
+	FacebookCredentials models.UserSocialDetails `json:"facebook_credentials" bson:"facebook_credentials"`
 }
 
 type PlanetUser struct {
@@ -255,7 +250,7 @@ type UserRepository interface {
 	FindById(id string) (*UserData, error)
 	FindByUsername(username string) (*UserData, error)
 	FindByGoogleId(userId string) (*UserData, error)
-	//FindByFacebookId(user_id string) (*UserData, error)
+	FindByFacebookId(userId string) (*UserData, error)
 
 	AddExperience(id string, experience int) error
 	UpdateClanId(id string, clanId string) error

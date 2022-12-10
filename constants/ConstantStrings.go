@@ -85,3 +85,9 @@ const (
 	ReturningState  string = "RETURNING"
 	CompletedState  string = "COMPLETED"
 )
+
+// Authenticators
+const (
+	GoogleAuthenticator   string = "GOOGLE"
+	FacebookAuthenticator string = "FACEBOOK"
+)

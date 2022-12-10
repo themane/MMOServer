@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
@@ -56,13 +55,13 @@ func NewRegistrationController(userRepository models.UserRepository,
 // @Success 200 {object} models.LoginResponse
 // @Router /register [post]
 func (r *RegistrationController) Register(c *gin.Context) {
-	claims, err := utils.ValidateIdToken(c)
+	userDetails, err := utils.ParseIdToken(c)
 	if err != nil {
 		r.logger.Error("Error in user authentication", err)
 		c.JSON(401, err.Error())
 		return
 	}
-	r.logger.Printf("Logged in user: %s", claims["email"])
+	r.logger.Printf("Logged in user: %s", userDetails.Email)
 
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var request controllerModels.RegistrationRequest
@@ -93,10 +92,7 @@ func (r *RegistrationController) Register(c *gin.Context) {
 		return
 	}
 
-	id := fmt.Sprintf("%v", claims["sub"])
-	email := fmt.Sprintf("%v", claims["email"])
-	name := fmt.Sprintf("%v", claims["name"])
-	err = r.registrationService.Register(request, id, email, name)
+	err = r.registrationService.Register(request, *userDetails)
 	if _, ok := err.(*mongoRepository.NoSuchCombinationError); ok {
 		r.logger.Error("error in finding new planet", err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in finding new planet. contact administrators for more info", HttpCode: 500})
@@ -108,7 +104,13 @@ func (r *RegistrationController) Register(c *gin.Context) {
 		return
 	}
 
-	response, err := r.loginService.GoogleLogin(id)
+	var response *controllerModels.UserResponse
+	if userDetails.Authenticator == constants.GoogleAuthenticator {
+		response, err = r.loginService.GoogleLogin(userDetails.Id)
+	}
+	if userDetails.Authenticator == constants.FacebookAuthenticator {
+		response, err = r.loginService.FacebookLogin(userDetails.Id)
+	}
 	if err != nil {
 		r.logger.Error("error in getting user data", err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -135,7 +137,6 @@ func (r *RegistrationController) Register(c *gin.Context) {
 		return
 	}
 	c.Header("X-Refresh-Token", refreshToken)
-
 	c.JSON(200, response)
 }
 
@@ -172,15 +173,20 @@ func (r *RegistrationController) CheckUsername(c *gin.Context) {
 // @Success 200 {object} models.LoginResponse
 // @Router /login [post]
 func (r *RegistrationController) Login(c *gin.Context) {
-	claims, err := utils.ValidateIdToken(c)
+	userDetails, err := utils.ParseIdToken(c)
 	if err != nil {
 		r.logger.Error("Error in user authentication", err)
 		c.JSON(401, err.Error())
 		return
 	}
-	r.logger.Printf("Logged in user: %s", claims["email"])
-	id := fmt.Sprintf("%v", claims["sub"])
-	response, err := r.loginService.GoogleLogin(id)
+	r.logger.Printf("Logged in user: %s", userDetails.Email)
+	var response *controllerModels.UserResponse
+	if userDetails.Authenticator == constants.GoogleAuthenticator {
+		response, err = r.loginService.GoogleLogin(userDetails.Id)
+	}
+	if userDetails.Authenticator == constants.FacebookAuthenticator {
+		response, err = r.loginService.FacebookLogin(userDetails.Id)
+	}
 	if err != nil {
 		r.logger.Error("error in getting user data", err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
@@ -207,7 +213,6 @@ func (r *RegistrationController) Login(c *gin.Context) {
 		return
 	}
 	c.Header("X-Refresh-Token", refreshToken)
-
 	c.JSON(200, response)
 }
 
