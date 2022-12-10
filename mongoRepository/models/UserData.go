@@ -252,6 +252,9 @@ type UserRepository interface {
 	FindByGoogleId(userId string) (*UserData, error)
 	FindByFacebookId(userId string) (*UserData, error)
 
+	AddGoogleId(id string, userDetails models.UserSocialDetails) error
+	AddFacebookId(id string, userDetails models.UserSocialDetails) error
+
 	AddExperience(id string, experience int) error
 	UpdateClanId(id string, clanId string) error
 

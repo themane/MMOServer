@@ -6,7 +6,7 @@ import (
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
-	"github.com/themane/MMOServer/mongoRepository"
+	"github.com/themane/MMOServer/mongoRepository/exceptions"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"hash/fnv"
 	"strings"
@@ -132,6 +132,26 @@ func (r *RegistrationService) UsernameExists(username string) bool {
 	return err == nil && user != nil && user.Profile.Username == username
 }
 
+func (r *RegistrationService) AddSocialLogin(username string, userDetails models.UserSocialDetails) error {
+	user, err := r.userRepository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	if userDetails.Authenticator == constants.GoogleAuthenticator {
+		if len(user.Profile.GoogleCredentials.Id) == 0 {
+			return r.userRepository.AddGoogleId(user.Id, userDetails)
+		}
+		return &exceptions.AlreadyExistsError{Message: "google sign in already linked with this account"}
+	}
+	if userDetails.Authenticator == constants.FacebookAuthenticator {
+		if len(user.Profile.FacebookCredentials.Id) == 0 {
+			return r.userRepository.AddFacebookId(user.Id, userDetails)
+		}
+		return &exceptions.AlreadyExistsError{Message: "facebook sign in already linked with this account"}
+	}
+	return errors.New("cannot register this login")
+}
+
 func (r *RegistrationService) findNewPlanet(location string) (*repoModels.PlanetUni, *repoModels.PlanetUni, error) {
 	system, err := r.hashPosition(location)
 	if err != nil {
@@ -139,7 +159,7 @@ func (r *RegistrationService) findNewPlanet(location string) (*repoModels.Planet
 	}
 	for i := 0; i < r.retries; i++ {
 		basePlanetUni, err1 := r.universeRepository.GetRandomUnoccupiedBasePlanet(system)
-		if _, ok := err1.(*mongoRepository.NoSuchCombinationError); ok {
+		if _, ok := err1.(*exceptions.NoSuchCombinationError); ok {
 			continue
 		}
 		if err1 != nil {
@@ -148,7 +168,7 @@ func (r *RegistrationService) findNewPlanet(location string) (*repoModels.Planet
 		for j := 0; j < r.retries; j++ {
 			homePlanetUni, err2 := r.universeRepository.GetRandomUnoccupiedHomePlanet(
 				basePlanetUni.Position.System, basePlanetUni.Position.Sector, basePlanetUni.Position.Planet)
-			if _, ok := err2.(*mongoRepository.NoSuchCombinationError); ok {
+			if _, ok := err2.(*exceptions.NoSuchCombinationError); ok {
 				continue
 			}
 			if err2 != nil {
@@ -157,7 +177,7 @@ func (r *RegistrationService) findNewPlanet(location string) (*repoModels.Planet
 			return basePlanetUni, homePlanetUni, nil
 		}
 	}
-	return nil, nil, &mongoRepository.NoSuchCombinationError{}
+	return nil, nil, &exceptions.NoSuchCombinationError{}
 }
 
 func (r *RegistrationService) hashPosition(s string) (int, error) {

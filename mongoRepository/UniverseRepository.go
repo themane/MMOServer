@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/models"
+	"github.com/themane/MMOServer/mongoRepository/exceptions"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -141,7 +142,7 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedBasePlanet(system int) (*rep
 		}
 		return &planet, nil
 	}
-	return nil, &NoSuchCombinationError{}
+	return nil, &exceptions.NoSuchCombinationError{}
 }
 
 func (u *UniverseRepositoryImpl) GetRandomUnoccupiedHomePlanet(system int, sector int, excludedPlanet int) (*repoModels.PlanetUni, error) {
@@ -177,7 +178,7 @@ func (u *UniverseRepositoryImpl) GetRandomUnoccupiedHomePlanet(system int, secto
 		}
 		return &planet, nil
 	}
-	return nil, &NoSuchCombinationError{}
+	return nil, &exceptions.NoSuchCombinationError{}
 }
 
 func (u *UniverseRepositoryImpl) MarkOccupied(system int, sector int, planet int, userId string) error {

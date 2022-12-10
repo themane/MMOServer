@@ -3,6 +3,7 @@ package mongoRepository
 import (
 	"context"
 	"github.com/themane/MMOServer/constants"
+	"github.com/themane/MMOServer/models"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -95,6 +96,26 @@ func (u *UserRepositoryImpl) FindByFacebookId(userId string) (*repoModels.UserDa
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (u *UserRepositoryImpl) AddGoogleId(id string, userDetails models.UserSocialDetails) error {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"profile.google_credentials": userDetails}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Added google sign in details to id: %s\n", id)
+	return nil
+}
+
+func (u *UserRepositoryImpl) AddFacebookId(id string, userDetails models.UserSocialDetails) error {
+	client, ctx := u.getMongoClient()
+	defer disconnect(client, ctx)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"profile.facebook_credentials": userDetails}}
+	u.getCollection(client).FindOneAndUpdate(ctx, filter, update)
+	u.logger.Printf("Added facebook sign in details to id: %s\n", id)
+	return nil
 }
 
 func (u *UserRepositoryImpl) AddExperience(id string, experience int) error {

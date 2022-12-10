@@ -12,10 +12,15 @@ import (
 	"net/http"
 )
 
-func ParseIdToken(c *gin.Context) (*models.UserSocialDetails, error) {
-	userDetails, err := ParseGoogleIdToken(c)
+func ValidateIdToken(c *gin.Context) (*models.UserSocialDetails, error) {
+	idToken := extractToken(c)
+	return ParseIdToken(idToken)
+}
+
+func ParseIdToken(idToken string) (*models.UserSocialDetails, error) {
+	userDetails, err := ParseGoogleIdToken(idToken)
 	if err != nil {
-		userDetails, err = ParseFacebookIdToken(c)
+		userDetails, err = ParseFacebookIdToken(idToken)
 		if err != nil {
 			return nil, err
 		}
@@ -24,8 +29,7 @@ func ParseIdToken(c *gin.Context) (*models.UserSocialDetails, error) {
 	return userDetails, nil
 }
 
-func ParseGoogleIdToken(c *gin.Context) (*models.UserSocialDetails, error) {
-	idToken := extractToken(c)
+func ParseGoogleIdToken(idToken string) (*models.UserSocialDetails, error) {
 	payload, err := idtoken.Validate(context.Background(), idToken, "")
 	if err != nil {
 		return nil, err
@@ -40,8 +44,7 @@ func ParseGoogleIdToken(c *gin.Context) (*models.UserSocialDetails, error) {
 	return &userDetails, nil
 }
 
-func ParseFacebookIdToken(c *gin.Context) (*models.UserSocialDetails, error) {
-	idToken := extractToken(c)
+func ParseFacebookIdToken(idToken string) (*models.UserSocialDetails, error) {
 	fbUserDetailsUrl := "https://graph.facebook.com/me?fields=id,name,email,picture&access_token=" + idToken
 	response, err := http.Get(fbUserDetailsUrl)
 	if err != nil {

@@ -6,7 +6,7 @@ import (
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/controllers/utils"
-	"github.com/themane/MMOServer/mongoRepository"
+	"github.com/themane/MMOServer/mongoRepository/exceptions"
 	"github.com/themane/MMOServer/mongoRepository/models"
 	"github.com/themane/MMOServer/services"
 	"io/ioutil"
@@ -55,7 +55,7 @@ func NewRegistrationController(userRepository models.UserRepository,
 // @Success 200 {object} models.LoginResponse
 // @Router /register [post]
 func (r *RegistrationController) Register(c *gin.Context) {
-	userDetails, err := utils.ParseIdToken(c)
+	userDetails, err := utils.ValidateIdToken(c)
 	if err != nil {
 		r.logger.Error("Error in user authentication", err)
 		c.JSON(401, err.Error())
@@ -93,7 +93,7 @@ func (r *RegistrationController) Register(c *gin.Context) {
 	}
 
 	err = r.registrationService.Register(request, *userDetails)
-	if _, ok := err.(*mongoRepository.NoSuchCombinationError); ok {
+	if _, ok := err.(*exceptions.NoSuchCombinationError); ok {
 		r.logger.Error("error in finding new planet", err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in finding new planet. contact administrators for more info", HttpCode: 500})
 		return
@@ -164,6 +164,49 @@ func (r *RegistrationController) CheckUsername(c *gin.Context) {
 	c.JSON(200, "available")
 }
 
+// AddSocialLogin godoc
+// @Summary Add Social Login API
+// @Description Add new Social Login for the same account
+// @Tags registration
+// @Accept json
+// @Produce json
+// @Param token query string true "new social login token"
+// @Success 200 {string}
+// @Router /check/username [get]
+func (r *RegistrationController) AddSocialLogin(c *gin.Context) {
+	username, err := utils.ExtractUsername(c, r.apiSecret)
+	if err != nil {
+		r.logger.Error("Error in user authentication", err)
+		c.JSON(401, err.Error())
+		return
+	}
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "token")
+	if err != nil {
+		r.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	userDetails, err := utils.ParseIdToken(parsedParams["token"])
+	if err != nil {
+		r.logger.Error("Error in parsing token", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	err = r.registrationService.AddSocialLogin(username, *userDetails)
+	if _, ok := err.(*exceptions.AlreadyExistsError); ok {
+		r.logger.Error("Error in linking social login", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	if err != nil {
+		r.logger.Error("Error in linking social login", err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in linking social login. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.JSON(200, "registered")
+}
+
 // Login godoc
 // @Summary Login API
 // @Description Login verification and first load of complete user data
@@ -173,7 +216,7 @@ func (r *RegistrationController) CheckUsername(c *gin.Context) {
 // @Success 200 {object} models.LoginResponse
 // @Router /login [post]
 func (r *RegistrationController) Login(c *gin.Context) {
-	userDetails, err := utils.ParseIdToken(c)
+	userDetails, err := utils.ValidateIdToken(c)
 	if err != nil {
 		r.logger.Error("Error in user authentication", err)
 		c.JSON(401, err.Error())
