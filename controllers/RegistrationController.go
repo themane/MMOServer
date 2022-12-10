@@ -181,13 +181,13 @@ func (r *RegistrationController) AddSocialLogin(c *gin.Context) {
 		return
 	}
 	values := c.Request.URL.Query()
-	parsedParams, err := parseStrings(values, "token")
+	parsedParams, err := parseStrings(values, "id_token")
 	if err != nil {
 		r.logger.Error("Error in parsing params", err)
 		c.JSON(400, err.Error())
 		return
 	}
-	userDetails, err := utils.ParseIdToken(parsedParams["token"])
+	userDetails, err := utils.ParseIdToken(parsedParams["id_token"])
 	if err != nil {
 		r.logger.Error("Error in parsing token", err)
 		c.JSON(400, err.Error())
