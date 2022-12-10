@@ -58,6 +58,14 @@ func NewLoginService(
 	}
 }
 
+func (l *LoginService) LegacyLogin(username string) (*controllerModels.UserResponse, error) {
+	userData, err := l.userRepository.FindByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	return l.login(userData)
+}
+
 func (l *LoginService) GoogleLogin(userId string) (*controllerModels.UserResponse, error) {
 	userData, err := l.userRepository.FindByGoogleId(userId)
 	if err != nil {

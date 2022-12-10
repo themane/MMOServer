@@ -57,6 +57,7 @@ func main() {
 	r.HEAD("/check/username", registrationController.CheckUsername)
 	r.PUT("/add/social", registrationController.AddSocialLogin)
 	r.POST("/login", registrationController.Login)
+	r.POST("/login/legacy", registrationController.LoginLegacy)
 	r.GET("/refresh/token", registrationController.RefreshToken)
 	r.GET("/refresh/planet", refreshController.RefreshPlanet)
 	//r.GET("/refresh/user_planet", loginController.RefreshUserPlanet)

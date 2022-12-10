@@ -259,6 +259,53 @@ func (r *RegistrationController) Login(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// LoginLegacy godoc
+// @Summary Legacy Login API
+// @Description Login verification and first load of complete user data
+// @Tags data retrieval
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.LoginResponse
+// @Router /login [post]
+func (r *RegistrationController) LoginLegacy(c *gin.Context) {
+	values := c.Request.URL.Query()
+	parsedParams, err := parseStrings(values, "username")
+	if err != nil {
+		r.logger.Error("Error in parsing params", err)
+		c.JSON(400, err.Error())
+		return
+	}
+	r.logger.Printf("Logged in user: %s", parsedParams["username"])
+	response, err := r.loginService.LegacyLogin(parsedParams["username"])
+	if err != nil {
+		r.logger.Error("error in getting user data", err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	if response == nil {
+		msg := "User data not found"
+		r.logger.Info(msg)
+		c.JSON(204, msg)
+		return
+	}
+	token, err := utils.GenerateToken(response.Profile.Username, r.apiSecret)
+	if err != nil {
+		r.logger.Error("error in getting auth token generation", err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.Header("X-Api-Token", token)
+
+	refreshToken, err := utils.GenerateRefreshToken(response.Profile.Username, r.apiSecret)
+	if err != nil {
+		r.logger.Error("error in getting auth token generation", err)
+		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})
+		return
+	}
+	c.Header("X-Refresh-Token", refreshToken)
+	c.JSON(200, response)
+}
+
 // RefreshToken godoc
 // @Summary Refresh Token API
 // @Description Refresh Token
