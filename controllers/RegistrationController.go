@@ -230,6 +230,11 @@ func (r *RegistrationController) Login(c *gin.Context) {
 	if userDetails.Authenticator == constants.FacebookAuthenticator {
 		response, err = r.loginService.FacebookLogin(userDetails.Id)
 	}
+	if _, ok := err.(*exceptions.NoSuchCombinationError); ok {
+		r.logger.Error("user not registered", err)
+		c.JSON(204, err.Error())
+		return
+	}
 	if err != nil {
 		r.logger.Error("error in getting user data", err)
 		c.JSON(500, controllerModels.ErrorResponse{Message: "error in getting user data. contact administrators for more info", HttpCode: 500})

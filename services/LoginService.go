@@ -4,6 +4,7 @@ import (
 	"github.com/themane/MMOServer/constants"
 	controllerModels "github.com/themane/MMOServer/controllers/models"
 	"github.com/themane/MMOServer/models"
+	"github.com/themane/MMOServer/mongoRepository/exceptions"
 	repoModels "github.com/themane/MMOServer/mongoRepository/models"
 )
 
@@ -69,7 +70,7 @@ func (l *LoginService) LegacyLogin(username string) (*controllerModels.UserRespo
 func (l *LoginService) GoogleLogin(userId string) (*controllerModels.UserResponse, error) {
 	userData, err := l.userRepository.FindByGoogleId(userId)
 	if err != nil {
-		return nil, err
+		return nil, &exceptions.NoSuchCombinationError{Message: err.Error()}
 	}
 	return l.login(userData)
 }
@@ -77,7 +78,7 @@ func (l *LoginService) GoogleLogin(userId string) (*controllerModels.UserRespons
 func (l *LoginService) FacebookLogin(userId string) (*controllerModels.UserResponse, error) {
 	userData, err := l.userRepository.FindByFacebookId(userId)
 	if err != nil {
-		return nil, err
+		return nil, &exceptions.NoSuchCombinationError{Message: err.Error()}
 	}
 	return l.login(userData)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/themane/MMOServer/constants"
 	"github.com/themane/MMOServer/models"
+	"github.com/themane/MMOServer/mongoRepository/exceptions"
 	"google.golang.org/api/idtoken"
 	"io"
 	"net/http"
@@ -32,7 +33,7 @@ func ParseIdToken(idToken string) (*models.UserSocialDetails, error) {
 func ParseGoogleIdToken(idToken string) (*models.UserSocialDetails, error) {
 	payload, err := idtoken.Validate(context.Background(), idToken, "")
 	if err != nil {
-		return nil, err
+		return nil, &exceptions.NoSuchCombinationError{Message: err.Error()}
 	}
 	userDetails := models.UserSocialDetails{
 		Id:            fmt.Sprintf("%v", payload.Claims["sub"]),
@@ -49,6 +50,10 @@ func ParseFacebookIdToken(idToken string) (*models.UserSocialDetails, error) {
 	response, err := http.Get(fbUserDetailsUrl)
 	if err != nil {
 		return nil, err
+	}
+	statusOK := response.StatusCode >= 200 && response.StatusCode < 300
+	if !statusOK {
+		return nil, &exceptions.NoSuchCombinationError{Message: "invalid login"}
 	}
 	var fbUserDetails models.FbUserDetails
 	decoder := json.NewDecoder(response.Body)
