@@ -7,10 +7,11 @@ import (
 )
 
 type Profile struct {
-	Username   string     `json:"username" example:"devashish"`
-	Experience Experience `json:"experience"`
-	Species    string     `json:"species" example:"KLAYANS"`
-	Clan       *Clan      `json:"clan,omitempty"`
+	Username       string     `json:"username" example:"devashish"`
+	ProfilePicture string     `json:"profile_picture" example:"http://test_url/profilepic"`
+	Experience     Experience `json:"experience"`
+	Species        string     `json:"species" example:"KLAYANS"`
+	Clan           *Clan      `json:"clan,omitempty"`
 }
 
 type Clan struct {
@@ -26,6 +27,12 @@ type Experience struct {
 
 func (p *Profile) Init(userData models.UserData, clanData *models.ClanData, experienceConstants constants.ExperienceConstants) {
 	p.Username = userData.Profile.Username
+	if len(userData.Profile.GoogleCredentials.PictureUrl) > 0 {
+		p.ProfilePicture = userData.Profile.GoogleCredentials.PictureUrl
+	}
+	if len(userData.Profile.FacebookCredentials.PictureUrl) > 0 {
+		p.ProfilePicture = userData.Profile.FacebookCredentials.PictureUrl
+	}
 	p.Species = userData.Profile.Species
 	p.Experience.Init(userData.Profile, experienceConstants)
 	if len(userData.Profile.ClanId) > 0 && clanData != nil {
