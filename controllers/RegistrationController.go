@@ -71,20 +71,6 @@ func (r *RegistrationController) Register(c *gin.Context) {
 		c.JSON(400, "Request not parseable")
 		return
 	}
-	today := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, time.UTC)
-	const datePattern = "2006-01-02"
-	birthday, err := time.Parse(datePattern, request.Birthday)
-	if err != nil {
-		r.logger.Error("Error in parsing birthday", err)
-		c.JSON(401, err.Error())
-		return
-	}
-	age := today.Sub(birthday).Hours() / 24 / 365
-	if age < 13 {
-		r.logger.Error("minimum age required to be 13 yrs", err)
-		c.JSON(400, "minimum age required to be 13 yrs")
-		return
-	}
 	_, err = time.LoadLocation(request.Location)
 	if err != nil {
 		r.logger.Error("Error in parsing location", err)

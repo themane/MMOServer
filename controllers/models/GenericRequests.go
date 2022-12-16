@@ -3,7 +3,6 @@ package models
 type RegistrationRequest struct {
 	Username string `json:"username" example:"asjfdkj13"`
 	Species  string `json:"species" example:"ARYAN"`
-	Birthday string `json:"birthday" example:"2001-01-12"`
 	Location string `json:"location" example:"UTC"`
 }
 
