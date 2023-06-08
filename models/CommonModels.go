@@ -6,9 +6,9 @@ type Formation struct {
 }
 
 type Notification struct {
-	Info    string `json:"info"`
-	Warning string `json:"warn"`
-	Error   string `json:"error"`
+	Tutorial string `json:"tutorial"`
+	Warning  string `json:"warn"`
+	Error    string `json:"error"`
 }
 
 type UserSocialDetails struct {

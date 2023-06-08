@@ -34,13 +34,13 @@ type UserPlanetResponse struct {
 	Defences            []military.Defence            `json:"idle_defences" bson:"idle_defences"`
 	DefenceShipCarriers []military.DefenceShipCarrier `json:"defence_ship_carriers" bson:"defence_ship_carriers"`
 	HomePlanet          bool                          `json:"home_planet" example:"true"`
-	Notifications       []models.Notification         `json:"notifications"`
+	Notifications       models.Notification           `json:"notifications"`
 }
 
 func (p *UserPlanetResponse) Init(planetUser repoModels.PlanetUser,
 	upgradeConstants map[string]constants.UpgradeConstants, sheildConstants map[string]map[string]interface{},
 	militaryConstants map[string]constants.MilitaryConstants, speciesConstants constants.SpeciesConstants,
-	notifications []models.Notification) {
+	notifications models.Notification) {
 
 	if planetUser.BasePlanet {
 		p.BasePlanet = true
