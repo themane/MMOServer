@@ -9,21 +9,21 @@ import (
 )
 
 type UserResponse struct {
-	Profile         Profile               `json:"profile"`
-	HomeSector      Sector                `json:"home_sector"`
-	OccupiedPlanets []StaticPlanetData    `json:"occupied_planets"`
-	Notifications   []models.Notification `json:"notifications"`
+	Profile         Profile             `json:"profile"`
+	HomeSector      Sector              `json:"home_sector"`
+	OccupiedPlanets []StaticPlanetData  `json:"occupied_planets"`
+	Notifications   models.Notification `json:"notifications"`
 }
 
 type SectorResponse struct {
-	Sector          Sector                `json:"sector"`
-	OccupiedPlanets []StaticPlanetData    `json:"occupied_planets"`
-	Notifications   []models.Notification `json:"notifications"`
+	Sector          Sector              `json:"sector"`
+	OccupiedPlanets []StaticPlanetData  `json:"occupied_planets"`
+	Notifications   models.Notification `json:"notifications"`
 }
 
 type PlanetResponse struct {
-	OccupiedPlanet OccupiedPlanet        `json:"occupied_planet"`
-	Notifications  []models.Notification `json:"notifications"`
+	OccupiedPlanet OccupiedPlanet      `json:"occupied_planet"`
+	Notifications  models.Notification `json:"notifications"`
 }
 
 type UserPlanetResponse struct {
