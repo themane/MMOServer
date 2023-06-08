@@ -89,7 +89,7 @@ func (r *QuickRefreshService) RefreshUserPlanet(username string, inputPlanetId s
 	for _, planetUser := range userData.OccupiedPlanets {
 		if planetUser.Id == inputPlanetId {
 			response := controllerModels.UserPlanetResponse{}
-			notifications := models.Notification{}
+			notifications := models.Notification{Tutorial: "", Error: "", Warning: ""}
 			response.Init(planetUser, r.upgradeConstants, r.buildingConstants[constants.Shield], r.militaryConstants, r.speciesConstants[userData.Profile.Species], notifications)
 			return &response, nil
 		}

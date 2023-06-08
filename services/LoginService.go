@@ -112,6 +112,7 @@ func (l *LoginService) login(userData *repoModels.UserData) (*controllerModels.U
 	response.HomeSector = *homeSector
 	response.OccupiedPlanets, err = generateOccupiedPlanetsData(occupiedPlanets,
 		homePlanetPosition.SectorId(), homeSectorData, l.universeRepository)
+	response.Notifications = models.Notification{Tutorial: "", Error: "", Warning: ""}
 	if err != nil {
 		return nil, err
 	}

@@ -84,17 +84,10 @@ func (s *SectorService) Visit(username string, sectorId string) (*controllerMode
 
 	response.OccupiedPlanets, err = generateOccupiedPlanetsData(occupiedPlanets,
 		sectorPosition.SectorId(), sectorData, s.universeRepository)
+	response.Notifications = models.Notification{Tutorial: "", Error: "", Warning: ""}
 	if err != nil {
 		return nil, err
 	}
-
-	//for _, userPlanet := range userData.OccupiedPlanets {
-	//notifications, err1 := l.notificationService.getNotifications(userPlanet)
-	//if err1 != nil {
-	//	return nil, err1
-	//}
-	//response.Notifications = append(response.Notifications, notifications...)
-	//}
 
 	return &response, nil
 }
@@ -134,17 +127,10 @@ func (s *SectorService) Teleport(username string, planetId string) (*controllerM
 
 	response.OccupiedPlanets, err = generateOccupiedPlanetsData(occupiedPlanets,
 		planetPosition.SectorId(), sectorData, s.universeRepository)
+	response.Notifications = models.Notification{Tutorial: "", Error: "", Warning: ""}
 	if err != nil {
 		return nil, err
 	}
-
-	//for _, userPlanet := range userData.OccupiedPlanets {
-	//notifications, err1 := l.notificationService.getNotifications(userPlanet)
-	//if err1 != nil {
-	//	return nil, err1
-	//}
-	//response.Notifications = append(response.Notifications, notifications...)
-	//}
 
 	return &response, nil
 }
