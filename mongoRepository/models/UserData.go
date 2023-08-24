@@ -90,6 +90,15 @@ func (p *PlanetUser) GetBuilding(buildingId string) *Building {
 	return nil
 }
 
+func (p *PlanetUser) GetBuildingLevel(buildingId string) int {
+	for _, building := range p.Buildings {
+		if building.Id == buildingId {
+			return building.BuildingLevel
+		}
+	}
+	return 0
+}
+
 func (p *PlanetUser) GetShip(shipName string) *Ship {
 	for _, ship := range p.Ships {
 		if ship.Name == shipName {

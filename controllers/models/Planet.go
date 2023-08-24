@@ -73,7 +73,7 @@ func (u *UnoccupiedPlanet) Init(planetUni repoModels.PlanetUni, planetUser repoM
 		}
 	} else {
 		for shieldId := range shieldIds {
-			if planetUser.GetBuilding(shieldId).BuildingLevel > 0 {
+			if planetUser.GetBuildingLevel(shieldId) > 0 {
 				u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Active})
 			} else {
 				u.Shields = append(u.Shields, UnoccupiedPlanetShield{shieldId, constants.Disabled})

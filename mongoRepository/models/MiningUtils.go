@@ -24,19 +24,25 @@ func GetMiningRate(userData UserData, occupiedPlanets []PlanetUni,
 		for _, mineUni := range planetUni.Mines {
 			mineUser := planetUser.GetMine(mineUni.Id)
 			miningPlant := planetUser.GetBuilding(GetMiningPlantId(mineUni.Id))
+			mineWorkers := 0
+			mineLevel := 0
+			if miningPlant != nil {
+				mineWorkers = miningPlant.Workers
+				mineLevel = miningPlant.BuildingLevel
+			}
 
 			var miningRatePerWorker int
 			if mineUni.Type == constants.Water {
-				miningRatePerWorker = waterConstants.Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
-				miningRate := GetTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
+				miningRatePerWorker = waterConstants.Levels[strconv.Itoa(mineLevel)].MiningRatePerWorker
+				miningRate := GetTotalMiningRate(miningRatePerWorker, mineWorkers, mineUni.MaxLimit, mineUser.Mined)
 				if planetIdWaterMiningRateMap[planetUni.Id] == nil {
 					planetIdWaterMiningRateMap[planetUni.Id] = map[string]int{}
 				}
 				planetIdWaterMiningRateMap[planetUni.Id][mineUni.Id] = miningRate
 			}
 			if mineUni.Type == constants.Graphene {
-				miningRatePerWorker = grapheneConstants.Levels[strconv.Itoa(miningPlant.BuildingLevel)].MiningRatePerWorker
-				miningRate := GetTotalMiningRate(miningRatePerWorker, miningPlant.Workers, mineUni.MaxLimit, mineUser.Mined)
+				miningRatePerWorker = grapheneConstants.Levels[strconv.Itoa(mineLevel)].MiningRatePerWorker
+				miningRate := GetTotalMiningRate(miningRatePerWorker, mineWorkers, mineUni.MaxLimit, mineUser.Mined)
 				if planetIdGrapheneMiningRateMap[planetUni.Id] == nil {
 					planetIdGrapheneMiningRateMap[planetUni.Id] = map[string]int{}
 				}
